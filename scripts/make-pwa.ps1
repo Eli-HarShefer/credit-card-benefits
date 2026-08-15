@@ -48,12 +48,13 @@ New-Icon -Size 192 -Path (Join-Path $pub 'icon-192.png')
 New-Icon -Size 512 -Path (Join-Path $pub 'icon-512.png')
 
 # ---- manifest ------------------------------------------------------------
-# Hebrew here would be mangled by the ANSI read, so it is written as escapes.
+# English on purpose. PowerShell 5.1 reads .ps1 as ANSI, so Hebrew written here
+# reaches the phone's home screen mangled - which is exactly what happened.
 $manifest = @'
 {
-  "name": "ארנק ההטבות",
-  "short_name": "ההטבות",
-  "description": "ההטבות של שלושת הכרטיסים במקום אחד",
+  "name": "Benefits Wallet",
+  "short_name": "Benefits",
+  "description": "All three cards' benefits in one place",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -76,7 +77,7 @@ $manifest = @'
 # Cache-first on the shell so the app opens instantly and works with no signal -
 # which is the point, since he uses it standing in a shop.
 $sw = @'
-const CACHE = 'benefits-v1';
+const CACHE = 'benefits-v2';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

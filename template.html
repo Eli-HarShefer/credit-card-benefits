@@ -51,12 +51,14 @@
   input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
   /* big picks */
-  .pick{list-style:none;margin:0;padding:0;display:grid;gap:9px}
-  .pick.two{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .pick{list-style:none;margin:0;padding:0;display:grid;gap:9px;align-items:stretch}
+  .pick.two{grid-template-columns:repeat(auto-fit,minmax(155px,1fr))}
+  .pick li{display:flex}
   .pick button{
-    width:100%;display:flex;align-items:center;gap:13px;text-align:start;
+    width:100%;display:flex;align-items:center;gap:11px;text-align:start;
     background:var(--surface);border:1px solid var(--rule);border-radius:13px;
-    padding:16px 16px;color:var(--ink);font:inherit;cursor:pointer;box-shadow:var(--shadow);
+    padding:15px 14px;color:var(--ink);font:inherit;cursor:pointer;box-shadow:var(--shadow);
+    min-height:60px;
   }
   .pick button:hover{border-color:var(--accent);background:var(--accent-wash)}
   .ic{font-size:1.5rem;line-height:1;flex-shrink:0}
@@ -147,7 +149,9 @@
     text-decoration:none;font-weight:700;
   }
 
-  /* near-me */
+  /* near-me. NB: every one of these sets `display`, which beats the UA rule for
+     [hidden] - so each needs its own [hidden] escape or it never hides. */
+  .nearbar[hidden],.legend[hidden],.plot[hidden],#map[hidden]{display:none!important}
   .nearbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
   .nearbar button{
     flex:1 1 auto;padding:13px;background:var(--surface);border:1px solid var(--rule);
@@ -156,8 +160,17 @@
   .nearbar button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
   .nearnote{color:var(--muted);font-size:.8rem;margin:0 0 10px}
 
+  #map{
+    width:100%;height:340px;border:1px solid var(--rule);border-radius:13px;
+    margin-bottom:12px;display:block;overflow:hidden;z-index:0;
+  }
+  .leaflet-popup-content{font-family:inherit;direction:rtl;font-size:.85rem}
+  .leaflet-popup-content b{display:block}
+  .leaflet-container{background:var(--surface)}
+
+  /* fallback plot, used only where a tile server is unreachable */
   .plot{
-    width:100%;aspect-ratio:1;max-height:380px;background:var(--surface);
+    width:100%;aspect-ratio:1;max-height:340px;background:var(--surface);
     border:1px solid var(--rule);border-radius:13px;margin-bottom:12px;display:block;
   }
   .legend{
@@ -260,11 +273,11 @@
     <button id="nearBtn">📍 מה קרוב אליי?</button>
   </div>
   <p class="nearnote" id="nearnote" hidden></p>
+  <div id="map" hidden></div>
   <canvas class="plot" id="plot" hidden></canvas>
   <div class="legend" id="legend" hidden>
     <span><i style="background:var(--flag)"></i>אתה</span>
     <span><i style="background:var(--accent)"></i>בית עסק</span>
-    <span>טבעות: 1 · 3 · 10 ק"מ</span>
   </div>
 
   <ul class="res" id="res"></ul>
@@ -335,11 +348,36 @@ $('#crumb').onclick = e => {
   const b = e.target.closest('.back');
   if (!b) return;
   const to = b.dataset.to;
-  if (to === 'group'){ step='group'; group=null; district=null; city=null; }
-  else if (to === 'district'){ step='district'; district=null; city=null; }
-  else { step='city'; city=null; }
-  draw();
+  go(() => {
+    if (to === 'group'){ step='group'; group=null; district=null; city=null; }
+    else if (to === 'district'){ step='district'; district=null; city=null; }
+    else { step='city'; city=null; }
+  });
 };
+
+/* Each screen is a history entry, so the phone's back gesture walks back through
+   the drill-down instead of leaving the app. */
+let popping = false;
+
+function snapshot(){ return { step, group, district, city }; }
+function restore(s){
+  step = s.step || 'group'; group = s.group || null;
+  district = s.district || null; city = s.city || null;
+}
+
+function go(next){
+  const before = JSON.stringify(snapshot());
+  next();
+  if (JSON.stringify(snapshot()) !== before && !popping) history.pushState(snapshot(), '');
+  draw();
+}
+
+addEventListener('popstate', e => {
+  popping = true;
+  restore(e.state || { step: 'group' });
+  draw();
+  popping = false;
+});
 
 function draw(){
   $('#filter').value = '';
@@ -352,7 +390,7 @@ function draw(){
   $('#tail').hidden = true;
   if (step !== 'list'){
     $('#nearbar').hidden = true; $('#nearnote').hidden = true;
-    $('#plot').hidden = true; $('#legend').hidden = true;
+    $('#plot').hidden = true; $('#map').hidden = true; $('#legend').hidden = true;
   }
 
   const isAli = step === 'ali';
@@ -364,7 +402,7 @@ function draw(){
   if (step === 'group'){
     const mk = t => GROUPS.filter(g => g.tier === t)
       .map(g => ({ label:g.name, n:g.n, icon:g.icon }));
-    setPick(mk(1), v => { group=v; step='district'; draw(); });
+    setPick(mk(1), v => go(() => { group=v; step='district'; }));
     const tail = mk(2);
     if (tail.length){
       $('#tail').hidden = false;
@@ -379,14 +417,14 @@ function draw(){
     // category - even at zero, which is itself the answer ("nothing here, don't look").
     if (TAU && !items.some(i => i.label === TAU)) items.unshift({ label:TAU, n:0 });
     setPick(items.map(b => ({...b, icon: b.label===ANY ? '🇮🇱' : (DICON[b.label]||'📍')})),
-            v => { district=v; if (v===ANY){ city=ANY; step='list'; } else step='city'; draw(); });
+            v => go(() => { district=v; if (v===ANY){ city=ANY; step='list'; } else step='city'; }));
     $('#pick').classList.add('two');
   } else if (step === 'city'){
     const rows = (byGroup.get(group)||[]).filter(r => (r.r||ANY) === district);
     // the campus is one place, not a district - skip straight to its results
     if (district === TAU){ city = ANY; step = 'list'; draw(); return; }
     const list = [{label:'כל המחוז', n:rows.length, icon:'📍'}, ...bucket(rows,'w').filter(b=>b.label!==ANY)];
-    setPick(list, v => { city = v==='כל המחוז' ? ANY : v; step='list'; draw(); });
+    setPick(list, v => go(() => { city = v==='כל המחוז' ? ANY : v; step='list'; }));
     $('#pick').classList.add('two');
   } else {
     results = (byGroup.get(group)||[])
@@ -420,7 +458,7 @@ $('#pickTail').onclick = e => {
   const b = e.target.closest('button[data-i]'); if (!b) return;
   const tail = GROUPS.filter(g => g.tier === 2);
   const it = tail[+b.dataset.i];
-  if (it){ group = it.name; step='district'; draw(); }
+  if (it) go(() => { group = it.name; step='district'; });
 };
 
 /* ---- near me ------------------------------------------------------------
@@ -439,7 +477,50 @@ const fmtKm = d => d < 1 ? Math.round(d*1000) + ' מ׳' : d.toFixed(1) + ' ק״�
 
 function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
 
+/* A real slippy map when Leaflet is available (the hosted build loads it), and
+   the schematic plot as a fallback so the page still answers "which direction,
+   how far" anywhere the tile server can't be reached. */
+let map = null, layer = null;
+
+function drawMap(rows){
+  const withXY = rows.filter(r => r.lat).slice(0, 400);
+  if (!window.L || !me || !withXY.length){ $('#map').hidden = true; return false; }
+  $('#map').hidden = false;
+  $('#plot').hidden = true;
+
+  if (!map){
+    map = L.map('map', { attributionControl: true });
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19, attribution: '© OpenStreetMap'
+    }).addTo(map);
+  }
+  if (layer) layer.remove();
+  layer = L.layerGroup().addTo(map);
+
+  L.circleMarker([me.lat, me.lon], {
+    radius: 8, color: '#fff', weight: 2, fillColor: css('--flag'), fillOpacity: 1
+  }).addTo(layer).bindPopup('<b>אתה כאן</b>');
+
+  for (const r of withXY){
+    L.circleMarker([r.lat, r.lon], {
+      radius: 6, color: '#fff', weight: 1.5, fillColor: css('--accent'), fillOpacity: .95
+    }).addTo(layer).bindPopup(
+      `<b>${r.n || ''}</b>${r.o || ''}` +
+      (r._d != null ? ` · ${fmtKm(r._d)}` : '') +
+      (r.d ? `<br>${r.d}` : '') +
+      `<br><a href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}"
+          target="_blank" rel="noopener">ניווט ←</a>`
+    );
+  }
+
+  const pts = withXY.map(r => [r.lat, r.lon]).concat([[me.lat, me.lon]]);
+  map.fitBounds(L.latLngBounds(pts).pad(0.15), { maxZoom: 15 });
+  setTimeout(() => map.invalidateSize(), 60);
+  return true;
+}
+
 function drawPlot(rows){
+  if (drawMap(rows)){ $('#legend').hidden = false; return; }
   const cv = $('#plot');
   const withXY = rows.filter(r => r.lat && r._d != null).slice(0, 300);
   if (!me || !withXY.length){ cv.hidden = true; $('#legend').hidden = true; return; }
@@ -525,7 +606,7 @@ function paintList(q){
       ' עם מיקום מדויק. השאר מוצגים אחריהם — הכתובות שלהם עדיין לא מופו.';
     drawPlot(rows);
   } else {
-    $('#plot').hidden = true; $('#legend').hidden = true;
+    $('#plot').hidden = true; $('#map').hidden = true; $('#legend').hidden = true;
   }
 
   window.__rows = rows; shown = 0; $('#res').innerHTML = ''; more();
@@ -562,11 +643,12 @@ $('#filter').oninput = () => {
   const q = $('#filter').value.trim();
   if (step === 'list') paintList(q); else paintPick(q);
 };
-$('#aliBtn').onclick = () => { step='ali'; draw(); };
+$('#aliBtn').onclick = () => go(() => { step='ali'; });
 
 $('#aliDeals').innerHTML = (DATA.aliDeals||[]).length
   ? DATA.aliDeals.map(d => `<li>${d.t}</li>`).join('')
   : '<li>אין כרגע מבצעים מסומנים.</li>';
 $('#foot').innerHTML = he(ROWS.length) + ' הטבות · בהצדעה · TAU · וואן זירו · עודכן ' + DATA.built;
+history.replaceState(snapshot(), '');
 draw();
 </script>

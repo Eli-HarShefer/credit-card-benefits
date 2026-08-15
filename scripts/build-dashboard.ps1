@@ -324,7 +324,7 @@ $groupsOut = foreach ($grp in $G.groups) {
   }
 }
 $districtsOut = @(
-  [pscustomobject]@{ name = $S.district_tau; icon = '🎓' }
+  [pscustomobject]@{ name = $S.district_tau; icon = $S.district_tau_icon }
 ) + @(foreach ($d in $G.districts) { [pscustomobject]@{ name = $d.name; icon = $d.icon } })
 
 $payload = [pscustomobject]@{
@@ -347,12 +347,19 @@ $out  = Join-Path $root 'dashboard.html'
 $pub = Join-Path $root 'docs'
 if (-not (Test-Path $pub)) { New-Item -ItemType Directory -Path $pub | Out-Null }
 
+# Leaflet only goes into the hosted copy. The Artifact build runs under a CSP that
+# blocks external scripts and map tiles, and there it falls back to the plot.
 $pwaHead = @'
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0f6b5f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Benefits">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 '@
 $pwaTail = @'
 <script>

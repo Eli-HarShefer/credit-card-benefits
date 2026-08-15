@@ -1,7 +1,7 @@
 {
-  "name": "××¨× ×§ ×”×”×˜×‘×•×ª",
-  "short_name": "×”×”×˜×‘×•×ª",
-  "description": "×”×”×˜×‘×•×ª ×©×œ ×©×œ×•×©×ª ×”×›×¨×˜×™×¡×™× ×‘×ž×§×•× ××—×“",
+  "name": "Benefits Wallet",
+  "short_name": "Benefits",
+  "description": "All three cards' benefits in one place",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
