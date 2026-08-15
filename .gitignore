@@ -7,7 +7,7 @@ data/be-plus.json
 data/max.json
 data/payback.json
 
-# Identical twin of public/index.html - that one is the deployed copy
+# Identical twin of docs/index.html - that one is the deployed copy
 dashboard.html
 
 # Raw crawl archive: 6MB, not read by the build, kept locally as a research record

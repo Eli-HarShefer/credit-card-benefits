@@ -13,7 +13,7 @@ $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
 
 $root = Split-Path -Parent $PSScriptRoot
-$pub  = Join-Path $root 'public'
+$pub  = Join-Path $root 'docs'
 if (-not (Test-Path $pub)) { New-Item -ItemType Directory -Path $pub | Out-Null }
 
 # ---- icons ---------------------------------------------------------------

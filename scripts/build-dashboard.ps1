@@ -341,10 +341,10 @@ $html = $tpl.Replace('/*__DATA__*/', $json)
 $out  = Join-Path $root 'dashboard.html'
 [System.IO.File]::WriteAllText($out, $html, (New-Object System.Text.UTF8Encoding($false)))
 
-# public/ is what gets deployed - index.html so any static host serves it at the root.
+# docs/ is what GitHub Pages serves (it only accepts / or /docs as the source path).
 # The hosted copy also gets the PWA hooks; the Artifact copy stays a plain page
 # because its CSP blocks both the manifest fetch and service-worker registration.
-$pub = Join-Path $root 'public'
+$pub = Join-Path $root 'docs'
 if (-not (Test-Path $pub)) { New-Item -ItemType Directory -Path $pub | Out-Null }
 
 $pwaHead = @'
