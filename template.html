@@ -355,28 +355,41 @@ $('#crumb').onclick = e => {
   });
 };
 
-/* Each screen is a history entry, so the phone's back gesture walks back through
-   the drill-down instead of leaving the app. */
-let popping = false;
+/* Routing lives in the URL hash rather than in pushState objects: the back
+   gesture then works through plain hashchange, which behaves consistently across
+   mobile browsers, and every screen becomes a link you can bookmark or share. */
+let applying = false;
 
-function snapshot(){ return { step, group, district, city }; }
-function restore(s){
-  step = s.step || 'group'; group = s.group || null;
-  district = s.district || null; city = s.city || null;
+function toHash(){
+  if (step === 'ali') return '#ali';
+  return '#' + [group, district, city].filter(Boolean).map(encodeURIComponent).join('/');
+}
+
+function fromHash(){
+  const h = decodeURIComponent(location.hash.replace(/^#/, ''));
+  if (h === 'ali'){ step='ali'; return; }
+  const [g, d, c] = h ? h.split('/').map(decodeURIComponent) : [];
+  group = g || null; district = d || null; city = c || null;
+  step = city ? 'list' : district ? 'city' : group ? 'district' : 'group';
+  // a district with no city means "whole district" - go straight to results
+  if (district === ANY || (district && district === TAU)){ city = ANY; step = 'list'; }
 }
 
 function go(next){
-  const before = JSON.stringify(snapshot());
   next();
-  if (JSON.stringify(snapshot()) !== before && !popping) history.pushState(snapshot(), '');
+  const h = toHash();
+  if (location.hash !== h){
+    applying = true;
+    location.hash = h;          // this is what the back gesture will undo
+    applying = false;
+  }
   draw();
 }
 
-addEventListener('popstate', e => {
-  popping = true;
-  restore(e.state || { step: 'group' });
+addEventListener('hashchange', () => {
+  if (applying) return;
+  fromHash();
   draw();
-  popping = false;
 });
 
 function draw(){
@@ -649,6 +662,6 @@ $('#aliDeals').innerHTML = (DATA.aliDeals||[]).length
   ? DATA.aliDeals.map(d => `<li>${d.t}</li>`).join('')
   : '<li>אין כרגע מבצעים מסומנים.</li>';
 $('#foot').innerHTML = he(ROWS.length) + ' הטבות · בהצדעה · TAU · וואן זירו · עודכן ' + DATA.built;
-history.replaceState(snapshot(), '');
+if (location.hash) fromHash();
 draw();
 </script>
