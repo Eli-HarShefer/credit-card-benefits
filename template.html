@@ -1,0 +1,572 @@
+<title>ארנק ההטבות</title>
+<style>
+  :root{
+    --paper:#fbfbf9; --surface:#fff; --ink:#15161a; --muted:#5f6169; --faint:#8b8d94;
+    --rule:#e6e6e2; --accent:#0f6b5f; --accent-ink:#0a4c43; --accent-wash:#e6f4f0;
+    --flag:#8a5a12; --flag-wash:#fdf3e2; --on-accent:#fff;
+    --tau:#1f4b8f; --zero:#6b2f7a; --beh:#0f6b5f;
+    --shadow:0 1px 2px rgba(20,25,24,.05), 0 4px 12px rgba(20,25,24,.05);
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#14161a; --surface:#1d2025; --ink:#eceae6; --muted:#a5a7ad; --faint:#83858c;
+      --rule:#2e3238; --accent:#63c2b2; --accent-ink:#8fd8c9; --accent-wash:#16302b;
+      --flag:#e0af65; --flag-wash:#2e2618; --on-accent:#0d1b18;
+      --tau:#8ab4ea; --zero:#cb9adb; --beh:#63c2b2;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#14161a; --surface:#1d2025; --ink:#eceae6; --muted:#a5a7ad; --faint:#83858c;
+    --rule:#2e3238; --accent:#63c2b2; --accent-ink:#8fd8c9; --accent-wash:#16302b;
+    --flag:#e0af65; --flag-wash:#2e2618; --on-accent:#0d1b18;
+    --tau:#8ab4ea; --zero:#cb9adb; --beh:#63c2b2;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;direction:rtl;background:var(--paper);color:var(--ink);
+    font-family:"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;
+    font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%;
+  }
+  .wrap{max-width:660px;margin:0 auto;padding:18px 14px 60px}
+
+  .crumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;min-height:20px}
+  .back{
+    background:var(--surface);border:1px solid var(--rule);border-radius:9px;
+    padding:8px 13px;color:var(--ink);font:inherit;font-size:.85rem;cursor:pointer;
+  }
+  .back:hover{border-color:var(--accent);color:var(--accent-ink)}
+  .here{color:var(--muted);font-size:.85rem}
+
+  h2{font-size:1.3rem;font-weight:650;margin:0 0 3px;letter-spacing:-.015em}
+  .lede{color:var(--muted);font-size:.87rem;margin:0 0 16px}
+
+  #filter{
+    width:100%;padding:13px 15px;font-size:16px;font-family:inherit;margin-bottom:14px;
+    border:1px solid var(--rule);border-radius:11px;background:var(--surface);color:var(--ink);
+  }
+  #filter:focus{outline:none;border-color:var(--accent)}
+  input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  /* big picks */
+  .pick{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .pick.two{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+  .pick button{
+    width:100%;display:flex;align-items:center;gap:13px;text-align:start;
+    background:var(--surface);border:1px solid var(--rule);border-radius:13px;
+    padding:16px 16px;color:var(--ink);font:inherit;cursor:pointer;box-shadow:var(--shadow);
+  }
+  .pick button:hover{border-color:var(--accent);background:var(--accent-wash)}
+  .ic{font-size:1.5rem;line-height:1;flex-shrink:0}
+  .lbl{flex:1;min-width:0;font-weight:650;overflow-wrap:anywhere}
+  .cnt{color:var(--faint);font-size:.8rem;font-variant-numeric:tabular-nums;flex-shrink:0}
+  .arrow{color:var(--faint);flex-shrink:0}
+
+  /* the de-prioritised tail */
+  .tail{margin-top:26px;border-top:1px solid var(--rule);padding-top:14px}
+  .tail summary{
+    cursor:pointer;color:var(--muted);font-size:.85rem;list-style:none;padding:4px 0;
+  }
+  .tail summary::-webkit-details-marker{display:none}
+  .tail summary::before{content:"▾ ";color:var(--faint)}
+  .tail[open] summary::before{content:"▴ "}
+  .tail .pick{margin-top:10px;gap:5px}
+  .tail .pick button{padding:9px 12px;font-size:.85rem;border-radius:9px;box-shadow:none}
+  .tail .ic{font-size:1rem}
+  .tail .lbl{font-weight:500}
+
+  /* results */
+  .res{list-style:none;margin:0;padding:0}
+  .res li{
+    background:var(--surface);border:1px solid var(--rule);border-radius:12px;
+    padding:13px 15px;margin-bottom:8px;box-shadow:var(--shadow);
+  }
+  .top{display:flex;align-items:baseline;gap:10px}
+  .name{flex:1;min-width:0;font-weight:650;overflow-wrap:anywhere}
+  .name a{color:inherit;text-decoration:none}
+  .name a:hover{text-decoration:underline;text-underline-offset:2px}
+  .val{
+    font-family:"Cascadia Mono",Consolas,ui-monospace,monospace;
+    font-variant-numeric:tabular-nums;color:var(--accent-ink);
+    font-weight:700;font-size:.98rem;flex-shrink:0;
+  }
+  .sub{display:block;color:var(--muted);font-size:.79rem;margin-top:4px}
+  .card{
+    display:inline-block;font-size:.68rem;font-weight:700;padding:2px 9px;
+    border-radius:20px;border:1px solid currentColor;margin-inline-end:7px;
+  }
+  .card.behatsdaa{color:var(--beh)}
+  .card.tau{color:var(--tau)}
+  .card.onezero{color:var(--zero)}
+  .card.wallet{color:var(--on-accent);background:var(--accent);border-color:var(--accent)}
+  .act{display:block;margin-top:7px;font-size:.81rem;color:var(--flag);font-weight:650}
+
+  /* AliExpress */
+  .ali-entry{
+    width:100%;text-align:start;background:var(--flag-wash);
+    border:1px solid var(--rule);border-inline-start:3px solid var(--flag);
+    border-radius:12px;padding:14px 15px;margin-bottom:16px;
+    color:var(--ink);font:inherit;cursor:pointer;display:flex;align-items:center;gap:12px;
+  }
+  .ali-entry:hover{border-color:var(--flag)}
+  .ali-tx{flex:1;min-width:0}
+  .ali-t{display:block;font-weight:700}
+  .ali-s{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}
+
+  #ali h3{font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .warn{
+    background:var(--flag-wash);border:1px solid var(--rule);
+    border-inline-start:3px solid var(--flag);border-radius:12px;padding:13px 15px;font-size:.9rem;
+  }
+  .warn b{display:block;margin-bottom:3px}
+  .steps{list-style:none;counter-reset:s;margin:0;padding:0}
+  .steps li{
+    counter-increment:s;position:relative;background:var(--surface);
+    border:1px solid var(--rule);border-radius:12px;
+    padding:13px 54px 13px 15px;margin-bottom:8px;font-size:.89rem;color:var(--muted);
+  }
+  .steps li::before{
+    content:counter(s);position:absolute;inset-inline-start:15px;top:13px;
+    width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--on-accent);
+    font-weight:700;font-size:.82rem;display:grid;place-items:center;
+  }
+  .steps li b{display:block;color:var(--ink);font-weight:700;margin-bottom:2px}
+  .steps li.hi{border-color:var(--flag);background:var(--flag-wash)}
+  .tip{display:block;margin-top:5px;font-size:.8rem;opacity:.9}
+  .facts{list-style:none;margin:0;padding:0}
+  .facts li{
+    background:var(--surface);border:1px solid var(--rule);border-radius:11px;
+    padding:11px 14px;margin-bottom:7px;font-size:.87rem;color:var(--muted);
+  }
+  .facts li b{color:var(--ink)}
+  .cta{
+    display:block;text-align:center;margin-top:18px;padding:16px;
+    background:var(--accent);color:var(--on-accent);border-radius:12px;
+    text-decoration:none;font-weight:700;
+  }
+
+  /* near-me */
+  .nearbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .nearbar button{
+    flex:1 1 auto;padding:13px;background:var(--surface);border:1px solid var(--rule);
+    border-radius:11px;color:var(--ink);font:inherit;font-weight:650;cursor:pointer;
+  }
+  .nearbar button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .nearnote{color:var(--muted);font-size:.8rem;margin:0 0 10px}
+
+  .plot{
+    width:100%;aspect-ratio:1;max-height:380px;background:var(--surface);
+    border:1px solid var(--rule);border-radius:13px;margin-bottom:12px;display:block;
+  }
+  .legend{
+    display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.75rem;margin:-4px 0 12px;
+  }
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:5px;vertical-align:0}
+
+  .dist{
+    display:inline-block;font-family:"Cascadia Mono",Consolas,ui-monospace,monospace;
+    font-variant-numeric:tabular-nums;color:var(--accent-ink);font-weight:700;
+    font-size:.76rem;margin-inline-end:7px;
+  }
+  .maplink{
+    display:inline-block;margin-top:6px;font-size:.79rem;font-weight:650;
+    color:var(--accent-ink);text-decoration:none;
+  }
+  .maplink:hover{text-decoration:underline;text-underline-offset:2px}
+
+  .more{
+    display:block;width:100%;margin-top:10px;padding:14px;background:var(--surface);
+    border:1px solid var(--rule);border-radius:12px;color:var(--ink);font:inherit;cursor:pointer;
+  }
+  .more[hidden]{display:none}
+  .empty{color:var(--muted);padding:30px 4px;text-align:center}
+  footer{margin-top:28px;padding-top:13px;border-top:1px solid var(--rule);
+    color:var(--faint);font-size:.75rem}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="crumb" id="crumb"></div>
+  <h2 id="title"></h2>
+  <p class="lede" id="lede"></p>
+
+  <div id="todo">
+    <button class="ali-entry" id="aliBtn">
+      <span class="ic">📦</span>
+      <span class="ali-tx">
+        <span class="ali-t">אליאקספרס — עד 11% חזרה</span>
+        <span class="ali-s">הסדר קובע. פספסת שלב, הכסף אבוד.</span>
+      </span>
+      <span class="arrow">‹</span>
+    </button>
+  </div>
+
+  <section id="ali" hidden>
+    <div class="warn">
+      <b>מה שהכי חשוב לדעת</b>
+      אם לא נכנסת לאליאקספרס דרך PayBack, אין החזר — ו<strong>אי אפשר להגיש בקשה
+      בדיעבד</strong> על החנות הזו. הכסף פשוט לא קיים.
+    </div>
+
+    <h3>סדר הפעולות</h3>
+    <ol class="steps">
+      <li><b>לרוקן את העגלה באליאקספרס</b>
+        מוצר ששכב בעגלה עוד לפני שעברת דרך PayBack — לא נספר.</li>
+      <li><b>לבדוק שהמוצר בכלל מזכה</b>
+        ב<a href="https://www.pay-back.co.il/retailer/aliexpress" target="_blank" rel="noopener">עמוד אליאקספרס ב-PayBack</a>
+        יש כפתור <em>"בדיקת החזר למוצר"</em> — מדביקים את קישור המוצר והוא אומר כמה מחזירים.
+        <span class="tip">יש מוצרים ב-11%, יש ב-0.5%, ויש שלא מחזירים כלום.</span></li>
+      <li><b>להיכנס רק דרך הכפתור של PayBack</b>
+        לא מלינק שמור, לא מגוגל, לא מההיסטוריה.</li>
+      <li class="hi"><b>לשלם בכרטיס אשראי max — TAU או בהצדעה</b>
+        <span class="tip">לא cash-card, לא debit, לא free ולא רכש — עליהם אין החזר בכלל.
+        ולא בוואן זירו: שם ההחזר מגיע מ-TOPCASH ורק עד 9%.</span></li>
+      <li><b>בלי קופונים חיצוניים</b>
+        קופונים של PayBack עצמם — בסדר גמור.</li>
+    </ol>
+
+    <h3>מגבלות ששווה לזכור</h3>
+    <ul class="facts">
+      <li><b>מקסימום ₪150 החזר להזמנה.</b> קנייה גדולה — כדאי לפצל.</li>
+      <li>ההחזר מחושב על מחיר המוצר בלבד — <b>בלי משלוח, מע"מ, מסים ואגרות</b>.</li>
+      <li><b>אין כפל מבצעים</b> אלא אם צוין אחרת.</li>
+      <li>אישור מגיע במייל תוך 24 שעות; הכסף נזקף עד 90 ימי עסקים.</li>
+      <li>אישור קבלת המוצר באליאקספרס <b>מזרז</b> את ההחזר.</li>
+      <li>פתיחת <b>מחלוקת (dispute)</b> עלולה לבטל את ההחזר.</li>
+    </ul>
+
+    <h3>מבצעי השבוע ב-PayBack</h3>
+    <p class="tip" style="margin-top:-4px">
+      של חנויות אחרות בשירות, לא של אליאקספרס — אבל אותו כלל: דרך PayBack ובכרטיס max.
+    </p>
+    <ul class="facts" id="aliDeals"></ul>
+
+    <a class="cta" href="https://www.pay-back.co.il/retailer/aliexpress" target="_blank" rel="noopener">
+      פתח את PayBack ובדוק מוצר ←
+    </a>
+  </section>
+
+  <input type="search" id="filter" placeholder="" autocomplete="off" aria-label="סינון">
+  <ul class="pick" id="pick"></ul>
+
+  <details class="tail" id="tail" hidden>
+    <summary id="tailSum">תחומים שפחות רלוונטיים לך</summary>
+    <ul class="pick" id="pickTail"></ul>
+  </details>
+
+  <div class="nearbar" id="nearbar" hidden>
+    <button id="nearBtn">📍 מה קרוב אליי?</button>
+  </div>
+  <p class="nearnote" id="nearnote" hidden></p>
+  <canvas class="plot" id="plot" hidden></canvas>
+  <div class="legend" id="legend" hidden>
+    <span><i style="background:var(--flag)"></i>אתה</span>
+    <span><i style="background:var(--accent)"></i>בית עסק</span>
+    <span>טבעות: 1 · 3 · 10 ק"מ</span>
+  </div>
+
+  <ul class="res" id="res"></ul>
+  <button class="more" id="more" hidden>הצג עוד</button>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = /*__DATA__*/;
+const ROWS = DATA.rows || [];
+const GROUPS = DATA.groups || [];
+const DISTRICTS = DATA.districts || [];
+const $ = s => document.querySelector(s);
+const he = n => n.toLocaleString('he-IL');
+const CARD = { behatsdaa:'בהצדעה', tau:'TAU', onezero:'וואן זירו', wallet:'ארנק דיגיטלי' };
+const ANY = 'בכל הארץ';
+
+let step = 'group', group = null, district = null, city = null, shown = 0, results = [];
+const PAGE = 40;
+
+const byGroup = new Map();
+for (const r of ROWS) for (const g of (r.gr || [])){
+  if (!byGroup.has(g)) byGroup.set(g, []);
+  byGroup.get(g).push(r);
+}
+const ICON = {}; for (const g of GROUPS) ICON[g.name] = g.icon;
+const DICON = {}; for (const d of DISTRICTS) DICON[d.name] = d.icon;
+
+const TAU = DISTRICTS[0] ? DISTRICTS[0].name : '';
+function bucket(rows, key){
+  const m = new Map();
+  for (const r of rows){ const v = r[key] || ANY; m.set(v, (m.get(v)||0)+1); }
+  // campus first, then "anywhere", then by size - the campus is where he actually is
+  const rank = l => l === TAU ? -2 : l === ANY ? -1 : 0;
+  return [...m.entries()].map(([label, n]) => ({ label, n }))
+    .sort((a,b) => (rank(a.label) - rank(b.label)) || (b.n - a.n));
+}
+
+function chrome(){
+  const c = $('#crumb');
+  const bits = [];
+  if (step !== 'group' && step !== 'ali') bits.push(`<button class="back" data-to="group">→ תחום אחר</button>`);
+  if (step === 'city' || step === 'list') bits.push(`<button class="back" data-to="district">→ אזור אחר</button>`);
+  if (step === 'list' && district !== ANY) bits.push(`<button class="back" data-to="city">→ עיר אחרת</button>`);
+  if (step === 'ali') bits.push(`<button class="back" data-to="group">→ חזרה</button>`);
+  const here = [group, district, city].filter(x => x && x !== ANY).join(' · ');
+  c.innerHTML = bits.join('') + (here ? `<span class="here">${here}</span>` : '');
+
+  const gnote = (GROUPS.find(g => g.name === group) || {}).note || '';
+  const T = {
+    group:    ['מה אתה מחפש?', 'בחר תחום, ואז את האזור שאתה נמצא בו.'],
+    district: ['באיזה אזור?',  gnote || 'קודם מחוז, אחר כך עיר.'],
+    city:     ['באיזו עיר?',   ''],
+    list:     [[group, city && city!==ANY ? city : district].filter(x=>x&&x!==ANY).join(' · '), gnote],
+    ali:      ['אליאקספרס',    'עד 11% חזרה — אבל רק אם עושים את זה בסדר הנכון.']
+  }[step];
+  $('#title').textContent = Array.isArray(T[0]) ? T[0].join('') : T[0];
+  $('#lede').textContent = T[1];
+
+  $('#filter').placeholder =
+    step === 'group' ? 'סנן תחום…' :
+    step === 'city'  ? 'סנן עיר…'  :
+    step === 'list'  ? 'סנן בתוך התוצאות…' : 'סנן…';
+}
+
+$('#crumb').onclick = e => {
+  const b = e.target.closest('.back');
+  if (!b) return;
+  const to = b.dataset.to;
+  if (to === 'group'){ step='group'; group=null; district=null; city=null; }
+  else if (to === 'district'){ step='district'; district=null; city=null; }
+  else { step='city'; city=null; }
+  draw();
+};
+
+function draw(){
+  $('#filter').value = '';
+  chrome();
+  shown = 0;
+  $('#res').innerHTML = '';
+  $('#pick').innerHTML = '';
+  $('#pickTail').innerHTML = '';
+  $('#more').hidden = true;
+  $('#tail').hidden = true;
+  if (step !== 'list'){
+    $('#nearbar').hidden = true; $('#nearnote').hidden = true;
+    $('#plot').hidden = true; $('#legend').hidden = true;
+  }
+
+  const isAli = step === 'ali';
+  $('#ali').hidden = !isAli;
+  $('#filter').hidden = isAli;
+  $('#todo').hidden = step !== 'group';
+  if (isAli) return;
+
+  if (step === 'group'){
+    const mk = t => GROUPS.filter(g => g.tier === t)
+      .map(g => ({ label:g.name, n:g.n, icon:g.icon }));
+    setPick(mk(1), v => { group=v; step='district'; draw(); });
+    const tail = mk(2);
+    if (tail.length){
+      $('#tail').hidden = false;
+      $('#tailSum').textContent = `תחומים שפחות רלוונטיים לך (${tail.length})`;
+      paintInto($('#pickTail'), tail);
+    }
+    $('#pick').classList.remove('two');
+  } else if (step === 'district'){
+    const rows = byGroup.get(group) || [];
+    let items = bucket(rows,'r');
+    // The campus is where he spends his days, so it stays pinned at the top of every
+    // category - even at zero, which is itself the answer ("nothing here, don't look").
+    if (TAU && !items.some(i => i.label === TAU)) items.unshift({ label:TAU, n:0 });
+    setPick(items.map(b => ({...b, icon: b.label===ANY ? '🇮🇱' : (DICON[b.label]||'📍')})),
+            v => { district=v; if (v===ANY){ city=ANY; step='list'; } else step='city'; draw(); });
+    $('#pick').classList.add('two');
+  } else if (step === 'city'){
+    const rows = (byGroup.get(group)||[]).filter(r => (r.r||ANY) === district);
+    // the campus is one place, not a district - skip straight to its results
+    if (district === TAU){ city = ANY; step = 'list'; draw(); return; }
+    const list = [{label:'כל המחוז', n:rows.length, icon:'📍'}, ...bucket(rows,'w').filter(b=>b.label!==ANY)];
+    setPick(list, v => { city = v==='כל המחוז' ? ANY : v; step='list'; draw(); });
+    $('#pick').classList.add('two');
+  } else {
+    results = (byGroup.get(group)||[])
+      .filter(r => district===ANY || (r.r||ANY)===district)
+      .filter(r => city===ANY || (r.w||ANY)===city)
+      .sort((a,b) => b.p - a.p);
+    paintList('');
+  }
+}
+
+function setPick(items, onPick){ window.__items=items; window.__onPick=onPick; paintPick(''); }
+function paintPick(q){
+  const items = (window.__items||[]).filter(i => !q || i.label.includes(q));
+  paintInto($('#pick'), items);
+  $('#pick').dataset.q = q;
+}
+function paintInto(el, items){
+  el.innerHTML = items.slice(0,400).map((i,idx) =>
+    `<li><button data-i="${idx}"><span class="ic">${i.icon||'•'}</span>` +
+    `<span class="lbl">${i.label}</span><span class="cnt">${he(i.n)}</span>` +
+    `<span class="arrow">‹</span></button></li>`).join('') || '<div class="empty">אין תוצאות</div>';
+}
+
+$('#pick').onclick = e => {
+  const b = e.target.closest('button[data-i]'); if (!b) return;
+  const q = $('#pick').dataset.q || '';
+  const items = (window.__items||[]).filter(i => !q || i.label.includes(q));
+  const it = items[+b.dataset.i]; if (it) window.__onPick(it.label);
+};
+$('#pickTail').onclick = e => {
+  const b = e.target.closest('button[data-i]'); if (!b) return;
+  const tail = GROUPS.filter(g => g.tier === 2);
+  const it = tail[+b.dataset.i];
+  if (it){ group = it.name; step='district'; draw(); }
+};
+
+/* ---- near me ------------------------------------------------------------
+   A published artifact cannot reach any map-tile host, so instead of a fake
+   basemap this draws the real geometry: you at the centre, shops at their true
+   bearing and distance, rings for scale. Tapping a shop hands it off to the
+   phone's actual map app, which is where a basemap belongs. */
+let me = null, near = false;
+
+function km(aLat, aLon, bLat, bLon){
+  const dLat = (aLat-bLat) * 111;
+  const dLon = (aLon-bLon) * 111 * Math.cos(aLat * Math.PI/180);
+  return Math.sqrt(dLat*dLat + dLon*dLon);
+}
+const fmtKm = d => d < 1 ? Math.round(d*1000) + ' מ׳' : d.toFixed(1) + ' ק״מ';
+
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+function drawPlot(rows){
+  const cv = $('#plot');
+  const withXY = rows.filter(r => r.lat && r._d != null).slice(0, 300);
+  if (!me || !withXY.length){ cv.hidden = true; $('#legend').hidden = true; return; }
+  cv.hidden = false; $('#legend').hidden = false;
+
+  const dpr = window.devicePixelRatio || 1;
+  const size = cv.clientWidth;
+  cv.width = size * dpr; cv.height = size * dpr;
+  const g = cv.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, size, size);
+
+  const cx = size/2, cy = size/2, pad = 14;
+  // scale to the 90th percentile so one far outlier doesn't squash everything
+  const ds = withXY.map(r => r._d).sort((a,b) => a-b);
+  const maxD = Math.max(0.5, ds[Math.floor(ds.length*0.9)] || ds[ds.length-1]);
+  const R = (size/2) - pad;
+  const px = d => (d / maxD) * R;
+
+  g.strokeStyle = css('--rule'); g.fillStyle = css('--muted');
+  g.font = '11px system-ui, sans-serif'; g.textAlign = 'center';
+  for (const ring of [1, 3, 10]){
+    if (ring > maxD * 1.15) continue;
+    g.beginPath(); g.arc(cx, cy, px(ring), 0, Math.PI*2); g.stroke();
+    g.fillText(ring + ' ק״מ', cx, cy - px(ring) - 3);
+  }
+
+  g.fillStyle = css('--accent');
+  for (const r of withXY){
+    // screen y grows downward, north should point up
+    const dy = -(r.lat - me.lat) * 111;
+    const dx = (r.lon - me.lon) * 111 * Math.cos(me.lat * Math.PI/180);
+    const d = Math.sqrt(dx*dx + dy*dy) || 0.0001;
+    const k = Math.min(px(d), R) / d;
+    g.beginPath(); g.arc(cx + dx*k, cy + dy*k, 3.5, 0, Math.PI*2); g.fill();
+  }
+
+  g.fillStyle = css('--flag');
+  g.beginPath(); g.arc(cx, cy, 6, 0, Math.PI*2); g.fill();
+}
+
+function locate(){
+  if (!navigator.geolocation){
+    $('#nearnote').hidden = false;
+    $('#nearnote').textContent = 'הדפדפן הזה לא תומך במיקום. אפשר עדיין לבחור עיר ידנית.';
+    return;
+  }
+  $('#nearnote').hidden = false;
+  $('#nearnote').textContent = 'מאתר את המיקום שלך…';
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      me = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      near = true;
+      $('#nearBtn').classList.add('on');
+      $('#nearBtn').textContent = '📍 ממוין לפי מרחק ממך';
+      paintList($('#filter').value.trim());
+    },
+    err => {
+      $('#nearnote').hidden = false;
+      $('#nearnote').textContent = err.code === 1
+        ? 'לא אישרת גישה למיקום. אפשר לאשר בהגדרות הדפדפן ולנסות שוב.'
+        : 'לא הצלחתי לאתר מיקום כרגע.';
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+  );
+}
+
+function paintList(q){
+  let rows = results.filter(r => !q || (r.n&&r.n.includes(q)) || (r.o&&r.o.includes(q)));
+  const anyCoords = rows.some(r => r.lat);
+  $('#nearbar').hidden = !anyCoords;
+
+  if (near && me){
+    rows = rows.map(r => {
+      r._d = r.lat ? km(me.lat, me.lon, r.lat, r.lon) : null;
+      return r;
+    });
+    // known distance first, then unplaced rows keeping their discount order
+    rows.sort((a,b) => (a._d==null) - (b._d==null) || (a._d - b._d) || (b.p - a.p));
+    const placed = rows.filter(r => r._d != null).length;
+    $('#nearnote').hidden = false;
+    $('#nearnote').textContent = placed + ' מתוך ' + rows.length +
+      ' עם מיקום מדויק. השאר מוצגים אחריהם — הכתובות שלהם עדיין לא מופו.';
+    drawPlot(rows);
+  } else {
+    $('#plot').hidden = true; $('#legend').hidden = true;
+  }
+
+  window.__rows = rows; shown = 0; $('#res').innerHTML = ''; more();
+}
+function more(){
+  const rows = window.__rows || [];
+  const slice = rows.slice(shown, shown+PAGE);
+  $('#res').insertAdjacentHTML('beforeend', slice.map(r => `
+    <li>
+      <span class="top">
+        <span class="name">${r.u ? `<a href="${r.u}" target="_blank" rel="noopener">${r.n||''}</a>` : (r.n||'')}</span>
+        <span class="val">${r.o||''}</span>
+      </span>
+      <span class="sub">
+        ${r._d != null ? `<span class="dist">${fmtKm(r._d)}</span>` : ''}
+        <span class="card ${r.c}">${CARD[r.c]||''}</span>${[r.w!==ANY?r.w:'', r.d].filter(Boolean).join(' · ')}
+      </span>
+      ${r.a ? `<span class="act">↳ ${r.a}</span>` : ''}
+      ${r.lat ? `<a class="maplink" target="_blank" rel="noopener"
+         href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}">🗺️ פתח במפה</a>` : ''}
+    </li>`).join(''));
+  shown += slice.length;
+  $('#more').hidden = shown >= rows.length;
+  if (!rows.length) $('#res').innerHTML = '<div class="empty">אין הטבות כאן</div>';
+}
+
+$('#nearBtn').onclick = () => { if (me){ near = !near; $('#nearBtn').classList.toggle('on', near);
+    $('#nearBtn').textContent = near ? '📍 ממוין לפי מרחק ממך' : '📍 מה קרוב אליי?';
+    paintList($('#filter').value.trim()); } else locate(); };
+window.addEventListener('resize', () => { if (near && me) drawPlot(window.__rows || []); });
+
+$('#more').onclick = more;
+$('#filter').oninput = () => {
+  const q = $('#filter').value.trim();
+  if (step === 'list') paintList(q); else paintPick(q);
+};
+$('#aliBtn').onclick = () => { step='ali'; draw(); };
+
+$('#aliDeals').innerHTML = (DATA.aliDeals||[]).length
+  ? DATA.aliDeals.map(d => `<li>${d.t}</li>`).join('')
+  : '<li>אין כרגע מבצעים מסומנים.</li>';
+$('#foot').innerHTML = he(ROWS.length) + ' הטבות · בהצדעה · TAU · וואן זירו · עודכן ' + DATA.built;
+draw();
+</script>

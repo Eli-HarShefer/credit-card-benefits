@@ -1,0 +1,24 @@
+# The repo versions the code and ships the built site. Anything the public
+# harvesters can rebuild in a couple of minutes stays out, so a weekly commit
+# doesn't drag megabytes of churn into history forever.
+
+# Regenerable: run scripts\harvest-beplus.ps1 / harvest-max.ps1 / harvest-payback.ps1
+data/be-plus.json
+data/max.json
+data/payback.json
+
+# Identical twin of public/index.html - that one is the deployed copy
+dashboard.html
+
+# Raw crawl archive: 6MB, not read by the build, kept locally as a research record
+data/behatsdaa-raw.json
+
+# Logs and scratch
+data/refresh.log
+*.tmp
+
+# NOT ignored, on purpose - expensive or impossible to regenerate:
+#   data/geocache.json          hours of rate-limited geocoding
+#   data/behatsdaa-*.json       behind an OTP login
+#   data/isracard-online.json   hand-extracted, the site blocks scripted access
+#   data/groups.json            the hand-built category and district mapping

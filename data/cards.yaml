@@ -1,0 +1,69 @@
+# שלושת הכרטיסים — מי מנפיק, מה זה פותח, ומה נשאר לאמת.
+# עודכן: 2026-08-15
+
+cards:
+  - id: onezero
+    name: וואן זירו
+    issuer: isracard              # אומת: כרטיסי וואן זירו מונפקים ע"י ישראכרט
+    issuer_label: ישראכרט
+    catalog: https://benefits.isracard.co.il
+    club_site: null               # אין מועדון נפרד; ההטבות הן קטלוג ישראכרט + פרקי החשבון באפליקציה
+    account_app_only: true        # אין ממשק web לבנק — הטבות החשבון רק דרך האפליקציה
+    tier: null                    # לאמת בשלב 3: איזה מסלול (ZERO / ONE / +ONE) — קובע זכאות ל"פרימיום"
+    strengths:
+      - קניות אונליין ואליאקספרס
+      - עמלות מט"ח (פטור מלא או חלקי, תלוי מסלול)
+    notes: |
+      הקטלוג הציבורי של ישראכרט מתייג חלק מההטבות כ"פרימיום".
+      עד שנאמת את המסלול בפועל, כל הטבה כזו מסומנת confidence: inferred.
+
+  - id: tau
+    name: כרטיס TAU
+    issuer: max
+    issuer_label: max
+    catalog: https://www.max.co.il/benefits
+    club_site: https://www.tauclub.co.il
+    account_app_only: false
+    tier: null
+    strengths:
+      - עמלת מט"ח מופחתת (~1.2%)
+      - הטבות קמפוס ומועדון TAU
+      - השכרת רכב בחו"ל (AVIS)
+    notes: פטור מדמי כרטיס כל עוד שייך למועדון.
+
+  - id: behatsdaa
+    name: כרטיס בהצדעה
+    issuer: max
+    issuer_label: max
+    catalog: https://www.max.co.il/benefits
+    club_site: https://www.behatsdaa.org.il
+    account_app_only: false
+    tier: null
+    strengths:
+      - קטלוג מועדון בהצדעה (נפרד לגמרי מ-max)
+      - פנאי, בידור, נופש
+    notes: |
+      אתר המועדון דורש התחברות ב-OTP (נייד + מייל).
+      הקטלוג שם *לא* חופף לקטלוג max — זה מאגר שני ונפרד.
+
+# ── בריכות משאבים משותפות ─────────────────────────────────────────
+# זו הנקודה שהכי קל לפספס: TAU ובהצדעה אינם שתי בריכות נפרדות.
+pools:
+  - id: max_pinukim
+    label: פינוקים max
+    applies_to: [tau, behatsdaa]   # בריכה אחת משותפת לשני הכרטיסים
+    scope: לפי ת.ז., על פני כל כרטיסי max
+    accrual: כ-1 פינוק לכל ₪2,000 חיוב במועד החיוב החודשי
+    monthly_cap: 4
+    expires: true
+    balance: null                  # לאמת בשלב 3 מול האזור האישי
+    balance_verified_at: null
+    note: |
+      פינוק שלא נוצל נמחק. זו ההטבה שהכי קל להפסיד בשקט,
+      ולכן מד הפינוקים בדשבורד הוא הרכיב עם ההחזר הגבוה ביותר.
+
+# ── מה עדיין לא ידוע ──────────────────────────────────────────────
+open_questions:
+  - מסלול וואן זירו בפועל (ZERO / ONE / +ONE) — קובע זכאות ל"פרימיום" בישראכרט
+  - יתרת פינוקים נוכחית בבריכת max
+  - האם קטלוג ישראכרט "הטבות לכל" חל על כרטיס וואן זירו במלואו
