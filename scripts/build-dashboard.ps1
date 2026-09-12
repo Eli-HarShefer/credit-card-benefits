@@ -336,8 +336,16 @@ $payload = [pscustomobject]@{
 }
 $json = $payload | ConvertTo-Json -Depth 4 -Compress
 
+# The "my cards" panel is hand-written content, kept in its own file so it can be
+# edited without touching code. Parsed first, so a typo fails the build and not the page.
+$cardsFile = Join-Path $data 'my-cards.json'
+$cardsJson = 'null'
+if (Test-Path $cardsFile) {
+  $cardsJson = (Get-Content $cardsFile -Raw -Encoding UTF8 | ConvertFrom-Json) | ConvertTo-Json -Depth 8 -Compress
+}
+
 $tpl  = Get-Content (Join-Path $root 'template.html') -Raw -Encoding UTF8
-$html = $tpl.Replace('/*__DATA__*/', $json)
+$html = $tpl.Replace('/*__DATA__*/', $json).Replace('/*__CARDS__*/', $cardsJson)
 $out  = Join-Path $root 'dashboard.html'
 [System.IO.File]::WriteAllText($out, $html, (New-Object System.Text.UTF8Encoding($false)))
 

@@ -161,18 +161,95 @@
   .nearnote{color:var(--muted);font-size:.8rem;margin:0 0 10px}
 
   #map{
-    width:100%;height:340px;border:1px solid var(--rule);border-radius:13px;
-    margin-bottom:12px;display:block;overflow:hidden;z-index:0;
+    width:100%;height:42vh;min-height:260px;max-height:420px;border:1px solid var(--rule);
+    border-radius:13px;margin-bottom:10px;display:block;overflow:hidden;z-index:0;
   }
-  .leaflet-popup-content{font-family:inherit;direction:rtl;font-size:.85rem}
+  #map.picking{cursor:crosshair;outline:3px solid var(--flag);outline-offset:-3px}
+  .leaflet-popup-content{font-family:inherit;direction:rtl;font-size:.85rem;margin:10px 12px}
   .leaflet-popup-content b{display:block}
   .leaflet-container{background:var(--surface)}
+  .plot{display:none}
 
-  /* fallback plot, used only where a tile server is unreachable */
-  .plot{
-    width:100%;aspect-ratio:1;max-height:340px;background:var(--surface);
-    border:1px solid var(--rule);border-radius:13px;margin-bottom:12px;display:block;
+  /* ---- where am I: the panel every location-aware screen hangs off ---- */
+  .loc,.loc-panel,.radius,#nearTools,.loc-help,.allnear{display:none}
+  .loc:not([hidden]){display:block}
+  .loc-panel:not([hidden]){display:grid}
+  .radius:not([hidden]),#nearTools:not([hidden]){display:flex}
+  .loc-help:not([hidden]){display:block}
+  .allnear:not([hidden]){display:flex}
+
+  .loc{
+    background:var(--surface);border:1px solid var(--rule);border-radius:14px;
+    padding:12px 14px;margin-bottom:14px;box-shadow:var(--shadow);
   }
+  .loc-row{display:flex;align-items:center;gap:10px}
+  .loc-ic{font-size:1.3rem;line-height:1}
+  .loc-tx{flex:1;min-width:0}
+  .loc-tx b{display:block;font-weight:700;overflow-wrap:anywhere}
+  .loc-tx span{display:block;color:var(--muted);font-size:.78rem}
+  .loc-chg{
+    background:none;border:1px solid var(--rule);border-radius:9px;padding:8px 13px;
+    color:var(--accent-ink);font:inherit;font-size:.85rem;font-weight:650;cursor:pointer;
+  }
+  .loc-panel{margin-top:12px;gap:9px}
+  .loc-gps{
+    padding:14px;border:0;border-radius:11px;background:var(--accent);color:var(--on-accent);
+    font:inherit;font-weight:700;cursor:pointer;
+  }
+  .addr{display:flex;gap:6px;margin:0}
+  .addr input{
+    flex:1;min-width:0;padding:12px 13px;font-size:16px;font-family:inherit;
+    border:1px solid var(--rule);border-radius:10px;background:var(--paper);color:var(--ink);
+  }
+  .addr input:focus{outline:none;border-color:var(--accent)}
+  .addr button{
+    padding:0 16px;border:1px solid var(--accent);border-radius:10px;background:var(--accent-wash);
+    color:var(--accent-ink);font:inherit;font-weight:700;cursor:pointer;
+  }
+  .hits{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+  .hits:empty{display:none}
+  .hits button{
+    width:100%;text-align:start;padding:11px 12px;border:1px solid var(--rule);border-radius:9px;
+    background:var(--paper);color:var(--ink);font:inherit;font-size:.88rem;cursor:pointer;
+  }
+  .hits button:hover{border-color:var(--accent)}
+  .hits .none{color:var(--muted);font-size:.85rem;padding:6px 2px}
+  .places{display:flex;gap:6px;flex-wrap:wrap}
+  .places:empty{display:none}
+  .chip{
+    padding:7px 12px;border:1px solid var(--rule);border-radius:20px;background:var(--paper);
+    color:var(--ink);font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap;
+  }
+  .chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700}
+  .loc-help{
+    margin:0;padding:10px 12px;border-radius:10px;background:var(--flag-wash);
+    border-inline-start:3px solid var(--flag);color:var(--ink);font-size:.84rem;
+  }
+  .loc-help b{display:block;margin-bottom:2px}
+  .radius{gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center}
+  .radius small{color:var(--muted);font-size:.78rem;margin-inline-end:2px}
+  .allnear{
+    width:100%;align-items:center;gap:10px;margin-top:10px;padding:13px 14px;
+    border:1px solid var(--accent);border-radius:12px;background:var(--accent-wash);
+    color:var(--accent-ink);font:inherit;font-weight:700;cursor:pointer;text-align:start;
+  }
+  .allnear .lbl{font-weight:700}
+  #nearTools{gap:6px;flex-wrap:wrap;margin:0 0 10px;align-items:center}
+  #nearTools .sp{flex:1}
+
+  .you span{
+    display:block;width:22px;height:22px;border-radius:50%;background:#2b7de9;
+    border:3px solid #fff;box-shadow:0 0 0 6px rgba(43,125,233,.25),0 1px 4px rgba(0,0,0,.4);
+  }
+  .navs{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+  .navs a,.navs button{
+    padding:7px 11px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);
+    color:var(--accent-ink);font:inherit;font-size:.78rem;font-weight:650;
+    text-decoration:none;cursor:pointer;
+  }
+  .walk{color:var(--muted);font-size:.74rem;margin-inline-end:7px}
+  .alt{display:block;color:var(--muted);font-size:.75rem;margin-top:3px}
+  .res li.hl{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-wash)}
   .legend{
     display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.75rem;margin:-4px 0 12px;
   }
@@ -197,6 +274,61 @@
   .empty{color:var(--muted);padding:30px 4px;text-align:center}
   footer{margin-top:28px;padding-top:13px;border-top:1px solid var(--rule);
     color:var(--faint);font-size:.75rem}
+  /* my cards - the three in the wallet, drawn as cards so they read at a glance */
+  .mycards{margin-top:30px;border-top:1px solid var(--rule);padding-top:18px}
+  .mycards h3{font-size:1.08rem;font-weight:700;margin:0 0 2px}
+  .mycards .lede{margin-bottom:14px}
+  .cc{
+    background:var(--surface);border:1px solid var(--rule);border-radius:16px;
+    padding:14px;margin-bottom:12px;box-shadow:var(--shadow);
+  }
+  .cc-head{display:flex;align-items:center;gap:14px}
+  .cc-face{
+    position:relative;flex-shrink:0;width:118px;aspect-ratio:1.586;border-radius:9px;overflow:hidden;
+    direction:ltr;color:#fff;background:linear-gradient(135deg,var(--c1),var(--c2));
+    box-shadow:0 7px 16px -8px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.1);
+  }
+  .cc-face::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.16) 52%,transparent 64%);
+  }
+  .cc-iss{position:absolute;top:9%;right:9%;font-size:.6rem;font-weight:800;letter-spacing:.05em;opacity:.92}
+  .cc-chip{
+    position:absolute;top:34%;left:10%;width:19%;height:23%;border-radius:4px;
+    background:linear-gradient(135deg,#f6dc95,#b98f3e);box-shadow:inset 0 0 0 1px rgba(0,0,0,.18);
+  }
+  .cc-nfc{position:absolute;top:35%;left:33%;width:15%;opacity:.75}
+  .cc-nm{
+    position:absolute;bottom:9%;left:10%;right:9%;font-size:.78rem;font-weight:800;letter-spacing:.02em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .cc-t{min-width:0}
+  .cc-t b{display:block;font-size:1.06rem;line-height:1.3}
+  .cc-t span{display:block;color:var(--muted);font-size:.8rem}
+  .cc-t .cc-n{color:var(--faint);font-size:.74rem;margin-top:2px}
+  .cc-uses{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:6px}
+  .cc-uses li{
+    display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:11px;
+    background:var(--paper);border-inline-start:3px solid var(--cc);
+  }
+  .cc-uses .ic{font-size:1.2rem}
+  .cc-uses .w{flex:1;min-width:0}
+  .cc-uses .w b{display:block;font-size:.88rem;font-weight:650;overflow-wrap:anywhere}
+  .cc-uses .w small{display:block;color:var(--muted);font-size:.76rem;line-height:1.35}
+  .cc-uses .v{
+    flex-shrink:0;font-family:"Cascadia Mono",Consolas,ui-monospace,monospace;
+    font-variant-numeric:tabular-nums;font-weight:800;font-size:.88rem;color:var(--cc);
+  }
+  .cc-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
+  .cc-links a{
+    font-size:.79rem;font-weight:650;color:var(--cc);text-decoration:none;
+    border:1px solid var(--rule);border-radius:20px;padding:6px 12px;background:var(--surface);
+  }
+  .cc-links a:hover{border-color:var(--cc)}
+  .pool{
+    margin:4px 0 0;padding:11px 13px;border-radius:12px;background:var(--flag-wash);
+    border-inline-start:3px solid var(--flag);font-size:.84rem;color:var(--ink);
+  }
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -204,6 +336,32 @@
   <div class="crumb" id="crumb"></div>
   <h2 id="title"></h2>
   <p class="lede" id="lede"></p>
+
+  <section class="loc" id="loc" hidden>
+    <div class="loc-row">
+      <span class="loc-ic">📍</span>
+      <div class="loc-tx"><b id="locLabel">איפה אתה?</b><span id="locSub"></span></div>
+      <button class="loc-chg" id="locChg" type="button">שנה</button>
+    </div>
+
+    <div class="loc-panel" id="locPanel" hidden>
+      <button class="loc-gps" id="locGps" type="button">📡 השתמש במיקום הנוכחי שלי</button>
+      <form class="addr" id="addrForm">
+        <input id="addr" type="search" placeholder="או הקלד כתובת — רחוב, מספר, עיר"
+               autocomplete="street-address" enterkeyhint="search" aria-label="כתובת">
+        <button type="submit">חפש</button>
+      </form>
+      <ul class="hits" id="addrHits"></ul>
+      <div class="places" id="places"></div>
+      <p class="loc-help" id="locHelp" hidden></p>
+    </div>
+
+    <div class="radius" id="radius" hidden></div>
+    <button class="allnear" id="allNear" type="button" hidden>
+      <span class="ic">🗺️</span><span class="lbl" id="allNearLbl">כל ההטבות סביבך</span>
+      <span class="arrow">‹</span>
+    </button>
+  </section>
 
   <div id="todo">
     <button class="ali-entry" id="aliBtn">
@@ -235,7 +393,8 @@
         לא מלינק שמור, לא מגוגל, לא מההיסטוריה.</li>
       <li class="hi"><b>לשלם בכרטיס אשראי max — TAU או בהצדעה</b>
         <span class="tip">לא cash-card, לא debit, לא free ולא רכש — עליהם אין החזר בכלל.
-        ולא בוואן זירו: שם ההחזר מגיע מ-TOPCASH ורק עד 9%.</span></li>
+        ולא בוואן זירו: שם ההחזר מגיע מ-TOPCASH, ולקוח קיים מקבל רק 3.5%–4.5%.
+        חריג אחד — הקנייה הראשונה שלך אי-פעם באליאקספרס: 20% דרך TOPCASH בוואן זירו.</span></li>
       <li><b>בלי קופונים חיצוניים</b>
         קופונים של PayBack עצמם — בסדר גמור.</li>
     </ol>
@@ -269,15 +428,25 @@
     <ul class="pick" id="pickTail"></ul>
   </details>
 
+  <section class="mycards" id="mycards" hidden></section>
+
   <div class="nearbar" id="nearbar" hidden>
-    <button id="nearBtn">📍 מה קרוב אליי?</button>
+    <button id="nearBtn" type="button">📍 מיין לפי מרחק ממני</button>
+  </div>
+  <div id="nearTools" hidden>
+    <button class="chip" id="sortDist" type="button">הכי קרוב</button>
+    <button class="chip" id="sortPct" type="button">ההנחה הגבוהה</button>
+    <span class="sp"></span>
+    <button class="chip" id="pickMap" type="button">📌 בחר נקודה במפה</button>
   </div>
   <p class="nearnote" id="nearnote" hidden></p>
   <div id="map" hidden></div>
   <canvas class="plot" id="plot" hidden></canvas>
   <div class="legend" id="legend" hidden>
-    <span><i style="background:var(--flag)"></i>אתה</span>
-    <span><i style="background:var(--accent)"></i>בית עסק</span>
+    <span><i style="background:#2b7de9"></i>אתה · אפשר לגרור</span>
+    <span><i style="background:var(--flag)"></i>ארנק דיגיטלי</span>
+    <span><i style="background:var(--accent)"></i>בהצדעה</span>
+    <span><i style="background:var(--zero)"></i>וואן זירו</span>
   </div>
 
   <ul class="res" id="res"></ul>
@@ -288,6 +457,7 @@
 
 <script>
 const DATA = /*__DATA__*/;
+const MY = /*__CARDS__*/;
 const ROWS = DATA.rows || [];
 const GROUPS = DATA.groups || [];
 const DISTRICTS = DATA.districts || [];
@@ -324,12 +494,14 @@ function chrome(){
   if (step === 'city' || step === 'list') bits.push(`<button class="back" data-to="district">→ אזור אחר</button>`);
   if (step === 'list' && district !== ANY) bits.push(`<button class="back" data-to="city">→ עיר אחרת</button>`);
   if (step === 'ali') bits.push(`<button class="back" data-to="group">→ חזרה</button>`);
+  if (step === 'near' && group) bits.push(`<button class="back" data-to="district">חפש לפי אזור במקום ›</button>`);
   const here = [group, district, city].filter(x => x && x !== ANY).join(' · ');
   c.innerHTML = bits.join('') + (here ? `<span class="here">${here}</span>` : '');
 
   const gnote = (GROUPS.find(g => g.name === group) || {}).note || '';
   const T = {
-    group:    ['מה אתה מחפש?', 'בחר תחום, ואז את האזור שאתה נמצא בו.'],
+    group:    ['מה אתה מחפש?', me ? 'בחר תחום — הוא ייפתח על מה שקרוב אליך.' : 'בחר תחום, ואז את האזור שאתה נמצא בו.'],
+    near:     [group ? `${ICON[group] || ''} ${group}` : 'כל ההטבות סביבך', ''],
     district: ['באיזה אזור?',  gnote || 'קודם מחוז, אחר כך עיר.'],
     city:     ['באיזו עיר?',   ''],
     list:     [[group, city && city!==ANY ? city : district].filter(x=>x&&x!==ANY).join(' · '), gnote],
@@ -341,7 +513,7 @@ function chrome(){
   $('#filter').placeholder =
     step === 'group' ? 'סנן תחום…' :
     step === 'city'  ? 'סנן עיר…'  :
-    step === 'list'  ? 'סנן בתוך התוצאות…' : 'סנן…';
+    (step === 'list' || step === 'near') ? 'סנן בתוך התוצאות…' : 'סנן…';
 }
 
 $('#crumb').onclick = e => {
@@ -362,12 +534,16 @@ let applying = false;
 
 function toHash(){
   if (step === 'ali') return '#ali';
+  if (step === 'near') return '#near' + (group ? '/' + encodeURIComponent(group) : '');
   return '#' + [group, district, city].filter(Boolean).map(encodeURIComponent).join('/');
 }
 
 function fromHash(){
   const h = decodeURIComponent(location.hash.replace(/^#/, ''));
   if (h === 'ali'){ step='ali'; return; }
+  if (h === 'near' || h.startsWith('near/')){
+    step = 'near'; group = h.length > 5 ? h.slice(5) : null; district = null; city = null; return;
+  }
   const [g, d, c] = h ? h.split('/').map(decodeURIComponent) : [];
   group = g || null; district = d || null; city = c || null;
   step = city ? 'list' : district ? 'city' : group ? 'district' : 'group';
@@ -393,6 +569,7 @@ addEventListener('hashchange', () => {
 });
 
 function draw(){
+  if (step === 'near' && !me) step = 'group';
   $('#filter').value = '';
   chrome();
   shown = 0;
@@ -401,22 +578,27 @@ function draw(){
   $('#pickTail').innerHTML = '';
   $('#more').hidden = true;
   $('#tail').hidden = true;
-  if (step !== 'list'){
-    $('#nearbar').hidden = true; $('#nearnote').hidden = true;
-    $('#plot').hidden = true; $('#map').hidden = true; $('#legend').hidden = true;
+  $('#nearTools').hidden = step !== 'near';
+  if (step !== 'list') $('#nearbar').hidden = true;
+  if (step !== 'list' && step !== 'near'){
+    $('#nearnote').hidden = true; $('#plot').hidden = true; $('#map').hidden = true; $('#legend').hidden = true;
+    pickMode = false; $('#map').classList.remove('picking'); $('#pickMap').classList.remove('on');
   }
+  renderLoc();
 
   const isAli = step === 'ali';
   $('#ali').hidden = !isAli;
   $('#filter').hidden = isAli;
   $('#todo').hidden = step !== 'group';
+  $('#mycards').hidden = step !== 'group' || !MY;
   if (isAli) return;
 
   if (step === 'group'){
-    const mk = t => GROUPS.filter(g => g.tier === t)
-      .map(g => ({ label:g.name, n:g.n, icon:g.icon }));
-    setPick(mk(1), v => go(() => { group=v; step='district'; }));
-    const tail = mk(2);
+    const tiles = t => GROUPS.filter(g => g.tier === t).map(g => ({
+      label: g.name, icon: g.icon,
+      n: me && HAS_GEO.has(g.name) ? `${he(nearCount.get(g.name) || 0)} בקרבתך` : g.n }));
+    setPick(tiles(1), v => go(() => { group = v; step = (me && HAS_GEO.has(v)) ? 'near' : 'district'; }));
+    const tail = tiles(2);
     if (tail.length){
       $('#tail').hidden = false;
       $('#tailSum').textContent = `תחומים שפחות רלוונטיים לך (${tail.length})`;
@@ -439,6 +621,8 @@ function draw(){
     const list = [{label:'כל המחוז', n:rows.length, icon:'📍'}, ...bucket(rows,'w').filter(b=>b.label!==ANY)];
     setPick(list, v => go(() => { city = v==='כל המחוז' ? ANY : v; step='list'; }));
     $('#pick').classList.add('two');
+  } else if (step === 'near'){
+    paintNear();
   } else {
     results = (byGroup.get(group)||[])
       .filter(r => district===ANY || (r.r||ANY)===district)
@@ -457,7 +641,7 @@ function paintPick(q){
 function paintInto(el, items){
   el.innerHTML = items.slice(0,400).map((i,idx) =>
     `<li><button data-i="${idx}"><span class="ic">${i.icon||'•'}</span>` +
-    `<span class="lbl">${i.label}</span><span class="cnt">${he(i.n)}</span>` +
+    `<span class="lbl">${i.label}</span><span class="cnt">${typeof i.n === 'number' ? he(i.n) : i.n}</span>` +
     `<span class="arrow">‹</span></button></li>`).join('') || '<div class="empty">אין תוצאות</div>';
 }
 
@@ -471,190 +655,501 @@ $('#pickTail').onclick = e => {
   const b = e.target.closest('button[data-i]'); if (!b) return;
   const tail = GROUPS.filter(g => g.tier === 2);
   const it = tail[+b.dataset.i];
-  if (it) go(() => { group = it.name; step='district'; });
+  if (it) go(() => { group = it.name; step = (me && HAS_GEO.has(it.name)) ? 'near' : 'district'; });
 };
 
-/* ---- near me ------------------------------------------------------------
-   A published artifact cannot reach any map-tile host, so instead of a fake
-   basemap this draws the real geometry: you at the centre, shops at their true
-   bearing and distance, rings for scale. Tapping a shop hands it off to the
-   phone's actual map app, which is where a basemap belongs. */
-let me = null, near = false;
+/* ---- my cards: the three in the wallet, and what each one is for ----------
+   Content lives in data/my-cards.json so it can be edited without code; only the
+   benefit counts are computed here, so they follow the weekly refresh. */
+function renderCards(){
+  const box = $('#mycards');
+  if (!MY || !MY.cards){ box.innerHTML = ''; return; }
+  const count = id => ROWS.filter(r => r.c === id || (id === 'behatsdaa' && r.c === 'wallet')).length;
+  const nfc = '<svg class="cc-nfc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" ' +
+              'stroke-linecap="round"><path d="M7 8.5a5 5 0 0 1 0 7M11 6a9 9 0 0 1 0 12M15 3.5a13 13 0 0 1 0 17"/></svg>';
+  box.innerHTML = `<h3>💳 הכרטיסים שלי</h3>
+    <p class="lede">${MY.lede || ''}</p>` +
+    MY.cards.map(c => `
+    <article class="cc" style="--cc:var(${c.color})">
+      <div class="cc-head">
+        <div class="cc-face" style="--c1:${c.face[0]};--c2:${c.face[1]}" aria-hidden="true">
+          <span class="cc-iss">${c.brand}</span><span class="cc-chip"></span>${nfc}
+          <span class="cc-nm">${c.name}</span>
+        </div>
+        <div class="cc-t"><b>${c.full}</b><span>${c.tag}</span>
+          <span class="cc-n">מונפק ע״י ${c.issuer} · ${he(count(c.id))} הטבות באפליקציה</span></div>
+      </div>
+      <ul class="cc-uses">${(c.uses || []).map(u => `
+        <li><span class="ic">${u.ic}</span>
+          <span class="w"><b>${u.t}</b>${u.how ? `<small>${u.how}</small>` : ''}</span>
+          <span class="v">${u.v || ''}</span></li>`).join('')}
+      </ul>
+      ${(c.links || []).length ? `<div class="cc-links">${c.links.map(l =>
+        `<a href="${l.u}" target="_blank" rel="noopener">${l.t} ↗</a>`).join('')}</div>` : ''}
+    </article>`).join('') +
+    (MY.pool ? `<p class="pool">💡 ${MY.pool}</p>` : '');
+}
+
+/* ---- where am I --------------------------------------------------------
+   Location comes first, not last: once the app knows where you are, every
+   category counts what is within reach and opens straight onto a map centred
+   on you. Four ways in, because GPS alone fails too often on a phone - indoors,
+   location services off, or a denied prompt: GPS, a typed address, a saved
+   place, or a point dropped (or dragged) on the map. */
+const LS = {
+  get(k, d){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+const RADII = [0.5, 1, 2, 5, 10];
+const TAU_PT = { lat: 32.1133, lon: 34.8044, label: 'קמפוס אוניברסיטת תל אביב' };
+const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+const TIER = {}; for (const g of GROUPS) TIER[g.name] = g.tier;
+const HAS_GEO = new Set(GROUPS.filter(g => (byGroup.get(g.name)||[]).some(r => r.lat)).map(g => g.name));
+
+let me = LS.get('loc', null);
+let radius = LS.get('radius', 2);
+let sortBy = 'dist', near = false, perm = 'unknown', watchId = null, pickMode = false;
+let panelOpen = !me, nearCount = new Map(), nearAll = 0;
 
 function km(aLat, aLon, bLat, bLon){
-  const dLat = (aLat-bLat) * 111;
-  const dLon = (aLon-bLon) * 111 * Math.cos(aLat * Math.PI/180);
+  const dLat = (aLat-bLat) * 111.2;
+  const dLon = (aLon-bLon) * 111.2 * Math.cos(aLat * Math.PI/180);
   return Math.sqrt(dLat*dLat + dLon*dLon);
 }
-const fmtKm = d => d < 1 ? Math.round(d*1000) + ' מ׳' : d.toFixed(1) + ' ק״מ';
-
+const fmtKm = d => d < 0.03 ? 'ממש כאן' : d < 1 ? Math.round(d*100)*10 + ' מ׳' : d.toFixed(d < 10 ? 1 : 0) + ' ק״מ';
+const fmtR = r => r < 1 ? r*1000 + ' מ׳' : r + ' ק״מ';
+const walkMin = d => Math.max(1, Math.round(d*1000/80));
 function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+const dkey = r => (r.n||'').replace(/[\s"'\-–]/g,'').toLowerCase() + '|' +
+  (r.lat ? r.lat.toFixed(3) + ',' + r.lon.toFixed(3) : (r.w || ''));
 
-/* A real slippy map when Leaflet is available (the hosted build loads it), and
-   the schematic plot as a fallback so the page still answers "which direction,
-   how far" anywhere the tile server can't be reached. */
+function measure(){
+  for (const r of ROWS) r._d = (me && r.lat) ? km(me.lat, me.lon, r.lat, r.lon) : null;
+  nearCount = new Map(); nearAll = 0;
+  if (!me) return;
+  const seen = new Map(), all = new Set();
+  for (const r of ROWS){
+    if (r._d == null || r._d > radius) continue;
+    const k = dkey(r);
+    for (const g of (r.gr||[])){
+      if (!seen.has(g)) seen.set(g, new Set());
+      seen.get(g).add(k);
+      if (TIER[g] === 1) all.add(k);
+    }
+  }
+  for (const [g, s] of seen) nearCount.set(g, s.size);
+  nearAll = all.size;
+}
+
+// nav=false for quiet updates (walking, background refresh) that must not change screens
+function setMe(p, nav = true){
+  me = { lat: +p.lat, lon: +p.lon, src: p.src, label: p.label || '', acc: p.acc || null, t: Date.now() };
+  LS.set('loc', me);
+  if (me.src !== 'gps') stopWatch();
+  if (p.src === 'addr' || p.src === 'map') rememberPlace(me);
+  if (nav) panelOpen = false;
+  $('#locHelp').hidden = true;
+  measure();
+  if (nav && step === 'group') go(() => { step = 'near'; group = null; });
+  else redraw();
+}
+
+function rememberPlace(p){
+  const list = LS.get('places', []).filter(x => x.label !== p.label);
+  list.unshift({ label: p.label, lat: p.lat, lon: p.lon, src: p.src });
+  LS.set('places', list.slice(0, 5));
+}
+
+/* GPS: fast and forgiving first, precise second. The old version demanded high
+   accuracy within 10s, which indoors just times out - that was the "sometimes it
+   doesn't get my location". auto=true is a silent refresh: no errors, no jumps. */
+function gps(auto){
+  if (!navigator.geolocation) return auto || locErr('nosupport');
+  if (!window.isSecureContext) return auto || locErr('insecure');
+  if (perm === 'denied') return auto || locErr('denied');
+  if (!auto){
+    $('#locLabel').textContent = 'מאתר את המיקום שלך…';
+    $('#locSub').textContent = 'אם הדפדפן שואל — לחץ "אפשר"';
+  }
+  const ok = pos => {
+    setMe({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy,
+            src: 'gps', label: 'המיקום הנוכחי שלך' }, !auto);
+    follow();
+  };
+  const fail = kind => auto ? renderLoc() : locErr(kind);
+  navigator.geolocation.getCurrentPosition(ok, e => {
+    if (e.code === 1) return fail('denied');
+    // the quick network fix failed - one more go with real GPS and patience
+    navigator.geolocation.getCurrentPosition(ok,
+      e2 => fail(e2.code === 1 ? 'denied' : e2.code === 3 ? 'timeout' : 'unavailable'),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 0 });
+  }, { enableHighAccuracy: false, timeout: 7000, maximumAge: 600000 });
+}
+
+// keep following you while the app is open, but only redraw after a real move
+function follow(){
+  if (watchId != null || !navigator.geolocation) return;
+  watchId = navigator.geolocation.watchPosition(pos => {
+    if (!me || me.src !== 'gps') return;
+    const moved = km(me.lat, me.lon, pos.coords.latitude, pos.coords.longitude) * 1000;
+    const sharper = pos.coords.accuracy < (me.acc || 1e9) * 0.6;
+    if (moved > 40 || sharper)
+      setMe({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy,
+              src: 'gps', label: 'המיקום הנוכחי שלך' }, false);
+  }, () => {}, { enableHighAccuracy: true, maximumAge: 30000, timeout: 30000 });
+}
+function stopWatch(){ if (watchId != null){ navigator.geolocation.clearWatch(watchId); watchId = null; } }
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopWatch();
+  else if (me && me.src === 'gps' && perm === 'granted') { gps(true); follow(); }
+});
+
+function locErr(kind){
+  const H = {
+    denied: IS_IOS
+      ? ['הגישה למיקום חסומה', 'הגדרות ← פרטיות ואבטחה ← שירותי מיקום ← Safari ← "בזמן השימוש ביישום", ואז לרענן את הדף. בינתיים — הקלד כתובת או בחר מקום שמור.']
+      : ['הגישה למיקום חסומה', 'לחץ על סמל המנעול ליד הכתובת (או ⋮ ← הגדרות אתר) ← מיקום ← "אפשר". באפליקציה מותקנת: לחיצה ארוכה על האייקון ← פרטי אפליקציה ← הרשאות ← מיקום. בינתיים — הקלד כתובת או בחר מקום שמור.'],
+    unavailable: ['לא הצלחתי לקבל מיקום', 'שירותי המיקום בטלפון כנראה כבויים. הדלק "מיקום" בהגדרות המהירות ונסה שוב — או הקלד כתובת.'],
+    timeout: ['המיקום לא הגיע בזמן', 'קורה בתוך בניינים. נסה שוב ליד חלון, או הקלד כתובת.'],
+    nosupport: ['הדפדפן לא תומך במיקום', 'הקלד כתובת או בחר מקום שמור.'],
+    insecure: ['מיקום עובד רק בכתובת המאובטחת', 'פתח את האפליקציה מ-https://eli-harshefer.github.io/credit-card-benefits/']
+  }[kind] || ['משהו השתבש', 'נסה שוב או הקלד כתובת.'];
+  panelOpen = true;
+  renderLoc();
+  $('#locHelp').hidden = false;
+  $('#locHelp').innerHTML = `<b>${H[0]}</b>${H[1]}`;
+}
+
+async function checkPerm(){
+  try {
+    const s = await navigator.permissions.query({ name: 'geolocation' });
+    perm = s.state;
+    s.onchange = () => { perm = s.state; renderLoc(); };
+  } catch(e){ perm = 'unknown'; }
+  // already allowed: refresh quietly so the first screen is current - never prompt uninvited
+  if (perm === 'granted' && (!me || me.src === 'gps')) gps(true);
+  renderLoc();
+}
+
+/* Typed address. Searches only on submit - the public geocoder forbids
+   search-as-you-type - and a known city name resolves locally first, so it
+   still works offline or wherever the geocoder is unreachable. */
+function cityCentroid(q){
+  const want = q.replace(/[\s"'\-–]/g,'');
+  const acc = new Map();
+  for (const r of ROWS){
+    if (!r.lat || !r.w || r.w === ANY) continue;
+    const c = r.w.replace(/[\s"'\-–]/g,'');
+    if (!c || !(want.includes(c) || c.includes(want))) continue;
+    const a = acc.get(r.w) || { lat: 0, lon: 0, n: 0 };
+    a.lat += r.lat; a.lon += r.lon; a.n++; acc.set(r.w, a);
+  }
+  return [...acc.entries()].sort((a,b) => b[1].n - a[1].n).slice(0, 3)
+    .map(([w, a]) => ({ lat: a.lat/a.n, lon: a.lon/a.n, label: 'מרכז ' + w }));
+}
+
+async function findAddress(q){
+  q = q.trim(); if (!q) return;
+  const box = $('#addrHits');
+  box.innerHTML = '<li class="none">מחפש…</li>';
+  let hits = [];
+  try {
+    const u = 'https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=5' +
+              '&countrycodes=il&accept-language=he&q=' + encodeURIComponent(q);
+    const res = await fetch(u, { headers: { 'Accept': 'application/json' } });
+    if (res.ok) hits = (await res.json()).map(h => {
+      const a = h.address || {};
+      const street = [a.road || a.pedestrian || a.neighbourhood || a.suburb, a.house_number].filter(Boolean).join(' ');
+      const town = a.city || a.town || a.village || a.municipality || '';
+      const label = [street, town].filter(Boolean).join(', ') || h.display_name.split(',').slice(0, 2).join(',');
+      return { lat: +h.lat, lon: +h.lon, label };
+    });
+  } catch(e){}
+  if (!hits.length) hits = cityCentroid(q);
+  // the geocoder often returns one address twice (building + entrance) - collapse them,
+  // so a single real match is picked straight away instead of shown as a 'choice'
+  hits = hits.filter((h, i) => hits.findIndex(o => o.label === h.label ||
+    km(o.lat, o.lon, h.lat, h.lon) < 0.15) === i);
+  window.__hits = hits;
+  if (hits.length === 1) return pickHit(0);
+  box.innerHTML = hits.length
+    ? hits.map((h, i) => `<li><button type="button" data-h="${i}">📍 ${h.label}</button></li>`).join('')
+    : '<li class="none">לא מצאתי. נסה רחוב ועיר, למשל "אבן גבירול 30 תל אביב".</li>';
+}
+function pickHit(i){
+  const h = (window.__hits || [])[i]; if (!h) return;
+  $('#addrHits').innerHTML = ''; $('#addr').value = ''; $('#addr').blur();
+  setMe({ lat: h.lat, lon: h.lon, src: 'addr', label: h.label });
+}
+
+function renderLoc(){
+  const show = step === 'group' || step === 'near';
+  $('#loc').hidden = !show;
+  if (!show) return;
+
+  if (me){
+    $('#locLabel').textContent = me.label || 'המיקום שלך';
+    const src = { gps: 'GPS', addr: 'כתובת שהקלדת', map: 'נבחר במפה', tau: 'מקום שמור' }[me.src] || '';
+    const mins = Math.round((Date.now() - (me.t || 0)) / 60000);
+    const age = me.src !== 'gps' ? '' : mins < 1 ? 'עכשיו' : mins < 60 ? `לפני ${mins} דק׳` : 'לפני יותר משעה';
+    const acc = me.acc && me.acc > 150 ? `דיוק ~${Math.round(me.acc)} מ׳ — אפשר לגרור במפה` : '';
+    $('#locSub').textContent = [src, age, acc].filter(Boolean).join(' · ');
+    $('#locChg').textContent = panelOpen ? 'סגור' : 'שנה';
+    $('#locChg').hidden = false;
+  } else {
+    $('#locLabel').textContent = 'איפה אתה?';
+    $('#locSub').textContent = 'מיקום, כתובת או מקום שמור — ואז הכל יחסי אליך';
+    $('#locChg').hidden = true;
+    panelOpen = true;
+  }
+  $('#locPanel').hidden = !panelOpen;
+  $('#locGps').textContent = perm === 'denied' ? '📡 המיקום חסום — איך מאפשרים?' : '📡 השתמש במיקום הנוכחי שלי';
+
+  const saved = [{ ...TAU_PT, src: 'tau', ic: '📚' },
+    ...LS.get('places', []).filter(p => p.label !== TAU_PT.label).map(p => ({ ...p, ic: '🕘' }))];
+  window.__places = saved;
+  $('#places').innerHTML = saved.map((p, i) =>
+    `<button type="button" class="chip" data-p="${i}">${p.ic} ${p.label}</button>`).join('');
+
+  $('#radius').hidden = !me;
+  $('#radius').innerHTML = '<small>טווח:</small>' + RADII.map(r =>
+    `<button type="button" class="chip${r === radius ? ' on' : ''}" data-r="${r}">${fmtR(r)}</button>`).join('');
+
+  $('#allNear').hidden = !(me && step === 'group');
+  $('#allNearLbl').textContent = `כל ההטבות סביבך · ${he(nearAll)} בטווח ${fmtR(radius)}`;
+}
+
+$('#locChg').onclick = () => { panelOpen = !panelOpen; renderLoc(); };
+$('#locGps').onclick = () => perm === 'denied' ? locErr('denied') : gps(false);
+$('#addrForm').onsubmit = e => { e.preventDefault(); findAddress($('#addr').value); };
+$('#addrHits').onclick = e => { const b = e.target.closest('[data-h]'); if (b) pickHit(+b.dataset.h); };
+$('#places').onclick = e => {
+  const b = e.target.closest('[data-p]'); if (!b) return;
+  const p = window.__places[+b.dataset.p];
+  setMe({ lat: p.lat, lon: p.lon, src: p.src === 'tau' ? 'tau' : 'addr', label: p.label });
+};
+$('#radius').onclick = e => {
+  const b = e.target.closest('[data-r]'); if (!b) return;
+  radius = +b.dataset.r; LS.set('radius', radius); measure(); redraw();
+};
+$('#allNear').onclick = () => go(() => { step = 'near'; group = null; });
+
+/* ---- the map ----------------------------------------------------------- */
 let map = null, layer = null;
+const mk = new Map();
+const CARD_COLOR = { wallet: '--flag', behatsdaa: '--accent', onezero: '--zero', tau: '--tau' };
 
-function drawMap(rows){
-  const withXY = rows.filter(r => r.lat).slice(0, 400);
-  if (!window.L || !me || !withXY.length){ $('#map').hidden = true; return false; }
-  $('#map').hidden = false;
-  $('#plot').hidden = true;
-
-  if (!map){
-    map = L.map('map', { attributionControl: true });
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19, attribution: '© OpenStreetMap'
+function ensureMap(){
+  if (!window.L) return false;
+  if (map) return true;
+  const t = document.documentElement.dataset.theme;
+  const dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  map = L.map('map', { zoomControl: true });
+  // OpenStreetMap: no key, Hebrew street names. CARTO started stamping "API KEY
+  // REQUIRED" across every tile - that was the ugly map. If OSM can't be reached
+  // at all, fall back to Esri's street map rather than show a blank grid.
+  const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19, attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+  let bad = 0, good = 0, swapped = false;
+  osm.on('tileload', () => good++);
+  osm.on('tileerror', () => {
+    if (swapped || good || ++bad < 4) return;
+    swapped = true; map.removeLayer(osm);
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19, attribution: 'Tiles © Esri'
     }).addTo(map);
-  }
-  if (layer) layer.remove();
-  layer = L.layerGroup().addTo(map);
-
-  L.circleMarker([me.lat, me.lon], {
-    radius: 8, color: '#fff', weight: 2, fillColor: css('--flag'), fillOpacity: 1
-  }).addTo(layer).bindPopup('<b>אתה כאן</b>');
-
-  for (const r of withXY){
-    L.circleMarker([r.lat, r.lon], {
-      radius: 6, color: '#fff', weight: 1.5, fillColor: css('--accent'), fillOpacity: .95
-    }).addTo(layer).bindPopup(
-      `<b>${r.n || ''}</b>${r.o || ''}` +
-      (r._d != null ? ` · ${fmtKm(r._d)}` : '') +
-      (r.d ? `<br>${r.d}` : '') +
-      `<br><a href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}"
-          target="_blank" rel="noopener">ניווט ←</a>`
-    );
-  }
-
-  const pts = withXY.map(r => [r.lat, r.lon]).concat([[me.lat, me.lon]]);
-  map.fitBounds(L.latLngBounds(pts).pad(0.15), { maxZoom: 15 });
-  setTimeout(() => map.invalidateSize(), 60);
+  });
+  // there are no keyless dark tiles, so dim the light ones instead of glaring at night
+  if (dark) map.getPane('tilePane').style.filter = 'invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.5)';
+  map.on('click', e => {
+    if (!pickMode) return;
+    pickMode = false; $('#map').classList.remove('picking'); $('#pickMap').classList.remove('on');
+    setMe({ lat: e.latlng.lat, lon: e.latlng.lng, src: 'map', label: 'נקודה שבחרת במפה' });
+  });
   return true;
 }
 
-function drawPlot(rows){
-  if (drawMap(rows)){ $('#legend').hidden = false; return; }
-  const cv = $('#plot');
-  const withXY = rows.filter(r => r.lat && r._d != null).slice(0, 300);
-  if (!me || !withXY.length){ cv.hidden = true; $('#legend').hidden = true; return; }
-  cv.hidden = false; $('#legend').hidden = false;
-
-  const dpr = window.devicePixelRatio || 1;
-  const size = cv.clientWidth;
-  cv.width = size * dpr; cv.height = size * dpr;
-  const g = cv.getContext('2d');
-  g.setTransform(dpr, 0, 0, dpr, 0, 0);
-  g.clearRect(0, 0, size, size);
-
-  const cx = size/2, cy = size/2, pad = 14;
-  // scale to the 90th percentile so one far outlier doesn't squash everything
-  const ds = withXY.map(r => r._d).sort((a,b) => a-b);
-  const maxD = Math.max(0.5, ds[Math.floor(ds.length*0.9)] || ds[ds.length-1]);
-  const R = (size/2) - pad;
-  const px = d => (d / maxD) * R;
-
-  g.strokeStyle = css('--rule'); g.fillStyle = css('--muted');
-  g.font = '11px system-ui, sans-serif'; g.textAlign = 'center';
-  for (const ring of [1, 3, 10]){
-    if (ring > maxD * 1.15) continue;
-    g.beginPath(); g.arc(cx, cy, px(ring), 0, Math.PI*2); g.stroke();
-    g.fillText(ring + ' ק״מ', cx, cy - px(ring) - 3);
-  }
-
-  g.fillStyle = css('--accent');
-  for (const r of withXY){
-    // screen y grows downward, north should point up
-    const dy = -(r.lat - me.lat) * 111;
-    const dx = (r.lon - me.lon) * 111 * Math.cos(me.lat * Math.PI/180);
-    const d = Math.sqrt(dx*dx + dy*dy) || 0.0001;
-    const k = Math.min(px(d), R) / d;
-    g.beginPath(); g.arc(cx + dx*k, cy + dy*k, 3.5, 0, Math.PI*2); g.fill();
-  }
-
-  g.fillStyle = css('--flag');
-  g.beginPath(); g.arc(cx, cy, 6, 0, Math.PI*2); g.fill();
+function popup(r){
+  const g = `https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lon}&travelmode=walking`;
+  const w = `https://waze.com/ul?ll=${r.lat},${r.lon}&navigate=yes`;
+  return `<b>${r.n||''}</b>${r.o||''} · ${CARD[r.c]||''}` +
+    (r._d != null ? `<br>${fmtKm(r._d)} · ${walkMin(r._d)} דק׳ הליכה` : '') +
+    (r.d ? `<br>${r.d}` : '') +
+    `<br><a href="${g}" target="_blank" rel="noopener">🚶 ניווט</a> · <a href="${w}" target="_blank" rel="noopener">Waze</a>`;
 }
 
-function locate(){
-  if (!navigator.geolocation){
-    $('#nearnote').hidden = false;
-    $('#nearnote').textContent = 'הדפדפן הזה לא תומך במיקום. אפשר עדיין לבחור עיר ידנית.';
-    return;
+function drawMap(list){
+  if (!me || !ensureMap()){ $('#map').hidden = true; $('#legend').hidden = true; return; }
+  $('#map').hidden = false; $('#legend').hidden = false;
+  // a fresh map has no view yet, and layers only attach once it does
+  if (!map._loaded) map.setView([me.lat, me.lon], 15);
+  if (layer) layer.remove();
+  layer = L.layerGroup().addTo(map); mk.clear();
+
+  const ring = L.circle([me.lat, me.lon], { radius: radius*1000, color: css('--accent'), weight: 1.5,
+    fillOpacity: .04, interactive: false }).addTo(layer);
+  if (me.acc && me.acc > 60)
+    L.circle([me.lat, me.lon], { radius: me.acc, stroke: false, fillColor: '#2b7de9',
+      fillOpacity: .12, interactive: false }).addTo(layer);
+
+  const pts = [];
+  for (const r of list.slice(0, 300)){
+    const m = L.circleMarker([r.lat, r.lon], { radius: 7, color: '#fff', weight: 1.5,
+      fillColor: css(CARD_COLOR[r.c] || '--accent'), fillOpacity: .95, bubblingMouseEvents: false })
+      .addTo(layer).bindPopup(popup(r));
+    m.on('click', () => highlight(r));
+    mk.set(r, m); pts.push([r.lat, r.lon]);
   }
-  $('#nearnote').hidden = false;
-  $('#nearnote').textContent = 'מאתר את המיקום שלך…';
-  navigator.geolocation.getCurrentPosition(
-    pos => {
-      me = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-      near = true;
-      $('#nearBtn').classList.add('on');
-      $('#nearBtn').textContent = '📍 ממוין לפי מרחק ממך';
-      paintList($('#filter').value.trim());
-    },
-    err => {
-      $('#nearnote').hidden = false;
-      $('#nearnote').textContent = err.code === 1
-        ? 'לא אישרת גישה למיקום. אפשר לאשר בהגדרות הדפדפן ולנסות שוב.'
-        : 'לא הצלחתי לאתר מיקום כרגע.';
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
-  );
+
+  const you = L.marker([me.lat, me.lon], { draggable: true, zIndexOffset: 1000, keyboard: false,
+    icon: L.divIcon({ className: 'you', html: '<span></span>', iconSize: [22, 22] }) }).addTo(layer);
+  you.bindTooltip('אתה כאן · אפשר לגרור', { direction: 'top', offset: [0, -12] });
+  you.on('dragend', e => { const p = e.target.getLatLng();
+    setMe({ lat: p.lat, lon: p.lng, src: 'map', label: 'נקודה שבחרת במפה' }); });
+
+  // frame the radius; if nothing was inside it, frame what we're showing instead
+  const inside = list.some(r => r._d <= radius);
+  // L.circle.getBounds() needs an attached layer; LatLng.toBounds() needs nothing
+  if (inside || !pts.length) map.fitBounds(L.latLng(me.lat, me.lon).toBounds(radius*2000), { padding: [8, 8] });
+  else map.fitBounds(L.latLngBounds(pts.concat([[me.lat, me.lon]])).pad(0.15), { maxZoom: 16 });
+  setTimeout(() => map.invalidateSize(), 60);
+}
+
+function highlight(r){
+  document.querySelectorAll('.res li.hl').forEach(li => li.classList.remove('hl'));
+  const li = document.querySelector(`.res li[data-k="${CSS.escape(dkey(r))}"]`);
+  if (li){ li.classList.add('hl'); li.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+}
+function showOnMap(r){
+  const m = mk.get(r); if (!m) return;
+  $('#map').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  map.setView([r.lat, r.lon], Math.max(map.getZoom(), 16));
+  setTimeout(() => m.openPopup(), 250);
+}
+
+$('#pickMap').onclick = () => {
+  if (!ensureMap()) return;
+  pickMode = !pickMode;
+  $('#map').classList.toggle('picking', pickMode);
+  $('#pickMap').classList.toggle('on', pickMode);
+  if (pickMode){
+    $('#nearnote').hidden = false;
+    $('#nearnote').textContent = 'הקש על המפה במקום שבו אתה נמצא.';
+    $('#map').scrollIntoView({ block: 'start', behavior: 'smooth' });
+  }
+};
+$('#sortDist').onclick = () => { sortBy = 'dist'; paintNear(); };
+$('#sortPct').onclick  = () => { sortBy = 'pct';  paintNear(); };
+
+/* ---- near view: a category (or everything) around you, closest first ---- */
+function nearRows(){
+  const src = group ? (byGroup.get(group) || [])
+                    : ROWS.filter(r => (r.gr || []).some(g => TIER[g] === 1));
+  const placed = src.filter(r => r._d != null);
+  const noGeo = src.length - placed.length;
+  // one row per shop per spot; when two cards cover it, keep the better and name the other
+  const best = new Map();
+  for (const r of placed){
+    const k = dkey(r), cur = best.get(k);
+    if (!cur){ best.set(k, { ...r, _alt: [] }); continue; }
+    if (r.p > cur.p) best.set(k, { ...r, _alt: [cur, ...cur._alt] });
+    else if (r.c !== cur.c) cur._alt.push(r);
+  }
+  return { list: [...best.values()], noGeo };
+}
+
+function paintNear(){
+  if (!me) return;
+  const { list, noGeo } = nearRows();
+  const q = $('#filter').value.trim();
+  const rows = list.filter(r => !q || (r.n && r.n.includes(q)) || (r.o && r.o.includes(q)));
+  let out = rows.filter(r => r._d <= radius), fallback = false;
+  // never an empty screen: nothing in range means "here are the closest anyway"
+  if (!out.length && rows.length){ out = rows.slice().sort((a,b) => a._d - b._d).slice(0, 12); fallback = true; }
+  out.sort(sortBy === 'pct' ? (a,b) => (b.p - a.p) || (a._d - b._d) : (a,b) => a._d - b._d);
+
+  $('#sortDist').classList.toggle('on', sortBy === 'dist');
+  $('#sortPct').classList.toggle('on', sortBy === 'pct');
+  const nearest = out.length ? Math.min(...out.map(r => r._d)) : null;
+  $('#lede').textContent = fallback
+    ? `אין כלום בטווח ${fmtR(radius)}. אלה ${out.length} הקרובים ביותר — או הגדל את הטווח.`
+    : `${he(out.length)} בטווח ${fmtR(radius)} ממך` + (nearest != null ? ` · הקרוב ביותר ${fmtKm(nearest)}` : '');
+  $('#nearnote').hidden = !(noGeo && group);
+  if (noGeo && group) $('#nearnote').innerHTML =
+    `ועוד ${he(noGeo)} הטבות בלי כתובת מדויקת (אונליין או ארציות) — <a href="#" id="noGeoLink">הצג אותן ›</a>`;
+
+  drawMap(out);
+  window.__rows = out; shown = 0; $('#res').innerHTML = ''; more();
 }
 
 function paintList(q){
   let rows = results.filter(r => !q || (r.n&&r.n.includes(q)) || (r.o&&r.o.includes(q)));
-  const anyCoords = rows.some(r => r.lat);
-  $('#nearbar').hidden = !anyCoords;
-
+  $('#nearbar').hidden = !rows.some(r => r.lat);
+  $('#nearBtn').classList.toggle('on', near && !!me);
+  $('#nearBtn').textContent = near && me ? '📍 ממוין לפי מרחק ממך' : '📍 מיין לפי מרחק ממני';
   if (near && me){
-    rows = rows.map(r => {
-      r._d = r.lat ? km(me.lat, me.lon, r.lat, r.lon) : null;
-      return r;
-    });
-    // known distance first, then unplaced rows keeping their discount order
-    rows.sort((a,b) => (a._d==null) - (b._d==null) || (a._d - b._d) || (b.p - a.p));
-    const placed = rows.filter(r => r._d != null).length;
-    $('#nearnote').hidden = false;
-    $('#nearnote').textContent = placed + ' מתוך ' + rows.length +
-      ' עם מיקום מדויק. השאר מוצגים אחריהם — הכתובות שלהם עדיין לא מופו.';
-    drawPlot(rows);
-  } else {
-    $('#plot').hidden = true; $('#map').hidden = true; $('#legend').hidden = true;
-  }
-
+    rows = rows.slice().sort((a,b) => (a._d==null) - (b._d==null) || (a._d - b._d) || (b.p - a.p));
+    drawMap(rows.filter(r => r._d != null));
+  } else { $('#map').hidden = true; $('#legend').hidden = true; mk.clear(); }
   window.__rows = rows; shown = 0; $('#res').innerHTML = ''; more();
 }
+
 function more(){
   const rows = window.__rows || [];
   const slice = rows.slice(shown, shown+PAGE);
-  $('#res').insertAdjacentHTML('beforeend', slice.map(r => `
-    <li>
+  const base = shown;
+  $('#res').insertAdjacentHTML('beforeend', slice.map((r, i) => {
+    const g = r.lat && `https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lon}&travelmode=walking`;
+    const w = r.lat && `https://waze.com/ul?ll=${r.lat},${r.lon}&navigate=yes`;
+    const alt = (r._alt || []).filter(a => a.c !== r.c).slice(0, 2).map(a => `${CARD[a.c]} ${a.o}`).join(' · ');
+    return `<li data-k="${dkey(r)}">
       <span class="top">
         <span class="name">${r.u ? `<a href="${r.u}" target="_blank" rel="noopener">${r.n||''}</a>` : (r.n||'')}</span>
         <span class="val">${r.o||''}</span>
       </span>
       <span class="sub">
-        ${r._d != null ? `<span class="dist">${fmtKm(r._d)}</span>` : ''}
+        ${r._d != null ? `<span class="dist">${fmtKm(r._d)}</span>${r._d <= 3 ? `<span class="walk">🚶 ${walkMin(r._d)} דק׳</span>` : ''}` : ''}
         <span class="card ${r.c}">${CARD[r.c]||''}</span>${[r.w!==ANY?r.w:'', r.d].filter(Boolean).join(' · ')}
       </span>
+      ${alt ? `<span class="alt">גם: ${alt}</span>` : ''}
       ${r.a ? `<span class="act">↳ ${r.a}</span>` : ''}
-      ${r.lat ? `<a class="maplink" target="_blank" rel="noopener"
-         href="https://www.google.com/maps/search/?api=1&query=${r.lat},${r.lon}">🗺️ פתח במפה</a>` : ''}
-    </li>`).join(''));
+      ${r.lat ? `<span class="navs">
+          ${mk.has(r) ? `<button type="button" data-map="${base+i}">📍 במפה</button>` : ''}
+          <a href="${g}" target="_blank" rel="noopener">🚶 ניווט</a>
+          <a href="${w}" target="_blank" rel="noopener">Waze</a></span>` : ''}
+    </li>`; }).join(''));
   shown += slice.length;
   $('#more').hidden = shown >= rows.length;
   if (!rows.length) $('#res').innerHTML = '<div class="empty">אין הטבות כאן</div>';
 }
 
-$('#nearBtn').onclick = () => { if (me){ near = !near; $('#nearBtn').classList.toggle('on', near);
-    $('#nearBtn').textContent = near ? '📍 ממוין לפי מרחק ממך' : '📍 מה קרוב אליי?';
-    paintList($('#filter').value.trim()); } else locate(); };
-window.addEventListener('resize', () => { if (near && me) drawPlot(window.__rows || []); });
+$('#res').onclick = e => {
+  const b = e.target.closest('[data-map]'); if (!b) return;
+  const r = (window.__rows || [])[+b.dataset.map]; if (r) showOnMap(r);
+};
+$('#nearnote').onclick = e => {
+  if (e.target.id !== 'noGeoLink') return;
+  e.preventDefault();
+  go(() => { step = 'list'; district = ANY; city = ANY; });
+};
+$('#nearBtn').onclick = () => {
+  if (!me){ panelOpen = true; go(() => { step = 'group'; group = null; district = null; city = null; }); return; }
+  near = !near; paintList($('#filter').value.trim());
+};
+window.addEventListener('resize', () => { if (map && !$('#map').hidden) map.invalidateSize(); });
+
+function redraw(){
+  renderLoc();
+  if (step === 'near') paintNear();
+  else if (step === 'list') paintList($('#filter').value.trim());
+  else if (step === 'group') draw();
+}
 
 $('#more').onclick = more;
 $('#filter').oninput = () => {
   const q = $('#filter').value.trim();
-  if (step === 'list') paintList(q); else paintPick(q);
+  if (step === 'list') paintList(q); else if (step === 'near') paintNear(); else paintPick(q);
 };
 $('#aliBtn').onclick = () => go(() => { step='ali'; });
 
@@ -662,6 +1157,9 @@ $('#aliDeals').innerHTML = (DATA.aliDeals||[]).length
   ? DATA.aliDeals.map(d => `<li>${d.t}</li>`).join('')
   : '<li>אין כרגע מבצעים מסומנים.</li>';
 $('#foot').innerHTML = he(ROWS.length) + ' הטבות · בהצדעה · TAU · וואן זירו · עודכן ' + DATA.built;
+renderCards();
+measure();
 if (location.hash) fromHash();
 draw();
+checkPerm();
 </script>

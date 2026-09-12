@@ -77,7 +77,7 @@ $manifest = @'
 # Cache-first on the shell so the app opens instantly and works with no signal -
 # which is the point, since he uses it standing in a shop.
 $sw = @'
-const CACHE = 'benefits-v2';
+const CACHE = 'benefits-v4';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {

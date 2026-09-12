@@ -60,6 +60,7 @@ powershell -ExecutionPolicy Bypass -File "scripts\refresh-all.ps1"
 | `data/isracard-online.json` | הקטגוריה הכספית של ישראכרט — קאשבק ושוברים (וואן זירו) |
 | `data/behatsdaa-raw.json` | קטלוג מועדון בהצדעה — 1,034 קטגוריות, 14,087 פריטים |
 | `data/cards.yaml` | שלושת הכרטיסים, המנפיקים, ובריכת הפינוקים המשותפת |
+| `data/my-cards.json` | "הכרטיסים שלי" בתחתית מסך הבית — מה כל כרטיס פותח. לעריכה ידנית, בלי פרטים אישיים |
 
 ---
 
