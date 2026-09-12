@@ -322,3 +322,40 @@ Get-ScheduledTask -TaskName 'CreditCardBenefits-WeeklyRefresh' | Get-ScheduledTa
 
 אירוע חוזר ביומן Google ב-2 לכל חודש, 10:00 — בדיקת יתרת פינוקים לפני שהם נמחקים,
 עם הקישורים להרשמות החד-פעמיות בגוף האירוע.
+
+---
+
+## 5. מועדון TAU — tauclub.co.il (נוסף 2026-09-12)
+
+האתר הוא אפליקציית Angular של פלטפורמת **Uniq-Club**, וה-API שלה **ציבורי**:
+`POST https://admin.uniq-club.co.il/api/graphql` — בלי התחברות ובלי headers מיוחדים.
+
+```graphql
+query($f: FilterBenefitsInput) { getBenefits(filterBenefitsInput: $f) {
+  count items { id name url description discount discountCondition siteDescription infoUrl categories { id name } } } }
+```
+
+- ברירת המחדל מחזירה 50. **`{"take": 500}`** מחזיר הכל בבקשה אחת (177 ב-2026-09-12).
+- `getCategories` דורש התחברות, אבל לא צריך אותו: הקטגוריות מגיעות עם כל הטבה.
+- השוברים לרמי לוי / ויקטורי / קרפור / Ten / Wolt **לא ברשימה הציבורית** — הם בחנות המועדון.
+- נשמר ל-`data/tauclub.json`. ה-build מדלג על פריטי PayBack (כבר קיימים ב-payback.json)
+  ומצמיד את "הטבות בקמפוס" לאוניברסיטה.
+
+## 6. בהצדעה — הארנק הדיגיטלי (עודכן 2026-09-12)
+
+דורש דפדפן מחובר. שלושה endpoints, אותם headers כמו בסעיף 1:
+
+| endpoint | מה מחזיר |
+|---|---|
+| `cards/GetCardGeneralInfo` | `data.wallets[]`: `walletID`, `walletName`, `discountRate`, `maxDepositForMonth` (התקרה). **יש שם גם יתרות ומספר כרטיס — לא לשמור.** |
+| `cards/GetWalletChain?walletId=` | `data[]` תגיות, בכל אחת `walletChainData[]` רשתות |
+| `cards/GetWalletChainBranches?walletId=&chainId=` | `data[]` סניפים: `branchName`, `storeAddress`, `storePhone1` |
+
+ב-2026-09-12: 7 ארנקים, 986 רשתות, 6,250 סניפים, 0 שגיאות, 4 בקשות במקביל + 220ms.
+ארנק זמני ("... עד 30/9/2026") נשמר עם `until`, וה-build מסתיר אותו אחרי התאריך.
+
+## ישראכרט — חילוץ בלי הורדה
+
+הורדות חסומות בדומיין, אבל אפשר לקרוא את `window.epi.CurrentPage.Benefits` מדפדפן מחובר
+ולהחזיר רשימה **מקודדת וקצרה** (V|שווי|מחיר|רשת, C|אחוז|חנות) בחלקים של ~25.
+2026-09-12: 315 הטבות, 76 בקטגוריית האונליין.

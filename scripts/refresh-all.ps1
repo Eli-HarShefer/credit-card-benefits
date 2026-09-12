@@ -27,6 +27,16 @@ function Say($msg){
 
 Say '--- refresh start ---'
 
+# "Network available" to the scheduler is not the same as DNS answering: on
+# 2026-08-23 every harvest failed with "remote name could not be resolved". Wait
+# (up to 10 minutes) until the catalogue hosts actually resolve.
+$ready = $false
+for ($i = 0; $i -lt 20 -and -not $ready; $i++) {
+  try { [void][System.Net.Dns]::GetHostAddresses('www.max.co.il'); $ready = $true }
+  catch { Start-Sleep -Seconds 30 }
+}
+if (-not $ready) { Say 'network never came up - skipping this run'; exit 1 }
+
 # scrub-personal runs before the push, every time - the repo is public.
 foreach ($s in @('harvest-beplus.ps1','harvest-max.ps1','harvest-payback.ps1',
                  'scrub-personal.ps1','build-dashboard.ps1')) {
@@ -34,7 +44,13 @@ foreach ($s in @('harvest-beplus.ps1','harvest-max.ps1','harvest-payback.ps1',
   Say "running $s"
   try {
     & powershell -ExecutionPolicy Bypass -File $path *>&1 | ForEach-Object { Say "  $_" }
-    if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { Say "  WARN exit=$LASTEXITCODE" }
+    if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) {
+      # one retry after a pause - a flaky connection should not cost a whole week
+      Say "  WARN exit=$LASTEXITCODE - retrying in 60s"
+      Start-Sleep -Seconds 60
+      & powershell -ExecutionPolicy Bypass -File $path *>&1 | ForEach-Object { Say "  $_" }
+      if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { Say "  WARN exit=$LASTEXITCODE (gave up)" }
+    }
   } catch {
     Say "  FAILED $($_.Exception.Message)"
   }
