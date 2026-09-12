@@ -52,7 +52,7 @@
 
   /* big picks */
   .pick{list-style:none;margin:0;padding:0;display:grid;gap:9px;align-items:stretch}
-  .pick.two{grid-template-columns:repeat(auto-fit,minmax(155px,1fr))}
+  .pick.two{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
   .pick li{display:flex}
   .pick button{
     width:100%;display:flex;align-items:center;gap:11px;text-align:start;
@@ -161,13 +161,14 @@
   .nearnote{color:var(--muted);font-size:.8rem;margin:0 0 10px}
 
   #map{
-    width:100%;height:42vh;min-height:260px;max-height:420px;border:1px solid var(--rule);
+    width:100%;height:42vh;height:round(down,42vh,1px);min-height:260px;max-height:420px;border:1px solid var(--rule);
     border-radius:13px;margin-bottom:10px;display:block;overflow:hidden;z-index:0;
   }
   #map.picking{cursor:crosshair;outline:3px solid var(--flag);outline-offset:-3px}
-  .leaflet-popup-content{font-family:inherit;direction:rtl;font-size:.85rem;margin:10px 12px}
-  .leaflet-popup-content b{display:block}
-  .leaflet-container{background:var(--surface)}
+  /* #map-prefixed: Leaflet's own stylesheet loads later (on demand) and wins any tie */
+  #map .leaflet-popup-content{font-family:inherit;direction:rtl;font-size:.85rem;margin:10px 12px}
+  #map .leaflet-popup-content b{display:block}
+  #map.leaflet-container{background:var(--surface);font-family:inherit}
   #map.dark-tiles .leaflet-tile{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.5)}
   .plot{display:none}
 
