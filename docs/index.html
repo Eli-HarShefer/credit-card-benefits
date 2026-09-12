@@ -1,13 +1,15 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0f6b5f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Benefits">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script><title>ארנק ההטבות</title>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://tile.openstreetmap.org"><title>ארנק ההטבות</title>
 <style>
   :root{
     --paper:#fbfbf9; --surface:#fff; --ink:#15161a; --muted:#5f6169; --faint:#8b8d94;
@@ -178,6 +180,33 @@
   .leaflet-popup-content b{display:block}
   .leaflet-container{background:var(--surface)}
   .plot{display:none}
+
+  /* district screen: the closest few, before asking which area */
+  .neartop{margin:0 0 6px}
+  .neartop h3{font-size:.95rem;font-weight:700;margin:0 0 8px}
+  .neartop h3.or{margin:20px 0 10px;color:var(--muted);font-weight:650}
+  .nt{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .nt button{
+    width:100%;display:flex;align-items:center;gap:11px;text-align:start;cursor:pointer;
+    background:var(--surface);border:1px solid var(--rule);border-radius:12px;padding:10px 12px;
+    color:var(--ink);font:inherit;box-shadow:var(--shadow);
+  }
+  .nt button:hover{border-color:var(--accent)}
+  .nt-d{
+    flex-shrink:0;min-width:60px;text-align:center;color:var(--accent-ink);font-weight:700;font-size:.82rem;
+    font-family:"Cascadia Mono",Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums;
+  }
+  .nt-d small{display:block;font-family:"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;font-weight:500;color:var(--muted);font-size:.7rem}
+  .nt-n{flex:1;min-width:0}
+  .nt-n b{display:block;font-size:.92rem;overflow-wrap:anywhere}
+  .nt-n small{display:block;color:var(--muted);font-size:.74rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .nt-n .card{font-size:.62rem;padding:1px 7px}
+  .nt-v{
+    flex-shrink:0;color:var(--accent-ink);font-weight:700;font-size:.86rem;
+    font-family:"Cascadia Mono",Consolas,ui-monospace,monospace;font-variant-numeric:tabular-nums;
+  }
+  #map.loading{display:grid;place-items:center;background:var(--surface)}
+  #map.loading::after{content:"טוען מפה…";color:var(--faint);font-size:.85rem}
 
   /* ---- where am I: the panel every location-aware screen hangs off ---- */
   .loc,.loc-panel,.radius,#nearTools,.loc-help,.allnear{display:none}
@@ -429,6 +458,16 @@
     </a>
   </section>
 
+  <section class="neartop" id="nearTop" hidden></section>
+  <div id="map" hidden></div>
+  <canvas class="plot" id="plot" hidden></canvas>
+  <div class="legend" id="legend" hidden>
+    <span><i style="background:#2b7de9"></i>אתה · אפשר לגרור</span>
+    <span><i style="background:var(--flag)"></i>ארנק דיגיטלי</span>
+    <span><i style="background:var(--accent)"></i>בהצדעה</span>
+    <span><i style="background:var(--zero)"></i>וואן זירו</span>
+  </div>
+
   <input type="search" id="filter" placeholder="" autocomplete="off" aria-label="סינון">
   <ul class="pick" id="pick"></ul>
 
@@ -449,14 +488,6 @@
     <button class="chip" id="pickMap" type="button">📌 בחר נקודה במפה</button>
   </div>
   <p class="nearnote" id="nearnote" hidden></p>
-  <div id="map" hidden></div>
-  <canvas class="plot" id="plot" hidden></canvas>
-  <div class="legend" id="legend" hidden>
-    <span><i style="background:#2b7de9"></i>אתה · אפשר לגרור</span>
-    <span><i style="background:var(--flag)"></i>ארנק דיגיטלי</span>
-    <span><i style="background:var(--accent)"></i>בהצדעה</span>
-    <span><i style="background:var(--zero)"></i>וואן זירו</span>
-  </div>
 
   <ul class="res" id="res"></ul>
   <button class="more" id="more" hidden>הצג עוד</button>
@@ -504,14 +535,15 @@ function chrome(){
   if (step === 'list' && district !== ANY) bits.push(`<button class="back" data-to="city">→ עיר אחרת</button>`);
   if (step === 'ali') bits.push(`<button class="back" data-to="group">→ חזרה</button>`);
   if (step === 'near' && group) bits.push(`<button class="back" data-to="district">חפש לפי אזור במקום ›</button>`);
-  const here = [group, district, city].filter(x => x && x !== ANY).join(' · ');
+  const nearFirst = step === 'district' && me && HAS_GEO.has(group);
+  const here = nearFirst ? '' : [group, district, city].filter(x => x && x !== ANY).join(' · ');
   c.innerHTML = bits.join('') + (here ? `<span class="here">${here}</span>` : '');
 
   const gnote = (GROUPS.find(g => g.name === group) || {}).note || '';
   const T = {
     group:    ['מה אתה מחפש?', me ? 'בחר תחום — הוא ייפתח על מה שקרוב אליך.' : 'בחר תחום, ואז את האזור שאתה נמצא בו.'],
     near:     [group ? `${ICON[group] || ''} ${group}` : 'כל ההטבות סביבך', ''],
-    district: ['באיזה אזור?',  gnote || 'קודם מחוז, אחר כך עיר.'],
+    district: nearFirst ? [`${ICON[group] || ''} ${group}`, gnote] : ['באיזה אזור?',  gnote || 'קודם מחוז, אחר כך עיר.'],
     city:     ['באיזו עיר?',   ''],
     list:     [[group, city && city!==ANY ? city : district].filter(x=>x&&x!==ANY).join(' · '), gnote],
     ali:      ['אליאקספרס',    'עד 11% חזרה — אבל רק אם עושים את זה בסדר הנכון.']
@@ -579,7 +611,10 @@ addEventListener('hashchange', () => {
 
 function draw(){
   if (step === 'near' && !me) step = 'group';
+  // arriving at "which area?" without a location: offer it, folded, so the areas stay in view
+  if (step !== lastStep){ if (step === 'district' && !me) panelOpen = false; lastStep = step; }
   $('#filter').value = '';
+  $('#nearTop').hidden = true;
   chrome();
   shown = 0;
   $('#res').innerHTML = '';
@@ -590,7 +625,7 @@ function draw(){
   $('#nearTools').hidden = step !== 'near';
   if (step !== 'list') $('#nearbar').hidden = true;
   if (step !== 'list' && step !== 'near'){
-    $('#nearnote').hidden = true; $('#plot').hidden = true; $('#map').hidden = true; $('#legend').hidden = true;
+    $('#nearnote').hidden = true; $('#plot').hidden = true; $('#map').hidden = true; $('#legend').hidden = true; mapTok++;
     pickMode = false; $('#map').classList.remove('picking'); $('#pickMap').classList.remove('on');
   }
   renderLoc();
@@ -615,6 +650,7 @@ function draw(){
     }
     $('#pick').classList.remove('two');
   } else if (step === 'district'){
+    paintNearTop();
     const rows = byGroup.get(group) || [];
     let items = bucket(rows,'r');
     // The campus is where he spends his days, so it stays pinned at the top of every
@@ -718,7 +754,7 @@ const HAS_GEO = new Set(GROUPS.filter(g => (byGroup.get(g.name)||[]).some(r => r
 let me = LS.get('loc', null);
 let radius = LS.get('radius', 2);
 let sortBy = 'dist', near = false, perm = 'unknown', watchId = null, pickMode = false;
-let panelOpen = !me, nearCount = new Map(), nearAll = 0;
+let panelOpen = !me, nearCount = new Map(), nearAll = 0, lastStep = null;
 
 function km(aLat, aLon, bLat, bLon){
   const dLat = (aLat-bLat) * 111.2;
@@ -892,7 +928,7 @@ function pickHit(i){
 }
 
 function renderLoc(){
-  const show = step === 'group' || step === 'near';
+  const show = step === 'group' || step === 'near' || (step === 'district' && HAS_GEO.has(group));
   $('#loc').hidden = !show;
   if (!show) return;
 
@@ -906,10 +942,12 @@ function renderLoc(){
     $('#locChg').textContent = panelOpen ? 'סגור' : 'שנה';
     $('#locChg').hidden = false;
   } else {
+    const fold = step === 'district';   // there the areas come first; location is one tap away
     $('#locLabel').textContent = 'איפה אתה?';
-    $('#locSub').textContent = 'מיקום, כתובת או מקום שמור — ואז הכל יחסי אליך';
-    $('#locChg').hidden = true;
-    panelOpen = true;
+    $('#locSub').textContent = fold ? 'הגדר מיקום ותראה כאן מה הכי קרוב אליך' : 'מיקום, כתובת או מקום שמור — ואז הכל יחסי אליך';
+    if (!fold) panelOpen = true;
+    $('#locChg').hidden = !fold;
+    $('#locChg').textContent = panelOpen ? 'סגור' : 'הגדר';
   }
   $('#locPanel').hidden = !panelOpen;
   $('#locGps').textContent = perm === 'denied' ? '📡 המיקום חסום — איך מאפשרים?' : '📡 השתמש במיקום הנוכחי שלי';
@@ -920,7 +958,7 @@ function renderLoc(){
   $('#places').innerHTML = saved.map((p, i) =>
     `<button type="button" class="chip" data-p="${i}">${p.ic} ${p.label}</button>`).join('');
 
-  $('#radius').hidden = !me;
+  $('#radius').hidden = !me || step === 'district';
   $('#radius').innerHTML = '<small>טווח:</small>' + RADII.map(r =>
     `<button type="button" class="chip${r === radius ? ' on' : ''}" data-r="${r}">${fmtR(r)}</button>`).join('');
 
@@ -943,17 +981,40 @@ $('#radius').onclick = e => {
 };
 $('#allNear').onclick = () => go(() => { step = 'near'; group = null; });
 
-/* ---- the map ----------------------------------------------------------- */
-let map = null, layer = null;
+/* ---- the map -----------------------------------------------------------
+   Built so a screen never waits on it: the Leaflet library is fetched only when
+   a map is first needed (and prefetched while the app sits idle), every business
+   is a dot on one canvas rather than a DOM node each, popups are built on tap,
+   and the list always paints before the map. */
+let map = null, layer = null, leafletP = null;
+let mapTok = 0, mapTimer = 0, mapDelay = 0, pendingFocus = null;
 const mk = new Map();
 const CARD_COLOR = { wallet: '--flag', behatsdaa: '--accent', onezero: '--zero', tau: '--tau' };
+const idle = f => (window.requestIdleCallback || (g => setTimeout(g, 200)))(f);
+
+function loadLeaflet(){
+  if (window.L) return Promise.resolve(true);
+  if (!leafletP){
+    const base = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.';
+    const css = Object.assign(document.createElement('link'), { rel: 'stylesheet', href: base + 'css',
+      integrity: 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=', crossOrigin: '' });
+    const js = Object.assign(document.createElement('script'), { src: base + 'js',
+      integrity: 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=', crossOrigin: '' });
+    const done = el => new Promise((ok, no) => { el.onload = ok; el.onerror = no; });
+    leafletP = Promise.all([done(css), done(js)])
+      .then(() => true, () => { leafletP = null; return false; });   // offline/blocked: retry next time
+    document.head.append(css, js);
+  }
+  return leafletP;
+}
 
 function ensureMap(){
   if (!window.L) return false;
   if (map) return true;
   const t = document.documentElement.dataset.theme;
   const dark = t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
-  map = L.map('map', { zoomControl: true });
+  // one canvas for all the dots; the wider tap tolerance is for fingers
+  map = L.map('map', { zoomControl: true, renderer: L.canvas({ padding: 0.3, tolerance: 6 }) });
   // OpenStreetMap: no key, Hebrew street names. CARTO started stamping "API KEY
   // REQUIRED" across every tile - that was the ugly map. If OSM can't be reached
   // at all, fall back to Esri's street map rather than show a blank grid.
@@ -988,41 +1049,79 @@ function popup(r){
     `<br><a href="${g}" target="_blank" rel="noopener">🚶 ניווט</a> · <a href="${w}" target="_blank" rel="noopener">Waze</a>`;
 }
 
-function drawMap(list){
-  if (!me || !ensureMap()){ $('#map').hidden = true; $('#legend').hidden = true; return; }
-  $('#map').hidden = false; $('#legend').hidden = false;
+// mode 'near': centred on you, with the radius ring. mode 'list': framed on the businesses.
+// Decides visibility now (so the list below knows), draws a moment later.
+function drawMap(list, mode = 'near'){
+  const tok = ++mapTok;
+  clearTimeout(mapTimer);
+  const show = list.length > 0 && (mode === 'list' || !!me);
+  $('#map').hidden = !show; $('#legend').hidden = !show;
+  if (!show){ mk.clear(); return; }
+  const run = () => { if (tok === mapTok) paintMap(list, mode); };
+  if (window.L){ mapTimer = setTimeout(run, mapDelay); return; }
+  $('#map').classList.add('loading');
+  loadLeaflet().then(ok => {
+    $('#map').classList.remove('loading');
+    if (ok) run();
+    else if (tok === mapTok){ $('#map').hidden = true; $('#legend').hidden = true; }
+  });
+}
+
+function paintMap(list, mode){
+  if (!ensureMap()){ $('#map').hidden = true; $('#legend').hidden = true; return; }
+  map.invalidateSize();       // the box may have been hidden since the last draw
   // a fresh map has no view yet, and layers only attach once it does
-  if (!map._loaded) map.setView([me.lat, me.lon], 15);
+  if (!map._loaded) map.setView(me ? [me.lat, me.lon] : [list[0].lat, list[0].lon], 14);
   if (layer) layer.remove();
   layer = L.layerGroup().addTo(map); mk.clear();
 
-  const ring = L.circle([me.lat, me.lon], { radius: radius*1000, color: css('--accent'), weight: 1.5,
-    fillOpacity: .04, interactive: false }).addTo(layer);
-  if (me.acc && me.acc > 60)
-    L.circle([me.lat, me.lon], { radius: me.acc, stroke: false, fillColor: '#2b7de9',
-      fillOpacity: .12, interactive: false }).addTo(layer);
+  const acc = css('--accent'), COL = {};
+  for (const k in CARD_COLOR) COL[k] = css(CARD_COLOR[k]);   // once per draw, not once per dot
+  if (mode === 'near'){
+    L.circle([me.lat, me.lon], { radius: radius*1000, color: acc, weight: 1.5,
+      fillOpacity: .04, interactive: false }).addTo(layer);
+    if (me.acc && me.acc > 60)
+      L.circle([me.lat, me.lon], { radius: me.acc, stroke: false, fillColor: '#2b7de9',
+        fillOpacity: .12, interactive: false }).addTo(layer);
+  }
 
   const pts = [];
-  for (const r of list.slice(0, 300)){
+  for (const r of list.slice(0, 5000)){
     const m = L.circleMarker([r.lat, r.lon], { radius: 7, color: '#fff', weight: 1.5,
-      fillColor: css(CARD_COLOR[r.c] || '--accent'), fillOpacity: .95, bubblingMouseEvents: false })
-      .addTo(layer).bindPopup(popup(r));
+      fillColor: COL[r.c] || acc, fillOpacity: .95, bubblingMouseEvents: false })
+      .bindPopup(() => popup(r)).addTo(layer);
     m.on('click', () => highlight(r));
     mk.set(r, m); pts.push([r.lat, r.lon]);
   }
 
-  const you = L.marker([me.lat, me.lon], { draggable: true, zIndexOffset: 1000, keyboard: false,
-    icon: L.divIcon({ className: 'you', html: '<span></span>', iconSize: [22, 22] }) }).addTo(layer);
-  you.bindTooltip('אתה כאן · אפשר לגרור', { direction: 'top', offset: [0, -12] });
-  you.on('dragend', e => { const p = e.target.getLatLng();
-    setMe({ lat: p.lat, lon: p.lng, src: 'map', label: 'נקודה שבחרת במפה' }); });
+  if (me){
+    const you = L.marker([me.lat, me.lon], { draggable: true, zIndexOffset: 1000, keyboard: false,
+      icon: L.divIcon({ className: 'you', html: '<span></span>', iconSize: [22, 22] }) }).addTo(layer);
+    you.bindTooltip('אתה כאן · אפשר לגרור', { direction: 'top', offset: [0, -12] });
+    you.on('dragend', e => { const p = e.target.getLatLng();
+      setMe({ lat: p.lat, lon: p.lng, src: 'map', label: 'נקודה שבחרת במפה' }); });
+  }
 
-  // frame the radius; if nothing was inside it, frame what we're showing instead
-  const inside = list.some(r => r._d <= radius);
-  // L.circle.getBounds() needs an attached layer; LatLng.toBounds() needs nothing
-  if (inside || !pts.length) map.fitBounds(L.latLng(me.lat, me.lon).toBounds(radius*2000), { padding: [8, 8] });
-  else map.fitBounds(L.latLngBounds(pts.concat([[me.lat, me.lon]])).pad(0.15), { maxZoom: 16 });
-  setTimeout(() => map.invalidateSize(), 60);
+  if (mode === 'near'){
+    // frame the radius; if nothing was inside it, frame what we're showing instead
+    const inside = list.some(r => r._d <= radius);
+    // L.circle.getBounds() needs an attached layer; LatLng.toBounds() needs nothing
+    if (inside || !pts.length) map.fitBounds(L.latLng(me.lat, me.lon).toBounds(radius*2000), { padding: [8, 8] });
+    else map.fitBounds(L.latLngBounds(pts.concat([[me.lat, me.lon]])).pad(0.15), { maxZoom: 16 });
+  } else map.fitBounds(frame(pts), { padding: [14, 14], maxZoom: 16 });
+
+  if (pendingFocus){
+    const r = list.find(x => dkey(x) === pendingFocus); pendingFocus = null;
+    if (r) setTimeout(() => showOnMap(r), 300);
+  }
+}
+
+// frame the bulk of the dots: one stray geocode 80 km off shouldn't shrink the rest to specks
+function frame(pts){
+  if (pts.length < 12) return L.latLngBounds(pts).pad(0.1);
+  const at = (a, f) => a[Math.floor((a.length - 1) * f)];
+  const la = pts.map(p => p[0]).sort((a, b) => a - b), lo = pts.map(p => p[1]).sort((a, b) => a - b);
+  return L.latLngBounds([at(la, .03), at(lo, .03)], [at(la, .97), at(lo, .97)]).pad(0.1);
 }
 
 function highlight(r){
@@ -1031,7 +1130,8 @@ function highlight(r){
   if (li){ li.classList.add('hl'); li.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
 }
 function showOnMap(r){
-  const m = mk.get(r); if (!m) return;
+  const m = mk.get(r);
+  if (!m){ pendingFocus = dkey(r); return; }      // map still loading - it opens this when ready
   $('#map').scrollIntoView({ block: 'start', behavior: 'smooth' });
   map.setView([r.lat, r.lon], Math.max(map.getZoom(), 16));
   setTimeout(() => m.openPopup(), 250);
@@ -1068,6 +1168,34 @@ function nearRows(){
   return { list: [...best.values()], noGeo };
 }
 
+/* The "which area?" screen opens with what is closest to you - often that is
+   the whole answer, and the areas stay right below for everything else. */
+function paintNearTop(){
+  const box = $('#nearTop');
+  box.hidden = !(me && HAS_GEO.has(group));
+  if (box.hidden) return;
+  const top = nearRows().list.sort((a, b) => a._d - b._d).slice(0, 5);
+  window.__top = top;
+  const n = nearCount.get(group) || 0;
+  box.innerHTML = `<h3>📍 הכי קרוב אליך</h3>
+    <ul class="nt">${top.map((r, i) => `<li><button type="button" data-t="${i}">
+      <span class="nt-d">${fmtKm(r._d)}${r._d <= 3 ? `<small>🚶 ${walkMin(r._d)} דק׳</small>` : ''}</span>
+      <span class="nt-n"><b>${r.n || ''}</b>
+        <small><span class="card ${r.c}">${CARD[r.c] || ''}</span>${[r.d, r.w !== ANY ? r.w : ''].filter(Boolean).join(', ')}</small></span>
+      <span class="nt-v">${r.o || ''}</span>
+    </button></li>`).join('')}</ul>
+    <button class="allnear" type="button" data-all="1"><span class="ic">🗺️</span>
+      <span class="lbl">${n ? `כל ה-${he(n)} בטווח ${fmtR(radius)} — על המפה` : 'הצג אותם על המפה'}</span>
+      <span class="arrow">‹</span></button>
+    <h3 class="or">או לפי אזור</h3>`;
+}
+$('#nearTop').onclick = e => {
+  const b = e.target.closest('[data-t],[data-all]'); if (!b) return;
+  const r = b.dataset.t != null ? (window.__top || [])[+b.dataset.t] : null;
+  if (r) pendingFocus = dkey(r);          // the map opens on this one
+  go(() => { step = 'near'; district = null; city = null; });
+};
+
 function paintNear(){
   if (!me) return;
   const { list, noGeo } = nearRows();
@@ -1088,7 +1216,7 @@ function paintNear(){
   if (noGeo && group) $('#nearnote').innerHTML =
     `ועוד ${he(noGeo)} הטבות בלי כתובת מדויקת (אונליין או ארציות) — <a href="#" id="noGeoLink">הצג אותן ›</a>`;
 
-  drawMap(out);
+  drawMap(out, 'near');
   window.__rows = out; shown = 0; $('#res').innerHTML = ''; more();
 }
 
@@ -1097,17 +1225,17 @@ function paintList(q){
   $('#nearbar').hidden = !rows.some(r => r.lat);
   $('#nearBtn').classList.toggle('on', near && !!me);
   $('#nearBtn').textContent = near && me ? '📍 ממוין לפי מרחק ממך' : '📍 מיין לפי מרחק ממני';
-  if (near && me){
+  if (near && me)
     rows = rows.slice().sort((a,b) => (a._d==null) - (b._d==null) || (a._d - b._d) || (b.p - a.p));
-    drawMap(rows.filter(r => r._d != null));
-  } else { $('#map').hidden = true; $('#legend').hidden = true; mk.clear(); }
+  // the map sits on top of every list that has addresses, spread over the businesses
+  drawMap(rows.filter(r => r.lat), 'list');
   window.__rows = rows; shown = 0; $('#res').innerHTML = ''; more();
 }
 
 function more(){
   const rows = window.__rows || [];
   const slice = rows.slice(shown, shown+PAGE);
-  const base = shown;
+  const base = shown, mapOn = !$('#map').hidden;
   $('#res').insertAdjacentHTML('beforeend', slice.map((r, i) => {
     const g = r.lat && `https://www.google.com/maps/dir/?api=1&destination=${r.lat},${r.lon}&travelmode=walking`;
     const w = r.lat && `https://waze.com/ul?ll=${r.lat},${r.lon}&navigate=yes`;
@@ -1124,7 +1252,7 @@ function more(){
       ${alt ? `<span class="alt">גם: ${alt}</span>` : ''}
       ${r.a ? `<span class="act">↳ ${r.a}</span>` : ''}
       ${r.lat ? `<span class="navs">
-          ${mk.has(r) ? `<button type="button" data-map="${base+i}">📍 במפה</button>` : ''}
+          ${mapOn ? `<button type="button" data-map="${base+i}">📍 במפה</button>` : ''}
           <a href="${g}" target="_blank" rel="noopener">🚶 ניווט</a>
           <a href="${w}" target="_blank" rel="noopener">Waze</a></span>` : ''}
     </li>`; }).join(''));
@@ -1152,13 +1280,15 @@ function redraw(){
   renderLoc();
   if (step === 'near') paintNear();
   else if (step === 'list') paintList($('#filter').value.trim());
-  else if (step === 'group') draw();
+  else if (step === 'group' || step === 'district') draw();
 }
 
 $('#more').onclick = more;
 $('#filter').oninput = () => {
   const q = $('#filter').value.trim();
+  mapDelay = 250;     // the list follows every keystroke; the map waits for a pause
   if (step === 'list') paintList(q); else if (step === 'near') paintNear(); else paintPick(q);
+  mapDelay = 0;
 };
 $('#aliBtn').onclick = () => go(() => { step='ali'; });
 
@@ -1171,6 +1301,8 @@ measure();
 if (location.hash) fromHash();
 draw();
 checkPerm();
+// fetch the map library while the first screen sits idle, so the first map opens at once
+setTimeout(() => idle(loadLeaflet), 1200);
 </script>
 <script>
 if ("serviceWorker" in navigator) {

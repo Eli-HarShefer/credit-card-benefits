@@ -355,19 +355,26 @@ $out  = Join-Path $root 'dashboard.html'
 $pub = Join-Path $root 'docs'
 if (-not (Test-Path $pub)) { New-Item -ItemType Directory -Path $pub | Out-Null }
 
-# Leaflet only goes into the hosted copy. The Artifact build runs under a CSP that
-# blocks external scripts and map tiles, and there it falls back to the plot.
+# Leaflet is no longer in the head: the page fetches it on demand (loadLeaflet in
+# template.html), so the first screen never waits on a CDN. The preconnects just
+# warm up the two hosts a map will need. In the Artifact copy the CSP blocks the
+# fetch and the page simply shows no map.
+# The doctype, charset and viewport were missing, so the hosted page ran in
+# quirks mode and phones laid it out 980px wide and shrank it. The Artifact copy
+# never showed this because its host wraps the page in a proper skeleton.
 $pwaHead = @'
+<!doctype html>
+<html lang="he" dir="rtl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#0f6b5f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Benefits">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link rel="preconnect" href="https://tile.openstreetmap.org">
 '@
 $pwaTail = @'
 <script>
