@@ -77,7 +77,10 @@ $walPath = Join-Path $data 'behatsdaa-wallet.json'
 if (Test-Path $walPath) {
   $wal = Get-Content $walPath -Raw -Encoding UTF8 | ConvertFrom-Json
   $best = @{}
+  $today = (Get-Date).Date
   foreach ($w in $wal.wallets) {
+    # a promo wallet ("... until 30/9") drops out by itself once its date has passed
+    if ($w.until -and ([datetime]::ParseExact([string]$w.until, 'yyyy-MM-dd', $null) -lt $today)) { continue }
     foreach ($cat in $w.categories) {
       foreach ($ch in $cat.chains) {
         $nm = [string]$ch.name
@@ -205,6 +208,32 @@ if (Test-Path $izPath) {
   }
 }
 
+# ---- TAU club (tauclub.co.il): the card's own club benefits ----------------
+# Mostly country-wide discounts at the till and Gift Card ACADEMIC chains. Its
+# max PayBack entries are skipped - payback.json already has them, at the same rates.
+# Campus benefits are pinned to the university so they land in the campus district.
+$tcPath = Join-Path $data 'tauclub.json'
+if (Test-Path $tcPath) {
+  $tc = Get-Content $tcPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  $tcAdded = 0
+  foreach ($b in $tc.benefits) {
+    if ([string]$b.name -match 'PayBack') { continue }
+    $offer = [string]$b.discount
+    $pct = 0
+    $pm = [regex]::Match($offer, '(\d+(?:\.\d+)?)\s*%')
+    if ($pm.Success) { $pct = [double]$pm.Groups[1].Value }
+    $cats = @($b.categories) | Where-Object { $_ } |
+            ForEach-Object { (($_ -replace 'VIEW ALL', '') -replace '\s+', ' ').Trim() } | Where-Object { $_ }
+    $act = $null
+    if ($offer -match 'ACADEMIC') { $act = $S.act_giftcard }
+    $city = $S.anywhere; $addr = $null
+    foreach ($c in $cats) { if ($c -match $S.match_tau_campus) { $city = $S.tau_city_canon; $addr = $S.tau_campus_addr; break } }
+    Add-Row ([string]$b.name) $offer $pct 'tau' $act $cats $city $addr ([string]$b.url)
+    $tcAdded++
+  }
+  Write-Host "tau club: $tcAdded"
+}
+
 # ---- group the raw categories, bucket cities into districts, drop dupes ---
 $G = Get-Content (Join-Path $data 'groups.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 
@@ -263,6 +292,7 @@ foreach ($r in $rows) {
       if ($geo.ContainsKey($key)) { $lat = [double]$geo[$key][0]; $lon = [double]$geo[$key][1]; break }
     }
   }
+  if ($null -eq $lat -and $r.d -eq $S.tau_campus_addr) { $lat = [double]$S.tau_lat; $lon = [double]$S.tau_lon }
   $r | Add-Member -NotePropertyName 'lat' -NotePropertyValue $lat -Force
   $r | Add-Member -NotePropertyName 'lon' -NotePropertyValue $lon -Force
 

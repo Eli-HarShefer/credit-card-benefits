@@ -2,9 +2,9 @@
   "source": "benefits.isracard.co.il",
   "card": "onezero",
   "card_note": "כרטיסי וואן זירו מונפקים ע\"י ישראכרט, ולכן קטלוג 'הטבות לכל' חל עליהם.",
-  "harvested_at": "2026-08-15",
-  "capture": "partial",
-  "capture_note": "הקטלוג המלא הוא 319 הטבות ב-7 קטגוריות (115 מהן מתויגות 'פרימיום'). הקובץ הזה מכיל את קטגוריית 'הטבות אונליין' — הקטגוריה הכספית־יומיומית. השאר (בילוי ופנאי 112, הורים וילדים 76, נוסעים לחו\"ל 40) הן פנאי ולא נקצרו במלואן. ראה SOURCES.md לשיטת החילוץ.",
+  "harvested_at": "2026-09-12",
+  "capture": "online-category",
+  "capture_note": "כל 76 ההטבות בקטגוריית \"הטבות אונליין\" (מתוך 315 בקטלוג, 109 מהן פרימיום), נקראו מ-window.epi.CurrentPage.Benefits בדפדפן מחובר. שאר הקטגוריות הן פנאי ולא נקצרו.",
   "mechanics": {
     "cashback": "חובה להירשם ל-TOPCASH פעם אחת ולהתחיל את הקנייה דרך הקישור שלהם, אחרת לא נצבר כלום",
     "voucher": "קונים שובר מוזל מראש באתר ההטבות ואז מממשים בחנות"
@@ -29,6 +29,10 @@
     {
       "merchant": "Asos",
       "rate": "עד 4%"
+    },
+    {
+      "merchant": "WIFLY",
+      "rate": "15%"
     },
     {
       "merchant": "פנדה",
@@ -81,6 +85,12 @@
   ],
   "vouchers": [
     {
+      "merchant": "Picabook",
+      "face": 100,
+      "price": 39,
+      "off_pct": 61.0
+    },
+    {
       "merchant": "נעמן",
       "face": 200,
       "price": 90,
@@ -93,10 +103,10 @@
       "off_pct": 55.0
     },
     {
-      "merchant": "Picabook",
-      "face": 100,
-      "price": 39,
-      "off_pct": 61.0
+      "merchant": "סטימצקי",
+      "face": 98,
+      "price": 63,
+      "off_pct": 35.7
     },
     {
       "merchant": "נעלי ברוקס",
@@ -117,18 +127,6 @@
       "off_pct": 24.7
     },
     {
-      "merchant": "קסטרו הום",
-      "face": 200,
-      "price": 162,
-      "off_pct": 19.0
-    },
-    {
-      "merchant": "הודיס",
-      "face": 200,
-      "price": 162,
-      "off_pct": 19.0
-    },
-    {
       "merchant": "מגנוליה",
       "face": 200,
       "price": 160,
@@ -141,10 +139,28 @@
       "off_pct": 20.0
     },
     {
+      "merchant": "הודיס",
+      "face": 200,
+      "price": 162,
+      "off_pct": 19.0
+    },
+    {
+      "merchant": "קסטרו הום",
+      "face": 200,
+      "price": 162,
+      "off_pct": 19.0
+    },
+    {
       "merchant": "בורגראנץ'",
       "face": 165,
       "price": 135,
       "off_pct": 18.2
+    },
+    {
+      "merchant": "ספארי רמת גן",
+      "face": 116,
+      "price": 95,
+      "off_pct": 18.1
     },
     {
       "merchant": "GOLF KIDS",
@@ -153,15 +169,45 @@
       "off_pct": 17.5
     },
     {
-      "merchant": "TAKEANAP",
-      "face": 250,
-      "price": 215,
-      "off_pct": 14.0
+      "merchant": "Yves Rocher",
+      "face": 200,
+      "price": 170,
+      "off_pct": 15.0
+    },
+    {
+      "merchant": "טרקלין חשמל",
+      "face": 100,
+      "price": 85,
+      "off_pct": 15.0
+    },
+    {
+      "merchant": "מוצצים",
+      "face": 100,
+      "price": 85,
+      "off_pct": 15.0
+    },
+    {
+      "merchant": "Papaya",
+      "face": 100,
+      "price": 85,
+      "off_pct": 15.0
+    },
+    {
+      "merchant": "אורבניקה",
+      "face": 200,
+      "price": 170,
+      "off_pct": 15.0
+    },
+    {
+      "merchant": "JAPAN-JAPAN",
+      "face": 100,
+      "price": 85,
+      "off_pct": 15.0
     },
     {
       "merchant": "מסעדות ובתי קפה",
-      "face": 500,
-      "price": 425,
+      "face": 100,
+      "price": 85,
       "off_pct": 15.0
     },
     {
@@ -172,8 +218,26 @@
     },
     {
       "merchant": "מסעדות ובתי קפה",
+      "face": 500,
+      "price": 425,
+      "off_pct": 15.0
+    },
+    {
+      "merchant": "INTIMA",
       "face": 100,
       "price": 85,
+      "off_pct": 15.0
+    },
+    {
+      "merchant": "אופטיקה הלפרין",
+      "face": 100,
+      "price": 85,
+      "off_pct": 15.0
+    },
+    {
+      "merchant": "קרולינה למקה",
+      "face": 200,
+      "price": 170,
       "off_pct": 15.0
     },
     {
@@ -183,33 +247,9 @@
       "off_pct": 15.0
     },
     {
-      "merchant": "אורבניקה",
-      "face": 200,
-      "price": 170,
-      "off_pct": 15.0
-    },
-    {
-      "merchant": "Yves Rocher",
-      "face": 200,
-      "price": 170,
-      "off_pct": 15.0
-    },
-    {
       "merchant": "Colombia",
       "face": 200,
       "price": 170,
-      "off_pct": 15.0
-    },
-    {
-      "merchant": "למטייל",
-      "face": 300,
-      "price": 275,
-      "off_pct": 8.3
-    },
-    {
-      "merchant": "INTIMA",
-      "face": 100,
-      "price": 85,
       "off_pct": 15.0
     },
     {
@@ -225,19 +265,13 @@
       "off_pct": 15.0
     },
     {
-      "merchant": "מגה ספורט",
-      "face": 100,
-      "price": 85,
-      "off_pct": 15.0
-    },
-    {
-      "merchant": "JAPAN-JAPAN",
-      "face": 100,
-      "price": 85,
-      "off_pct": 15.0
-    },
-    {
       "merchant": "POLGAT",
+      "face": 100,
+      "price": 85,
+      "off_pct": 15.0
+    },
+    {
+      "merchant": "ערד טקסטיל",
       "face": 100,
       "price": 85,
       "off_pct": 15.0
@@ -249,16 +283,16 @@
       "off_pct": 15.0
     },
     {
-      "merchant": "אופטיקה הלפרין",
+      "merchant": "מגה ספורט",
       "face": 100,
       "price": 85,
       "off_pct": 15.0
     },
     {
-      "merchant": "kiko mikano",
-      "face": 100,
-      "price": 85,
-      "off_pct": 15.0
+      "merchant": "TAKEANAP",
+      "face": 250,
+      "price": 215,
+      "off_pct": 14.0
     },
     {
       "merchant": "מוצצים",
@@ -267,16 +301,16 @@
       "off_pct": 13.0
     },
     {
-      "merchant": "ספארי רמת גן",
-      "face": 116,
-      "price": 95,
-      "off_pct": 18.1
+      "merchant": "וניליה",
+      "face": 118,
+      "price": 104,
+      "off_pct": 11.9
     },
     {
-      "merchant": "אניפט",
-      "face": 500,
-      "price": 460,
-      "off_pct": 8.0
+      "merchant": "למטייל",
+      "face": 300,
+      "price": 275,
+      "off_pct": 8.3
     },
     {
       "merchant": "אניפט",
@@ -285,10 +319,10 @@
       "off_pct": 8.0
     },
     {
-      "merchant": "קרפור ורשתות נוספות",
-      "face": 250,
-      "price": 235,
-      "off_pct": 6.0
+      "merchant": "אניפט",
+      "face": 500,
+      "price": 460,
+      "off_pct": 8.0
     },
     {
       "merchant": "מחסני חשמל",
@@ -301,20 +335,58 @@
       "face": 150,
       "price": 141,
       "off_pct": 6.0
+    },
+    {
+      "merchant": "קרפור ורשתות נוספות",
+      "face": 250,
+      "price": 235,
+      "off_pct": 6.0
     }
   ],
   "other": [
+    {
+      "merchant": "דה קרינה",
+      "offer": "50 ₪ הנחה על מארזי השוקולד"
+    },
+    {
+      "merchant": "לובלינסקי",
+      "offer": "15% הנחה באתר"
+    },
+    {
+      "merchant": "BFRIEND",
+      "offer": "100 ₪ הנחה לרוכשים ביטוח בעלי חיים"
+    },
+    {
+      "merchant": "LEONIDAS",
+      "offer": "שוברים החל מ-88 ₪"
+    },
+    {
+      "merchant": "שטיחי צמר",
+      "offer": "שובר לשטיחי צמר"
+    },
     {
       "merchant": "אלבומי albume",
       "offer": "קופון 50% הנחה על כל האלבומים הדיגיטליים"
     },
     {
-      "merchant": "WIFLY",
-      "offer": "15% הנחה על חבילות גלישה לחו\"ל"
+      "merchant": "INCENSE",
+      "offer": "שוברים החל מ-170 ₪"
     },
     {
-      "merchant": "לובלינסקי",
-      "offer": "15% הנחה באתר"
+      "merchant": "מקס ברנר",
+      "offer": "שוברים החל מ-85 ₪"
+    },
+    {
+      "merchant": "עגליס",
+      "offer": "שוברים החל מ-85 ₪"
+    },
+    {
+      "merchant": "ארקיע",
+      "offer": "חבילות נופש"
+    },
+    {
+      "merchant": "CRAZY LINE",
+      "offer": "שוברים החל מ-87 ₪"
     },
     {
       "merchant": "קפה קפה",
@@ -325,8 +397,16 @@
       "offer": "15% הנחה על שובר"
     },
     {
-      "merchant": "BFRIEND",
-      "offer": "100 ₪ הנחה לרוכשים ביטוח בעלי חיים"
+      "merchant": "פארק החבלים",
+      "offer": "שוברים החל מ-115 ₪"
+    },
+    {
+      "merchant": "שטיפת רכב",
+      "offer": "שוברים החל מ-40 ₪ ברשת"
+    },
+    {
+      "merchant": "המשביר לצרכן",
+      "offer": "שוברים החל מ-87 ₪"
     }
   ]
 }
