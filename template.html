@@ -168,6 +168,7 @@
   .leaflet-popup-content{font-family:inherit;direction:rtl;font-size:.85rem;margin:10px 12px}
   .leaflet-popup-content b{display:block}
   .leaflet-container{background:var(--surface)}
+  #map.dark-tiles .leaflet-tile{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.5)}
   .plot{display:none}
 
   /* district screen: the closest few, before asking which area */
@@ -645,7 +646,8 @@ function draw(){
     // The campus is where he spends his days, so it stays pinned at the top of every
     // category - even at zero, which is itself the answer ("nothing here, don't look").
     if (TAU && !items.some(i => i.label === TAU)) items.unshift({ label:TAU, n:0 });
-    setPick(items.map(b => ({...b, icon: b.label===ANY ? '🇮🇱' : (DICON[b.label]||'📍')})),
+    // not the flag emoji: Windows has no flag glyphs and draws the letters "IL" instead
+    setPick(items.map(b => ({...b, icon: b.label===ANY ? '🗺️' : (DICON[b.label]||'📍')})),
             v => go(() => { district=v; if (v===ANY){ city=ANY; step='list'; } else step='city'; }));
     $('#pick').classList.add('two');
   } else if (step === 'city'){
@@ -1020,7 +1022,8 @@ function ensureMap(){
     }).addTo(map);
   });
   // there are no keyless dark tiles, so dim the light ones instead of glaring at night
-  if (dark) map.getPane('tilePane').style.filter = 'invert(1) hue-rotate(180deg) brightness(.9) contrast(.85) saturate(.5)';
+  // (filtered per tile, not on the whole pane: a pane-wide filter leaves hairline seams)
+  $('#map').classList.toggle('dark-tiles', dark);
   map.on('click', e => {
     if (!pickMode) return;
     pickMode = false; $('#map').classList.remove('picking'); $('#pickMap').classList.remove('on');
@@ -1110,7 +1113,8 @@ function frame(pts){
   if (pts.length < 12) return L.latLngBounds(pts).pad(0.1);
   const at = (a, f) => a[Math.floor((a.length - 1) * f)];
   const la = pts.map(p => p[0]).sort((a, b) => a - b), lo = pts.map(p => p[1]).sort((a, b) => a - b);
-  return L.latLngBounds([at(la, .03), at(lo, .03)], [at(la, .97), at(lo, .97)]).pad(0.1);
+  const cut = pts.length >= 40 ? .08 : .03;     // a whole city: frame its busy core
+  return L.latLngBounds([at(la, cut), at(lo, cut)], [at(la, 1 - cut), at(lo, 1 - cut)]).pad(0.1);
 }
 
 function highlight(r){
