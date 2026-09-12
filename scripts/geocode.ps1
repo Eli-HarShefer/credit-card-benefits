@@ -24,10 +24,17 @@ $cacheFile = Join-Path $data 'geocache.json'
 $UA = 'CreditCardBenefitsMap/1.0 (personal use)'
 
 # ---- load cache ----------------------------------------------------------
+# Keys are addresses with runs of whitespace collapsed: harvests differ in spacing
+# ("yehud  yehud" vs "yehud yehud"), and a re-harvest must not re-geocode everything.
+function Norm-Addr([string]$s) { return ($s -replace '\s+', ' ').Trim() }
 $cache = @{}
 if (Test-Path $cacheFile) {
   $raw = Get-Content $cacheFile -Raw -Encoding UTF8 | ConvertFrom-Json
-  foreach ($p in $raw.PSObject.Properties) { $cache[$p.Name] = $p.Value }
+  foreach ($p in $raw.PSObject.Properties) {
+    $k = Norm-Addr $p.Name
+    # two spellings of one address: a hit beats a remembered miss
+    if (-not $cache.ContainsKey($k) -or ($null -eq $cache[$k] -and $null -ne $p.Value)) { $cache[$k] = $p.Value }
+  }
 }
 Write-Host "cache: $($cache.Count) entries"
 
@@ -48,7 +55,7 @@ if (Test-Path $brFile) {
   $bj = Get-Content $brFile -Raw -Encoding UTF8 | ConvertFrom-Json
   foreach ($p in $bj.branches.PSObject.Properties) {
     foreach ($b in $p.Value) {
-      if ($b.a) { $walletWork += [pscustomobject]@{ q = ([string]$b.a).Trim(); prio = 0 } }
+      if ($b.a) { $walletWork += [pscustomobject]@{ q = (Norm-Addr ([string]$b.a)); prio = 0 } }
     }
   }
 }
@@ -63,7 +70,7 @@ $work = foreach ($m in $bp.merchants) {
   foreach ($c in @($m.all_categories)) {
     if ($c -and $tier1.ContainsKey(($c -replace '^\s*-\s*', '').Trim())) { $isTop = $true; break }
   }
-  [pscustomobject]@{ q = "$addr, $city"; prio = $(if ($isTop) { 0 } else { 1 }) }
+  [pscustomobject]@{ q = (Norm-Addr "$addr, $city"); prio = $(if ($isTop) { 0 } else { 1 }) }
 }
 
 $queue = @($walletWork) + @($work) | Group-Object q | ForEach-Object { $_.Group[0] } |

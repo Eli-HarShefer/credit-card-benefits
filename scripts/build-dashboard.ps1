@@ -107,7 +107,7 @@ if (Test-Path $walPath) {
   $chainIdByName = @{}
   if (Test-Path $brFile) {
     $bj2 = Get-Content $brFile -Raw -Encoding UTF8 | ConvertFrom-Json
-    foreach ($c in $bj2.chains) { $chainIdByName[$c.name] = $c.chainId }
+    foreach ($c in $bj2.chains) { $chainIdByName[([string]$c.name).Trim()] = $c.chainId }
   }
 
   $WALLET_URL = 'https://www.behatsdaa.org.il/card/chargingCard'
@@ -261,11 +261,13 @@ foreach ($r in $rows) {
 
 # Coordinates from the geocoder, so rows can be placed near the TAU campus and,
 # later, sorted by real distance in the app.
+# Keyed with whitespace collapsed, same as scripts\geocode.ps1 - harvests differ in spacing.
+function Norm-Addr([string]$s) { return ($s -replace '\s+', ' ').Trim() }
 $geo = @{}
 $geoFile = Join-Path $data 'geocache.json'
 if (Test-Path $geoFile) {
   $gj = Get-Content $geoFile -Raw -Encoding UTF8 | ConvertFrom-Json
-  foreach ($p in $gj.PSObject.Properties) { if ($p.Value) { $geo[$p.Name] = $p.Value } }
+  foreach ($p in $gj.PSObject.Properties) { if ($p.Value) { $geo[(Norm-Addr $p.Name)] = $p.Value } }
   Write-Host "geocoded: $($geo.Count)"
 }
 
@@ -288,7 +290,7 @@ foreach ($r in $rows) {
   # address string, so try both shapes.
   $lat = $null; $lon = $null
   if ($r.d -and $r.w -and $r.w -ne $S.anywhere) {
-    foreach ($key in @("$($r.d), $($r.w)", "$($r.d) $($r.w)")) {
+    foreach ($key in @((Norm-Addr "$($r.d), $($r.w)"), (Norm-Addr "$($r.d) $($r.w)"))) {
       if ($geo.ContainsKey($key)) { $lat = [double]$geo[$key][0]; $lon = [double]$geo[$key][1]; break }
     }
   }
