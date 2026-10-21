@@ -1,0 +1,121 @@
+{
+  "_note": "מאיפה מגיעה כל הטבה. בישראל הטבה כמעט אף פעם לא שייכת לכרטיס בודד אלא לתוכנית — קטלוג של מנפיק, מועדון, רשת הנחות או שירות קאשבק. כל שורה במאגר נושאת מזהה תוכנית בשדה c, וכל כרטיס ב-cards.json מונה את התוכניות שהוא פותח. כך אפשר להוסיף כרטיס בלי לגעת בנתונים.",
+  "_verified": "631 ההטבות בקטלוג max נבדקו ב-2026-10-21: 618 מהן בלי שיוך למועדון, כלומר תקפות לכל כרטיס max. רק 13 שייכות למועדון מסוים (Executive, maxbussiness, MAX Back Total, premium, TAU). זו הסיבה שהמודל הוא לפי תוכנית ולא לפי כרטיס.",
+  "programs": [
+    {
+      "id": "max",
+      "name": "הטבות max",
+      "short": "max",
+      "issuer": "max",
+      "kind": "catalog",
+      "what": "שוברים מוזלים, הטבות תמורת פינוק, והנחות ברשתות",
+      "site": "https://www.max.co.il/benefits",
+      "data": "data/max.json",
+      "harvest": "scripts/harvest-max.ps1",
+      "access": "public",
+      "color": "--tau"
+    },
+    {
+      "id": "max-payback",
+      "name": "max PayBack",
+      "short": "PayBack",
+      "issuer": "max",
+      "kind": "cashback",
+      "what": "החזר כספי באתרי קניות — נכנסים דרך PayBack ומשלמים בכרטיס max",
+      "needs": "הרשמה חד-פעמית. בלעדיה לא נצבר כלום",
+      "site": "https://www.pay-back.co.il/",
+      "data": "data/payback.json",
+      "harvest": "scripts/harvest-payback.ps1",
+      "access": "public",
+      "only": "כרטיסי אשראי של max בלבד — לא cash-card, לא דביט, לא free ולא רכש",
+      "color": "--tau"
+    },
+    {
+      "id": "beplus",
+      "name": "הנחות פלוס (Be-Plus)",
+      "short": "Be-Plus",
+      "issuer": "max",
+      "kind": "network",
+      "what": "הנחה אוטומטית במעמד החיוב באלפי בתי עסק — בלי להפעיל ובלי קופון",
+      "site": "https://be-plus.co.il",
+      "data": "data/be-plus.json",
+      "harvest": "scripts/harvest-beplus.ps1",
+      "access": "public",
+      "note": "הכניסה הרגילה היא דרך מועדון בהצדעה. לכרטיסי max אחרים אותה רשת נפתחת דרך \"הטבות פלוס\" באתר max, אבל שם היא מותנית בתשלום בנייד, והאחוזים לא תמיד זהים.",
+      "color": "--beh"
+    },
+    {
+      "id": "behatsdaa-wallet",
+      "name": "הארנק הדיגיטלי של בהצדעה",
+      "short": "ארנק",
+      "issuer": "max",
+      "kind": "wallet",
+      "what": "טוענים כסף מראש בהנחה ומשלמים בקופה — האחוזים הגבוהים במאגר, ורשתות הסופר היחידות",
+      "needs": "לטעון את הארנק הנכון לפני הקנייה. יש תקרה חודשית לכל ארנק",
+      "site": "https://www.behatsdaa.org.il/card/chargingCard",
+      "data": "data/behatsdaa-wallet.json",
+      "harvest": "browser",
+      "access": "login",
+      "color": "--accent"
+    },
+    {
+      "id": "behatsdaa-club",
+      "name": "מועדון בהצדעה",
+      "short": "בהצדעה",
+      "issuer": "max",
+      "kind": "club",
+      "what": "קטלוג המועדון — בעיקר חנות: מוצרים, חופשות, מופעים ואטרקציות",
+      "site": "https://www.behatsdaa.org.il/",
+      "data": "data/behatsdaa-raw.json",
+      "harvest": "browser",
+      "access": "login",
+      "color": "--beh"
+    },
+    {
+      "id": "tauclub",
+      "name": "מועדון TAU",
+      "short": "TAU",
+      "issuer": "max",
+      "kind": "club",
+      "what": "הנחות המועדון, שוברי סופר ודלק, ו-Gift Card ACADEMIC",
+      "site": "https://www.tauclub.co.il/",
+      "data": "data/tauclub.json",
+      "harvest": "browser",
+      "access": "login",
+      "color": "--tau"
+    },
+    {
+      "id": "isracard",
+      "name": "הטבות ישראכרט",
+      "short": "ישראכרט",
+      "issuer": "isracard",
+      "kind": "catalog",
+      "what": "שוברים מוזלים והטבות אונליין לכל כרטיסי ישראכרט",
+      "site": "https://benefits.isracard.co.il/benefitsforall/online/",
+      "data": "data/isracard-online.json",
+      "harvest": "browser",
+      "access": "blocked",
+      "note": "האתר מחזיר 403 לכל בקשה שאינה מדפדפן. הקטגוריה הכספית חולצה ידנית; שאר הקטלוג ממתין.",
+      "color": "--zero"
+    },
+    {
+      "id": "topcash",
+      "name": "TOPCASH",
+      "short": "TOPCASH",
+      "issuer": "isracard",
+      "kind": "cashback",
+      "what": "החזר כספי באתרי קניות לכרטיסי ישראכרט",
+      "needs": "הרשמה חד-פעמית, ולהתחיל כל קנייה דרך הקישור שלהם",
+      "site": "https://www.topcash.co.il/",
+      "data": "data/isracard-online.json",
+      "harvest": "browser",
+      "access": "blocked",
+      "color": "--zero"
+    }
+  ],
+  "issuers": [
+    { "id": "max", "name": "max", "was": "לאומי קארד" },
+    { "id": "isracard", "name": "ישראכרט", "also": "אמריקן אקספרס ישראל מונפק על ידם" },
+    { "id": "cal", "name": "כאל", "also": "ויזה כאל, דיינרס, ומועדוני כאל", "data": "none", "note": "האתר חוסם כל גישה שאינה דפדפן, כולל robots.txt. אין עדיין נתונים במאגר." }
+  ]
+}

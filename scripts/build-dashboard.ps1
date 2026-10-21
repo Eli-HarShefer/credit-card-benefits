@@ -52,7 +52,7 @@ foreach ($m in $bp.merchants) {
   if ($addr -match '^\s*0\s*$' -or [string]::IsNullOrWhiteSpace($addr)) { $addr = $null }
 
   Add-Row $m.name ("$($m.discount_pct)" + $S.discount_suffix) ([double]$m.discount_pct) `
-          'behatsdaa' $null $cats $city $addr $m.url
+          'beplus' $null $cats $city $addr $m.url
 }
 
 # ---- max: TAU + Behatsdaa. No geography - these are country-wide ---------
@@ -64,7 +64,7 @@ if (Test-Path $maxPath) {
     $act = $null
     if ($offer -match $S.match_cashback)  { $act = $S.act_payback }
     elseif ($offer -match $S.match_pinuk) { $act = $S.act_pinuk }
-    Add-Row $b.name $offer 0 'tau' $act @($b.categories) $S.anywhere $null $b.url
+    Add-Row $b.name $offer 0 'max' $act @($b.categories) $S.anywhere $null $b.url
   }
 }
 
@@ -129,14 +129,14 @@ if (Test-Path $walPath) {
         }
         if (-not $city) { continue }
         $street = $addr.Substring(0, $addr.Length - $city.Length).Trim()
-        Add-Row $k ("$($b.pct)" + $S.discount_suffix) $b.pct 'wallet' $act `
+        Add-Row $k ("$($b.pct)" + $S.discount_suffix) $b.pct 'behatsdaa-wallet' $act `
                 @($b.tag) $city $street $WALLET_URL
         $rowsAdded++
       }
     }
     # no branch data (online-only, or not harvested yet) - keep the nationwide row
     if ($rowsAdded -eq 0) {
-      Add-Row $k ("$($b.pct)" + $S.discount_suffix) $b.pct 'wallet' $act `
+      Add-Row $k ("$($b.pct)" + $S.discount_suffix) $b.pct 'behatsdaa-wallet' $act `
               @($b.tag) $S.anywhere $null $WALLET_URL
     }
   }
@@ -176,7 +176,7 @@ if (Test-Path $pbPath) {
       elseif ($r.rate_pct -gt $rival) { $act = [string]::Format($S.better_max, $rival) }
     }
 
-    Add-Row $r.name $r.rate_text ([double]$r.rate_pct) 'tau' $act `
+    Add-Row $r.name $r.rate_text ([double]$r.rate_pct) 'max-payback' $act `
             @($S.cat_online) $S.anywhere $null $r.url
   }
 }
@@ -191,7 +191,7 @@ if (Test-Path $izPath) {
     $dupe = $false
     foreach ($pk in $pbSeen.Keys) { if ($k -and ($k -like "*$pk*" -or $pk -like "*$k*")) { $dupe = $true; break } }
     if ($dupe) { continue }
-    Add-Row $c.merchant ($c.rate + $S.cashback_suffix) 0 'onezero' $S.act_topcash `
+    Add-Row $c.merchant ($c.rate + $S.cashback_suffix) 0 'topcash' $S.act_topcash `
             @($S.cat_online) $S.anywhere $null $IZURL
   }
   foreach ($v in $iz.vouchers) {
@@ -200,11 +200,11 @@ if (Test-Path $izPath) {
     # across all three cards, so it gets filed under that category rather than buried
     # with the fashion vouchers.
     $vcat = if ($v.merchant -match $S.match_superchain) { $S.cat_super_chain } else { $S.cat_voucher }
-    Add-Row $v.merchant $label ([double]$v.off_pct) 'onezero' $S.act_voucher `
+    Add-Row $v.merchant $label ([double]$v.off_pct) 'isracard' $S.act_voucher `
             @($vcat) $S.anywhere $null $IZURL
   }
   foreach ($o in $iz.other) {
-    Add-Row $o.merchant $o.offer 0 'onezero' $null @($S.cat_online) $S.anywhere $null $IZURL
+    Add-Row $o.merchant $o.offer 0 'isracard' $null @($S.cat_online) $S.anywhere $null $IZURL
   }
 }
 
@@ -228,7 +228,7 @@ if (Test-Path $tcPath) {
     if ($offer -match 'ACADEMIC') { $act = $S.act_giftcard }
     $city = $S.anywhere; $addr = $null
     foreach ($c in $cats) { if ($c -match $S.match_tau_campus) { $city = $S.tau_city_canon; $addr = $S.tau_campus_addr; break } }
-    Add-Row ([string]$b.name) $offer $pct 'tau' $act $cats $city $addr ([string]$b.url)
+    Add-Row ([string]$b.name) $offer $pct 'tauclub' $act $cats $city $addr ([string]$b.url)
     $tcAdded++
   }
   Write-Host "tau club: $tcAdded"
@@ -368,16 +368,24 @@ $payload = [pscustomobject]@{
 }
 $json = $payload | ConvertTo-Json -Depth 4 -Compress
 
-# The "my cards" panel is hand-written content, kept in its own file so it can be
-# edited without touching code. Parsed first, so a typo fails the build and not the page.
-$cardsFile = Join-Path $data 'my-cards.json'
-$cardsJson = 'null'
-if (Test-Path $cardsFile) {
-  $cardsJson = (Get-Content $cardsFile -Raw -Encoding UTF8 | ConvertFrom-Json) | ConvertTo-Json -Depth 8 -Compress
+# The card registry and the programs they open - hand-written content, kept in their
+# own files so a card can be added without touching code. Each row above carries a
+# program id; the page turns the cards you pick into the set of programs to show.
+# Parsed first, so a typo fails the build and not the page.
+function Read-Json { param($file)
+  $p = Join-Path $data $file
+  if (-not (Test-Path $p)) { return 'null' }
+  return (Get-Content $p -Raw -Encoding UTF8 | ConvertFrom-Json) | ConvertTo-Json -Depth 8 -Compress
 }
+$cardsJson = Read-Json 'cards.json'
+$progJson  = Read-Json 'programs.json'
+
+# every program a row actually used, so a card that opens nothing shows as empty
+$progsUsed = ($rows | ForEach-Object { $_.c } | Sort-Object -Unique) -join ', '
+Write-Host "programs in the data: $progsUsed"
 
 $tpl  = Get-Content (Join-Path $root 'template.html') -Raw -Encoding UTF8
-$html = $tpl.Replace('/*__DATA__*/', $json).Replace('/*__CARDS__*/', $cardsJson)
+$html = $tpl.Replace('/*__DATA__*/', $json).Replace('/*__CARDS__*/', $cardsJson).Replace('/*__PROGRAMS__*/', $progJson)
 $out  = Join-Path $root 'dashboard.html'
 [System.IO.File]::WriteAllText($out, $html, (New-Object System.Text.UTF8Encoding($false)))
 

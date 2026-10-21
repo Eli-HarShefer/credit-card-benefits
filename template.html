@@ -303,7 +303,53 @@
   .empty{color:var(--muted);padding:30px 4px;text-align:center}
   footer{margin-top:28px;padding-top:13px;border-top:1px solid var(--rule);
     color:var(--faint);font-size:.75rem}
-  /* my cards - the three in the wallet, drawn as cards so they read at a glance */
+  /* the wallet bar - which cards you picked, always one tap from changing */
+  .wallet{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 14px}
+  .wallet[hidden]{display:none}
+  .wchip{
+    display:inline-flex;align-items:center;gap:6px;padding:4px 10px 5px;border-radius:999px;
+    background:var(--surface);border:1px solid var(--rule);font-size:.76rem;font-weight:700;color:var(--ink);
+  }
+  .wchip i{width:9px;height:9px;border-radius:3px;background:var(--cc,var(--rule));flex:none}
+  .wallet button{
+    padding:4px 11px 5px;border-radius:999px;border:1px dashed var(--rule);background:none;
+    color:var(--muted);font:inherit;font-size:.76rem;cursor:pointer;
+  }
+  .wallet button:hover{color:var(--ink);border-style:solid}
+  /* the chooser - a sheet, because on a phone it has to reach the thumb */
+  .sheet{position:fixed;inset:0;z-index:900;display:flex;align-items:flex-end;justify-content:center;
+    background:rgba(0,0,0,.45);backdrop-filter:blur(2px)}
+  .sheet[hidden]{display:none}
+  .sheet-box{
+    width:100%;max-width:560px;max-height:88vh;overflow:auto;background:var(--bg);
+    border-radius:18px 18px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom));
+    box-shadow:0 -10px 40px rgba(0,0,0,.4);
+  }
+  @media (min-width:600px){ .sheet{align-items:center} .sheet-box{border-radius:18px} }
+  .sheet-box h3{margin:0 0 3px;font-size:1.1rem}
+  .sheet-box .lede{margin:0 0 14px}
+  .iss{margin:14px 0 7px;font-size:.74rem;font-weight:800;color:var(--muted);letter-spacing:.03em}
+  .copt{
+    display:flex;align-items:center;gap:11px;width:100%;text-align:right;margin-bottom:8px;padding:11px 12px;
+    border:1px solid var(--rule);border-radius:13px;background:var(--surface);color:var(--ink);
+    font:inherit;cursor:pointer;
+  }
+  .copt[aria-pressed="true"]{border-color:var(--cc,var(--accent));box-shadow:inset 0 0 0 1px var(--cc,var(--accent))}
+  .copt .box{
+    flex:none;width:21px;height:21px;border-radius:7px;border:1.5px solid var(--rule);
+    display:grid;place-items:center;font-size:.72rem;color:var(--on-accent);
+  }
+  .copt[aria-pressed="true"] .box{background:var(--cc,var(--accent));border-color:var(--cc,var(--accent))}
+  .copt .w{flex:1;min-width:0}
+  .copt b{display:block;font-size:.93rem}
+  .copt small{display:block;color:var(--muted);font-size:.74rem;line-height:1.35;margin-top:1px}
+  .copt .cnt{flex:none;color:var(--faint);font-size:.74rem;font-variant-numeric:tabular-nums}
+  .sheet-go{
+    width:100%;margin-top:14px;padding:13px;border:0;border-radius:13px;
+    background:var(--accent);color:var(--on-accent);font:inherit;font-weight:800;font-size:.97rem;cursor:pointer;
+  }
+  .sheet-go[disabled]{opacity:.45;cursor:default}
+  /* my cards - the ones in the wallet, drawn as cards so they read at a glance */
   .mycards{margin-top:30px;border-top:1px solid var(--rule);padding-top:18px}
   .mycards h3{font-size:1.08rem;font-weight:700;margin:0 0 2px}
   .mycards .lede{margin-bottom:14px}
@@ -452,12 +498,9 @@
   <section class="neartop" id="nearTop" hidden></section>
   <div id="map" hidden></div>
   <canvas class="plot" id="plot" hidden></canvas>
-  <div class="legend" id="legend" hidden>
-    <span><i style="background:#2b7de9"></i>אתה · אפשר לגרור</span>
-    <span><i style="background:var(--flag)"></i>ארנק דיגיטלי</span>
-    <span><i style="background:var(--accent)"></i>בהצדעה</span>
-    <span><i style="background:var(--zero)"></i>וואן זירו</span>
-  </div>
+  <div class="legend" id="legend" hidden></div>
+
+  <section class="wallet" id="wallet" hidden></section>
 
   <input type="search" id="filter" placeholder="" autocomplete="off" aria-label="סינון">
   <ul class="pick" id="pick"></ul>
@@ -486,24 +529,49 @@
   <footer id="foot"></footer>
 </div>
 
+<div class="sheet" id="cardSheet" hidden>
+  <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <h3 id="sheetTitle">💳 אילו כרטיסים יש לך?</h3>
+    <p class="lede" id="sheetLede"></p>
+    <div id="cardOpts"></div>
+    <button class="sheet-go" id="cardGo" type="button">הצג את ההטבות שלי</button>
+  </div>
+</div>
+
 <script>
 const DATA = /*__DATA__*/;
 const MY = /*__CARDS__*/;
-const ROWS = DATA.rows || [];
+const PROG = /*__PROGRAMS__*/;
+const ALL = DATA.rows || [];
+let ROWS = ALL;                      // the rows the picked cards actually open
 const GROUPS = DATA.groups || [];
 const DISTRICTS = DATA.districts || [];
 const $ = s => document.querySelector(s);
 const he = n => n.toLocaleString('he-IL');
-const CARD = { behatsdaa:'בהצדעה', tau:'TAU', onezero:'וואן זירו', wallet:'ארנק דיגיטלי' };
+/* Every row carries the PROGRAM it came from - a catalogue, a club, a discount
+   network or a cashback service - never a single card, because in Israel that is
+   how benefits are actually granted: 618 of the 631 max benefits apply to every
+   max card. A card is a bundle of programs (data/cards.json), so adding a card
+   is one line of content and no change to the data. */
+const CARDS = (MY && MY.cards) || [];
+const PROGRAM = {}; for (const p of (PROG && PROG.programs) || []) PROGRAM[p.id] = p;
+const CARD = {}; for (const id in PROGRAM) CARD[id] = PROGRAM[id].short || PROGRAM[id].name;
 const ANY = 'בכל הארץ';
 
 let step = 'group', group = null, district = null, city = null, shown = 0, results = [];
 const PAGE = 40;
 
 const byGroup = new Map();
-for (const r of ROWS) for (const g of (r.gr || [])){
-  if (!byGroup.has(g)) byGroup.set(g, []);
-  byGroup.get(g).push(r);
+const GN = new Map();                // how many benefits each category has, for the cards you hold
+let HAS_GEO = new Set();
+function indexRows(){
+  byGroup.clear(); GN.clear();
+  for (const r of ROWS) for (const g of (r.gr || [])){
+    if (!byGroup.has(g)) byGroup.set(g, []);
+    byGroup.get(g).push(r);
+  }
+  for (const g of GROUPS) GN.set(g.name, (byGroup.get(g.name) || []).length);
+  HAS_GEO = new Set(GROUPS.filter(g => (byGroup.get(g.name) || []).some(r => r.lat)).map(g => g.name));
 }
 const ICON = {}; for (const g of GROUPS) ICON[g.name] = g.icon;
 const DICON = {}; for (const d of DISTRICTS) DICON[d.name] = d.icon;
@@ -624,14 +692,15 @@ function draw(){
   const isAli = step === 'ali';
   $('#ali').hidden = !isAli;
   $('#filter').hidden = isAli;
-  $('#todo').hidden = step !== 'group';
-  $('#mycards').hidden = step !== 'group' || !MY;
+  $('#todo').hidden = step !== 'group' || !progsOf(picked).has('max-payback');
+  $('#mycards').hidden = step !== 'group' || !picked.length;
+  $('#wallet').hidden = step !== 'group' || !CARDS.length;
   if (isAli) return;
 
   if (step === 'group'){
-    const tiles = t => GROUPS.filter(g => g.tier === t).map(g => ({
+    const tiles = t => GROUPS.filter(g => g.tier === t && (GN.get(g.name) || 0) > 0).map(g => ({
       label: g.name, icon: g.icon,
-      n: me && HAS_GEO.has(g.name) ? `${he(nearCount.get(g.name) || 0)} בקרבתך` : g.n }));
+      n: me && HAS_GEO.has(g.name) ? `${he(nearCount.get(g.name) || 0)} בקרבתך` : he(GN.get(g.name) || 0) }));
     setPick(tiles(1), v => go(() => { group = v; step = (me && HAS_GEO.has(v)) ? 'near' : 'district'; }));
     const tail = tiles(2);
     if (tail.length){
@@ -679,7 +748,11 @@ function paintInto(el, items){
   el.innerHTML = items.slice(0,400).map((i,idx) =>
     `<li><button data-i="${idx}"><span class="ic">${i.icon||'•'}</span>` +
     `<span class="lbl">${i.label}</span><span class="cnt">${typeof i.n === 'number' ? he(i.n) : i.n}</span>` +
-    `<span class="arrow">‹</span></button></li>`).join('') || '<div class="empty">אין תוצאות</div>';
+    `<span class="arrow">‹</span></button></li>`).join('') ||
+    (step === 'group' && !ROWS.length
+      ? `<div class="empty">אין עדיין הטבות במאגר לכרטיסים שבחרת.<br>` +
+        `<button class="chip" type="button" onclick="openSheet()">בחר כרטיסים אחרים</button></div>`
+      : '<div class="empty">אין תוצאות</div>');
 }
 
 $('#pick').onclick = e => {
@@ -695,18 +768,90 @@ $('#pickTail').onclick = e => {
   if (it) go(() => { group = it.name; step = (me && HAS_GEO.has(it.name)) ? 'near' : 'district'; });
 };
 
-/* ---- my cards: the three in the wallet, and what each one is for ----------
-   Content lives in data/my-cards.json so it can be edited without code; only the
-   benefit counts are computed here, so they follow the weekly refresh. */
+/* ---- the cards you hold ---------------------------------------------------
+   The whole app is filtered by this one choice. A card opens a set of programs
+   (data/cards.json), and every row names the program it came from, so picking
+   cards is a set union - no per-card data anywhere. The choice lives in this
+   browser only; nothing about it leaves the device. */
+const CARDKEY = 'cards.v1';
+let picked = [];
+
+function progsOf(ids){
+  const s = new Set();
+  for (const c of CARDS) if (ids.includes(c.id)) for (const p of (c.programs || [])) s.add(p);
+  return s;
+}
+function countFor(c){
+  const progs = new Set(c.programs || []);
+  return ALL.filter(r => progs.has(r.c)).length;
+}
+function applyCards(ids, save){
+  picked = CARDS.filter(c => ids.includes(c.id)).map(c => c.id);   // keep the file's order
+  if (save) LS.set(CARDKEY, picked);
+  const progs = progsOf(picked);
+  ROWS = ALL.filter(r => progs.has(r.c));
+  indexRows();
+}
+
+/* the bar above the categories: what is in the wallet, one tap from changing */
+function renderWallet(){
+  const bar = $('#wallet');
+  bar.innerHTML = picked.map(id => {
+    const c = CARDS.find(x => x.id === id) || {};
+    return `<span class="wchip" style="--cc:var(${c.color || '--rule'})"><i></i>${c.name || id}</span>`;
+  }).join('') + `<button type="button" id="editCards">${picked.length ? 'שנה כרטיסים' : 'בחר כרטיסים'}</button>`;
+  $('#editCards').onclick = () => openSheet();
+}
+
+/* the chooser. Opens by itself on a first visit, because without a card choice
+   the app would show benefits the visitor cannot use. */
+let sheetSel = [];
+function openSheet(){
+  sheetSel = picked.slice();
+  const byIssuer = new Map();
+  for (const c of CARDS){
+    const k = c.issuer_label || c.issuer || '';
+    if (!byIssuer.has(k)) byIssuer.set(k, []);
+    byIssuer.get(k).push(c);
+  }
+  $('#sheetLede').textContent = (MY && MY.lede) || '';
+  $('#cardOpts').innerHTML = [...byIssuer].map(([iss, list]) => `<div class="iss">מונפק ע״י ${iss}</div>` +
+    list.map(c => {
+      const n = countFor(c);
+      return `<button class="copt" type="button" data-id="${c.id}" aria-pressed="false"
+                style="--cc:var(${c.color || '--rule'})">
+        <span class="box">✓</span>
+        <span class="w"><b>${c.full || c.name}</b><small>${c.tag || ''}</small></span>
+        <span class="cnt">${n ? he(n) + ' הטבות' : 'אין עדיין'}</span>
+      </button>`;
+    }).join('')).join('');
+  $('#cardOpts').querySelectorAll('.copt').forEach(b => {
+    b.onclick = () => {
+      const id = b.dataset.id;
+      sheetSel = sheetSel.includes(id) ? sheetSel.filter(x => x !== id) : sheetSel.concat(id);
+      paintSheet();
+    };
+  });
+  paintSheet();
+  $('#cardSheet').hidden = false;
+}
+function paintSheet(){
+  $('#cardOpts').querySelectorAll('.copt').forEach(b =>
+    b.setAttribute('aria-pressed', sheetSel.includes(b.dataset.id) ? 'true' : 'false'));
+  $('#cardGo').disabled = !sheetSel.length;
+}
+function closeSheet(){ $('#cardSheet').hidden = true; }
+
 function renderCards(){
   const box = $('#mycards');
-  if (!MY || !MY.cards){ box.innerHTML = ''; return; }
-  const count = id => ROWS.filter(r => r.c === id || (id === 'behatsdaa' && r.c === 'wallet')).length;
+  if (!CARDS.length || !picked.length){ box.innerHTML = ''; return; }
+  const count = id => { const c = CARDS.find(x => x.id === id); return c ? ALL.filter(r => (c.programs||[]).includes(r.c)).length : 0; };
   const nfc = '<svg class="cc-nfc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" ' +
               'stroke-linecap="round"><path d="M7 8.5a5 5 0 0 1 0 7M11 6a9 9 0 0 1 0 12M15 3.5a13 13 0 0 1 0 17"/></svg>';
+  const mine = CARDS.filter(c => picked.includes(c.id));
   box.innerHTML = `<h3>💳 הכרטיסים שלי</h3>
-    <p class="lede">${MY.lede || ''}</p>` +
-    MY.cards.map(c => `
+    <p class="lede">${mine.map(c => c.name).join(' · ')}</p>` +
+    mine.map(c => `
     <article class="cc" style="--cc:var(${c.color})">
       <div class="cc-head">
         <div class="cc-face" style="--c1:${c.face[0]};--c2:${c.face[1]}" aria-hidden="true">
@@ -714,7 +859,7 @@ function renderCards(){
           <span class="cc-nm">${c.name}</span>
         </div>
         <div class="cc-t"><b>${c.full}</b><span>${c.tag}</span>
-          <span class="cc-n">מונפק ע״י ${c.issuer} · ${he(count(c.id))} הטבות באפליקציה</span></div>
+          <span class="cc-n">מונפק ע״י ${c.issuer_label || c.issuer} · ${he(count(c.id))} הטבות באפליקציה</span></div>
       </div>
       <ul class="cc-uses">${(c.uses || []).map(u => `
         <li><span class="ic">${u.ic}</span>
@@ -724,7 +869,8 @@ function renderCards(){
       ${(c.links || []).length ? `<div class="cc-links">${c.links.map(l =>
         `<a href="${l.u}" target="_blank" rel="noopener">${l.t} ↗</a>`).join('')}</div>` : ''}
     </article>`).join('') +
-    (MY.pool ? `<p class="pool">💡 ${MY.pool}</p>` : '');
+    (MY.pools || []).filter(p => (p.cards || []).filter(x => picked.includes(x)).length > 1)
+      .map(p => `<p class="pool">💡 ${p.text}</p>`).join('');
 }
 
 /* ---- where am I --------------------------------------------------------
@@ -741,7 +887,6 @@ const RADII = [0.5, 1, 2, 5, 10];
 const TAU_PT = { lat: 32.1133, lon: 34.8044, label: 'קמפוס אוניברסיטת תל אביב' };
 const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
 const TIER = {}; for (const g of GROUPS) TIER[g.name] = g.tier;
-const HAS_GEO = new Set(GROUPS.filter(g => (byGroup.get(g.name)||[]).some(r => r.lat)).map(g => g.name));
 
 let me = LS.get('loc', null);
 let radius = LS.get('radius', 2);
@@ -981,7 +1126,7 @@ $('#allNear').onclick = () => go(() => { step = 'near'; group = null; });
 let map = null, layer = null, leafletP = null;
 let mapTok = 0, mapTimer = 0, mapDelay = 0, pendingFocus = null;
 const mk = new Map();
-const CARD_COLOR = { wallet: '--flag', behatsdaa: '--accent', onezero: '--zero', tau: '--tau' };
+const CARD_COLOR = {}; for (const id in PROGRAM) CARD_COLOR[id] = PROGRAM[id].color || '--accent';
 const idle = f => (window.requestIdleCallback || (g => setTimeout(g, 200)))(f);
 
 function loadLeaflet(){
@@ -1049,6 +1194,11 @@ function drawMap(list, mode = 'near'){
   clearTimeout(mapTimer);
   const show = list.length > 0 && (mode === 'list' || !!me);
   $('#map').hidden = !show; $('#legend').hidden = !show;
+  if (show){
+    const here = [...new Set(list.map(r => r.c))].filter(c => PROGRAM[c]);
+    $('#legend').innerHTML = '<span><i style="background:#2b7de9"></i>אתה · אפשר לגרור</span>' +
+      here.map(c => `<span><i style="background:var(${PROGRAM[c].color || '--accent'})"></i>${CARD[c]}</span>`).join('');
+  }
   if (!show){ mk.clear(); return; }
   const run = () => { if (tok === mapTok) paintMap(list, mode); };
   if (window.L){ mapTimer = setTimeout(run, mapDelay); return; }
@@ -1289,8 +1439,20 @@ $('#aliBtn').onclick = () => go(() => { step='ali'; });
 $('#aliDeals').innerHTML = (DATA.aliDeals||[]).length
   ? DATA.aliDeals.map(d => `<li>${d.t}</li>`).join('')
   : '<li>אין כרגע מבצעים מסומנים.</li>';
-$('#foot').innerHTML = he(ROWS.length) + ' הטבות · בהצדעה · TAU · וואן זירו · עודכן ' + DATA.built;
+function renderFoot(){
+  const names = CARDS.filter(c => picked.includes(c.id)).map(c => c.name).join(' · ');
+  $('#foot').innerHTML = he(ROWS.length) + ' הטבות' + (names ? ' · ' + names : '') + ' · עודכן ' + DATA.built;
+}
+
+// the cards decide what the whole page shows, so they are settled before the first draw
+applyCards(LS.get(CARDKEY, (MY && MY.default) || CARDS.map(c => c.id)), false);
+$('#cardGo').onclick = () => { applyCards(sheetSel, true); closeSheet(); afterCards(); };
+$('#cardSheet').onclick = e => { if (e.target.id === 'cardSheet' && picked.length) closeSheet(); };
+function afterCards(){ renderWallet(); renderCards(); renderFoot(); measure(); draw(); }
+renderWallet();
+renderFoot();
 renderCards();
+if (CARDS.length && !LS.get(CARDKEY, null)) openSheet();
 measure();
 if (location.hash) fromHash();
 draw();
