@@ -145,7 +145,8 @@ if (Test-Path $walPath) {
 # ---- max PayBack: online cashback, TAU / Behatsdaa -----------------------
 # This is also where the "which card do I pull out" answer gets decided, because
 # One Zero offers many of the same shops through TOPCASH at a different rate.
-function Norm { param([string]$s) ($s -replace '[^a-zA-Z0-9֐-׿]', '').ToLower() }
+$HEB = [string][char]0x0590 + '-' + [string][char]0x05FF
+function Norm { param([string]$s) ($s -replace "[^a-zA-Z0-9$HEB]", '').ToLower() }
 
 $izPath = Join-Path $data 'isracard-online.json'
 $izRates = @{}
@@ -183,7 +184,8 @@ if (Test-Path $pbPath) {
 
 # ---- isracard / One Zero ------------------------------------------------
 $IZURL = 'https://benefits.isracard.co.il/benefitsforall/online/'
-if (Test-Path $izPath) {
+$izFull = Test-Path (Join-Path $data 'isracard-benefits.json')
+if ((Test-Path $izPath) -and -not $izFull) {
   $iz = Get-Content $izPath -Raw -Encoding UTF8 | ConvertFrom-Json
   foreach ($c in $iz.cashback_topcash) {
     # skip shops max already covers at an equal-or-better rate - one row per shop
@@ -206,6 +208,56 @@ if (Test-Path $izPath) {
   foreach ($o in $iz.other) {
     Add-Row $o.merchant $o.offer 0 'isracard' $null @($S.cat_online) $S.anywhere $null $IZURL
   }
+}
+
+# ---- isracard: the whole catalogue -------------------------------------
+# 326 benefits, the entire "benefits for all" catalogue that every isracard-issued
+# card opens (One Zero included). The site answers 403 to anything that is not a
+# browser, so this file is pulled by hand - see SOURCES.md. Rows whose link points
+# at TOPCASH are filed under that programme instead, because they need the one-time
+# signup and are not simply "show the card".
+$SHEKEL  = [char]0x20AA
+$IZ_BASE = 'https://benefits.isracard.co.il'
+$izbPath = Join-Path $data 'isracard-benefits.json'
+if (Test-Path $izbPath) {
+  $izb = Get-Content $izbPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  $seenIz = @{}
+  foreach ($r in $rows) {
+    if ($r.c -eq 'isracard' -or $r.c -eq 'topcash') { $seenIz[(([string]$r.n) -replace '\s+', ' ').Trim().ToLower()] = $true }
+  }
+  $izAdded = 0
+  foreach ($b in $izb.benefits) {
+    if ($b.x) { continue }                                  # sold out
+    $name = [string]$b.n
+    if (-not $name) { continue }
+    $key = ($name -replace '\s+', ' ').Trim().ToLower()
+    if (-not $key -or $seenIz.ContainsKey($key)) { continue }
+    $seenIz[$key] = $true
+
+    # the headline carries the number: a percentage, or a voucher priced below its face
+    $pct = 0
+    $pm = [regex]::Match($name, '(\d+(?:\.\d+)?)\s*%')
+    if ($pm.Success) { $pct = [double]$pm.Groups[1].Value }
+    else {
+      $vm = [regex]::Match($name, "(\d+(?:\.\d+)?)\s*$SHEKEL.*?(\d+(?:\.\d+)?)\s*$SHEKEL")
+      if ($vm.Success) {
+        $face = [double]$vm.Groups[1].Value; $price = [double]$vm.Groups[2].Value
+        if ($face -gt 0 -and $price -gt 0 -and $price -lt $face) { $pct = [math]::Round((1 - $price / $face) * 100, 1) }
+      }
+    }
+
+    $url = [string]$b.u
+    if ($url -and $url.StartsWith('/')) { $url = $IZ_BASE + $url }
+    $prog = if ($url -match 'topcash\.co\.il') { 'topcash' } else { 'isracard' }
+    $act = if ($b.P) { $S.act_iz_premium } elseif ($prog -eq 'topcash') { $S.act_topcash } else { $S.act_iz }
+
+    $cats = @($b.c) + @($b.a) | Where-Object { $_ }
+    if ($name -match $S.match_superchain) { $cats = @($S.cat_super_chain) + $cats }
+    $offer = if ($b.r) { [string]$b.r } elseif ($b.m) { [string]$b.m } else { $name }
+    Add-Row $name $offer $pct $prog $act $cats $S.anywhere $null $url
+    $izAdded++
+  }
+  Write-Host "isracard catalogue: $izAdded"
 }
 
 # ---- TAU club (tauclub.co.il): the card's own club benefits ----------------

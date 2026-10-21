@@ -275,7 +275,7 @@ window.epi.CurrentPage.Benefits   // 319 רשומות
 שדות שימושיים: `MobileBenefitName`, `RegularBenefitDesc`, `PremiumBenefitDesc`,
 `IsPremium`, `Category`, `LinkUrl`, `BenefitAcquireDescText`, `BenefitConditionText`.
 
-**115 מ-319 מתויגות `IsPremium`** — תלויות במסלול. יש לאמת מול המסלול בפועל.
+**121 מ-326 מתויגות `IsPremium`** — תלויות במסלול. יש לאמת מול המסלול בפועל.
 
 פילוח: בילוי ופנאי 112 · הורים וילדים 76 · הטבות אונליין 71 · נוסעים לחו"ל 40 ·
 כרטיס TOP 14 · אטרקציות 5 · אוכל 1.
@@ -288,9 +288,29 @@ window.epi.CurrentPage.Benefits   // 319 רשומות
 - **שובר מסעדות — 500 ₪ ב-425 ₪** (15%).
 - נעמן וורדינון — 200 ₪ ב-90 ₪ (55% הנחה).
 
-> **חילוץ נתונים חסום כאן.** הורדת Blob, הורדת data-URL, והעתקה ללוח — כולן
-> נחסמות בדומיין הזה. הקטגוריה הכספית חולצה ידנית ל-`data/isracard-online.json`;
-> שאר 319 הרשומות ממתינות לשיטת חילוץ טובה יותר.
+### ✅ החילוץ — פתור (2026-10-21)
+
+מה שנחסם בעבר היה הדפדפן המחובר הרגיל. **הדפדפן הפנימי של Claude מצליח להוריד
+Blob מהדומיין הזה**, ולכן כל הקטלוג יוצא בפעולה אחת, בלי שום העתקה ידנית:
+
+```js
+// בדף כלשהו של benefits.isracard.co.il
+const slim = window.epi.CurrentPage.Benefits.map(b => ({ /* השדות שרוצים */ }));
+const a = document.createElement('a');
+a.href = URL.createObjectURL(new Blob([JSON.stringify({ built: new Date().toISOString(), benefits: slim })],
+                                      { type: 'application/json' }));
+a.download = 'isracard-benefits.json'; document.body.appendChild(a); a.click(); a.remove();
+```
+
+הקובץ נוחת ב-`~\Downloads` בשם זמני (`<guid>.tmp`) ומועבר ל-`data/isracard-benefits.json`.
+
+**326 הטבות** נשמרות כך, לעומת 62 שחולצו ידנית קודם. שדות שנשמרים:
+`i` מזהה · `n` שם · `c` קטגוריה · `a` קטגוריות נוספות · `m` בית העסק ·
+`r`/`p` תיאור רגיל/פרימיום · `P` פרימיום · `x` אזל · `u` קישור ·
+`h` אופן המימוש (‎`1` = נוסח הסטנדרטי "להורדת הטבה", אחרת הטקסט עצמו).
+
+הקובץ הישן `data/isracard-online.json` נשאר בשביל השוואת שיעורי הקאשבק מול max,
+אבל כבר לא מייצר שורות — הקטלוג המלא מחליף אותו.
 
 הטבות **חשבון** וואן זירו (להבדיל מהטבות הכרטיס) זמינות **רק באפליקציה** — אין web.
 

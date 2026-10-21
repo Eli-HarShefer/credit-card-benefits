@@ -60,7 +60,8 @@ powershell -ExecutionPolicy Bypass -File "scripts\refresh-all.ps1"
 |---|---|
 | `data/be-plus.json` | 10,512 בתי עסק — הנחה אוטומטית במעמד החיוב (בהצדעה) |
 | `data/max.json` | 685 הטבות max — TAU ובהצדעה, מסווגות לפי מנגנון |
-| `data/isracard-online.json` | הקטגוריה הכספית של ישראכרט — קאשבק ושוברים (וואן זירו) |
+| `data/isracard-benefits.json` | 326 הטבות ישראכרט — כל הקטלוג, לכל כרטיס ישראכרט |
+| `data/isracard-online.json` | שיעורי הקאשבק של TOPCASH, להשוואה מול max |
 | `data/behatsdaa-raw.json` | קטלוג מועדון בהצדעה — 1,034 קטגוריות, 14,087 פריטים |
 | `data/cards.json` | רישום הכרטיסים שהאתר מכיר, ואילו תוכניות כל אחד פותח |
 | `data/programs.json` | מאיפה מגיעה כל הטבה — קטלוג, מועדון, רשת הנחות או שירות קאשבק |
@@ -86,7 +87,7 @@ powershell -ExecutionPolicy Bypass -File "scripts\refresh-all.ps1"
 | מנפיק | מצב |
 |---|---|
 | max | ✅ קטלוג ציבורי, נקצר אוטומטית |
-| ישראכרט | ⚠️ ‏403 לכל גישה שאינה דפדפן — חולץ ידנית |
+| ישראכרט | ⚠️ ‏403 לכל גישה שאינה דפדפן — נקצר דרך דפדפן |
 | כאל | ❌ חוסם כל גישה אוטומטית — אין עדיין נתונים |
 
 ---
