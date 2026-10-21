@@ -314,6 +314,9 @@
   .empty{color:var(--muted);padding:30px 4px;text-align:center}
   footer{margin-top:28px;padding-top:13px;border-top:1px solid var(--rule);
     color:var(--faint);font-size:.75rem}
+  footer b{color:var(--muted);font-weight:700}
+  footer p{margin:7px 0 0;line-height:1.5}
+  footer a{color:var(--muted)}
   /* the wallet bar - which cards you picked, always one tap from changing */
   .wallet{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 14px}
   .wallet[hidden]{display:none}
@@ -1452,7 +1455,14 @@ $('#aliDeals').innerHTML = (DATA.aliDeals||[]).length
   : '<li>אין כרגע מבצעים מסומנים.</li>';
 function renderFoot(){
   const names = CARDS.filter(c => picked.includes(c.id)).map(c => c.name).join(' · ');
-  $('#foot').innerHTML = he(ROWS.length) + ' הטבות' + (names ? ' · ' + names : '') + ' · עודכן ' + DATA.built;
+  const progs = [...progsOf(picked)].map(p => PROGRAM[p] && (PROGRAM[p].short || PROGRAM[p].name)).filter(Boolean);
+  $('#foot').innerHTML =
+    `<b>${he(ROWS.length)} הטבות</b>${names ? ' · ' + names : ''} · עודכן ${DATA.built}` +
+    (progs.length ? `<p>מתוך: ${progs.join(' · ')}.</p>` : '') +
+    `<p>האתר אוסף את הקטלוגים הציבוריים של חברות האשראי והמועדונים. הוא אינו רשמי,
+      ואינו קשור אליהן. תנאים, אחוזים ותקרות משתנים — לפני קנייה גדולה כדאי לאמת מול המקור.
+      הבחירה שלך נשמרת בדפדפן בלבד ולא נשלחת לשום מקום.</p>
+     <p><a href="https://github.com/Eli-HarShefer/credit-card-benefits" target="_blank" rel="noopener">הקוד והנתונים ב-GitHub ↗</a></p>`;
 }
 
 // the cards decide what the whole page shows, so they are settled before the first draw
