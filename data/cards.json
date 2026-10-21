@@ -1,7 +1,11 @@
 {
   "_note": "רישום הכרטיסים שהאתר מכיר. כל כרטיס מונה את התוכניות שהוא פותח (ראה programs.json), והמאגר מסונן לפי איחוד התוכניות של הכרטיסים שבחרת. בלי מספרי כרטיס, יתרות או כל פרט אישי — הריפו ציבורי. להוספת כרטיס: שורה כאן, ואם יש לו מקור נתונים משלו — גם ב-programs.json.",
   "lede": "בוחרים את הכרטיסים שבארנק, ורואים רק מה שרלוונטי.",
-  "default": ["tau", "behatsdaa", "onezero"],
+  "default": [
+    "tau",
+    "behatsdaa",
+    "onezero"
+  ],
   "cards": [
     {
       "id": "tau",
@@ -11,20 +15,58 @@
       "issuer": "max",
       "issuer_label": "max",
       "club": "מועדון אוניברסיטת תל אביב",
-      "programs": ["max", "max-payback", "tauclub"],
+      "programs": [
+        "max",
+        "max-payback",
+        "tauclub"
+      ],
       "tag": "מועדון אוניברסיטת תל אביב — סופר, דלק ומשלוחים",
       "color": "--tau",
-      "face": ["#3b6fc4", "#0c2656"],
+      "face": [
+        "#3b6fc4",
+        "#0c2656"
+      ],
       "uses": [
-        { "ic": "🛒", "t": "רמי לוי · ויקטורי · קרפור", "v": "10%", "how": "שובר מראש דרך מועדון TAU" },
-        { "ic": "⛽", "t": "דלק ברשת Ten", "v": "10%", "how": "שובר מראש דרך מועדון TAU" },
-        { "ic": "🛵", "t": "Wolt", "v": "10%", "how": "שובר מראש דרך מועדון TAU" },
-        { "ic": "🎁", "t": "Gift Card ACADEMIC", "v": "15%", "how": "נטען מראש — ביותר מ-100 רשתות" },
-        { "ic": "📦", "t": "אליאקספרס ואונליין", "v": "עד 11%", "how": "נכנסים דרך max PayBack ומשלמים בכרטיס" }
+        {
+          "ic": "🛒",
+          "t": "רמי לוי · ויקטורי · קרפור",
+          "v": "10%",
+          "how": "שובר מראש דרך מועדון TAU"
+        },
+        {
+          "ic": "⛽",
+          "t": "דלק ברשת Ten",
+          "v": "10%",
+          "how": "שובר מראש דרך מועדון TAU"
+        },
+        {
+          "ic": "🛵",
+          "t": "Wolt",
+          "v": "10%",
+          "how": "שובר מראש דרך מועדון TAU"
+        },
+        {
+          "ic": "🎁",
+          "t": "Gift Card ACADEMIC",
+          "v": "15%",
+          "how": "נטען מראש — ביותר מ-100 רשתות"
+        },
+        {
+          "ic": "📦",
+          "t": "אליאקספרס ואונליין",
+          "v": "עד 11%",
+          "how": "נכנסים דרך max PayBack ומשלמים בכרטיס"
+        }
       ],
       "links": [
-        { "t": "מועדון TAU", "u": "https://www.tauclub.co.il/" },
-        { "t": "max PayBack", "u": "https://www.pay-back.co.il/" }
+        {
+          "t": "מועדון TAU",
+          "u": "https://www.tauclub.co.il/"
+        },
+        {
+          "t": "max PayBack",
+          "u": "https://www.pay-back.co.il/"
+        }
       ]
     },
     {
@@ -35,20 +77,60 @@
       "issuer": "max",
       "issuer_label": "max",
       "club": "מועדון בהצדעה",
-      "programs": ["max", "max-payback", "beplus", "behatsdaa-wallet", "behatsdaa-club"],
+      "programs": [
+        "max",
+        "max-payback",
+        "beplus",
+        "behatsdaa-wallet",
+        "behatsdaa-club"
+      ],
       "tag": "הארנק הדיגיטלי — מסעדות ורשתות",
       "color": "--beh",
-      "face": ["#1c9a86", "#07443c"],
+      "face": [
+        "#1c9a86",
+        "#07443c"
+      ],
       "uses": [
-        { "ic": "🍽️", "t": "מסעדות ובתי קפה", "v": "20%", "how": "ארנק \"בהצדעה – מסעדות 20% הנחה\" · עד ₪500 בחודש" },
-        { "ic": "🏠", "t": "כלי בית ורשתות", "v": "20%", "how": "ארנק \"בהצדעה- ארנק רשתות 20%\" · עד ₪500 בחודש" },
-        { "ic": "🛒", "t": "קרפור סיטי ומרקט", "v": "10%", "how": "ארנק קרפור · עד ₪750 בחודש" },
-        { "ic": "🥫", "t": "קינג סטור, שפע ברכת השם ועוד", "v": "7%", "how": "ארנק \"מזון + אתרי אונליין\" · עד ₪700 בחודש" },
-        { "ic": "☕", "t": "הנחה במקום — Be-Plus", "v": "3%–5%", "how": "אוטומטית בקופה, בלי לעשות כלום" }
+        {
+          "ic": "🍽️",
+          "t": "מסעדות ובתי קפה",
+          "v": "20%",
+          "how": "ארנק \"בהצדעה – מסעדות 20% הנחה\" · עד ₪500 בחודש"
+        },
+        {
+          "ic": "🏠",
+          "t": "כלי בית ורשתות",
+          "v": "20%",
+          "how": "ארנק \"בהצדעה- ארנק רשתות 20%\" · עד ₪500 בחודש"
+        },
+        {
+          "ic": "🛒",
+          "t": "קרפור סיטי ומרקט",
+          "v": "10%",
+          "how": "ארנק קרפור · עד ₪750 בחודש"
+        },
+        {
+          "ic": "🥫",
+          "t": "קינג סטור, שפע ברכת השם ועוד",
+          "v": "7%",
+          "how": "ארנק \"מזון + אתרי אונליין\" · עד ₪700 בחודש"
+        },
+        {
+          "ic": "☕",
+          "t": "הנחה במקום — Be-Plus",
+          "v": "3%–5%",
+          "how": "אוטומטית בקופה, בלי לעשות כלום"
+        }
       ],
       "links": [
-        { "t": "טעינת ארנק", "u": "https://www.behatsdaa.org.il/card/chargingCard" },
-        { "t": "אתר בהצדעה", "u": "https://www.behatsdaa.org.il/" }
+        {
+          "t": "טעינת ארנק",
+          "u": "https://www.behatsdaa.org.il/card/chargingCard"
+        },
+        {
+          "t": "אתר בהצדעה",
+          "u": "https://www.behatsdaa.org.il/"
+        }
       ]
     },
     {
@@ -59,18 +141,45 @@
       "issuer": "isracard",
       "issuer_label": "ישראכרט",
       "club": null,
-      "programs": ["isracard", "topcash"],
+      "programs": [
+        "isracard",
+        "topcash"
+      ],
       "tag": "הטבות ישראכרט — שוברים ואונליין",
       "color": "--zero",
-      "face": ["#3d3a4a", "#0b0b0f"],
+      "face": [
+        "#3d3a4a",
+        "#0b0b0f"
+      ],
       "uses": [
-        { "ic": "🎟️", "t": "שוברים מוזלים", "v": "עד 55%", "how": "קונים באתר ההטבות לפני הקנייה — נעמן, ורדינון; מסעדות ובתי קפה 15%" },
-        { "ic": "📦", "t": "אליאקספרס — רק בקנייה הראשונה", "v": "20%", "how": "דרך TOPCASH. אחרי זה: TAU או בהצדעה דרך PayBack" },
-        { "ic": "🛍️", "t": "קאשבק באונליין (TOPCASH)", "v": "עד 9%", "how": "Airalo 9%, סופר פארם 3% — להירשם פעם אחת" }
+        {
+          "ic": "🎟️",
+          "t": "שוברים מוזלים",
+          "v": "עד 55%",
+          "how": "קונים באתר ההטבות לפני הקנייה — נעמן, ורדינון; מסעדות ובתי קפה 15%"
+        },
+        {
+          "ic": "📦",
+          "t": "אליאקספרס — רק בקנייה הראשונה",
+          "v": "20%",
+          "how": "דרך TOPCASH. אחרי זה: TAU או בהצדעה דרך PayBack"
+        },
+        {
+          "ic": "🛍️",
+          "t": "קאשבק באונליין (TOPCASH)",
+          "v": "עד 9%",
+          "how": "Airalo 9%, סופר פארם 3% — להירשם פעם אחת"
+        }
       ],
       "links": [
-        { "t": "הטבות ישראכרט", "u": "https://benefits.isracard.co.il/benefitsforall/online/" },
-        { "t": "TOPCASH", "u": "https://www.topcash.co.il/" }
+        {
+          "t": "הטבות ישראכרט",
+          "u": "https://benefits.isracard.co.il/benefitsforall/online/"
+        },
+        {
+          "t": "TOPCASH",
+          "u": "https://www.topcash.co.il/"
+        }
       ]
     },
     {
@@ -81,15 +190,27 @@
       "issuer": "max",
       "issuer_label": "max",
       "club": null,
-      "programs": ["max", "max-payback"],
+      "programs": [
+        "max",
+        "max-payback"
+      ],
       "tag": "max Back, Executive, עסקי, או כל כרטיס max אחר",
       "color": "--tau",
-      "face": ["#5b6472", "#20242c"],
+      "face": [
+        "#5b6472",
+        "#20242c"
+      ],
       "generic": true,
       "note": "‏618 מתוך 631 ההטבות בקטלוג max תקפות לכל כרטיס max, בלי קשר למועדון.",
       "links": [
-        { "t": "הטבות max", "u": "https://www.max.co.il/benefits" },
-        { "t": "max PayBack", "u": "https://www.pay-back.co.il/" }
+        {
+          "t": "הטבות max",
+          "u": "https://www.max.co.il/benefits"
+        },
+        {
+          "t": "max PayBack",
+          "u": "https://www.pay-back.co.il/"
+        }
       ]
     },
     {
@@ -100,33 +221,78 @@
       "issuer": "isracard",
       "issuer_label": "ישראכרט",
       "club": null,
-      "programs": ["isracard", "topcash"],
+      "programs": [
+        "isracard",
+        "topcash"
+      ],
       "tag": "ישראכרט, אמריקן אקספרס, ומועדוני ישראכרט",
       "color": "--zero",
-      "face": ["#4a4654", "#15141a"],
+      "face": [
+        "#4a4654",
+        "#15141a"
+      ],
       "generic": true,
       "note": "אמריקן אקספרס ישראל מונפק על ידי ישראכרט, ולכן קטלוג \"הטבות לכל\" חל גם עליו.",
       "links": [
-        { "t": "הטבות ישראכרט", "u": "https://benefits.isracard.co.il/benefitsforall/online/" }
+        {
+          "t": "הטבות ישראכרט",
+          "u": "https://benefits.isracard.co.il/benefitsforall/online/"
+        }
       ]
     },
     {
       "id": "cal-other",
-      "name": "כרטיס כאל",
-      "full": "ויזה כאל, דיינרס, או מועדון של כאל",
+      "name": "כאל",
+      "full": "ויזה כאל / מאסטרקארד כאל",
       "brand": "cal",
       "issuer": "cal",
       "issuer_label": "כאל",
       "club": null,
-      "programs": [],
-      "tag": "אין עדיין נתונים במאגר",
-      "color": "--rule",
-      "face": ["#3a3f49", "#15181d"],
+      "programs": [
+        "cal-store"
+      ],
+      "tag": "חנות החוויות — שוברים ומוצרים מוזלים",
+      "color": "--zero",
+      "face": [
+        "#0a5ca8",
+        "#06243f"
+      ],
       "generic": true,
-      "empty": true,
-      "note": "אתר כאל חוסם כל גישה אוטומטית, ולכן ההטבות שלו עדיין לא במאגר. אם יש לך כרטיס כאל, ההטבות שלו לא יופיעו כאן בינתיים.",
+      "note": "ההטבות הן של חנות החוויות. שאר הקטלוג של כאל פזור בדפי שיווק ולא נקצר.",
       "links": [
-        { "t": "הטבות כאל", "u": "https://www.cal-online.co.il/" }
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        },
+        {
+          "t": "הטבות כאל",
+          "u": "https://www.cal-online.co.il/benefits/"
+        }
+      ]
+    },
+    {
+      "id": "diners",
+      "name": "דיינרס",
+      "full": "דיינרס קלאב",
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "club": null,
+      "programs": [
+        "cal-store"
+      ],
+      "tag": "מונפק ע״י כאל — אותה חנות חוויות",
+      "color": "--zero",
+      "face": [
+        "#2b2f3a",
+        "#101217"
+      ],
+      "generic": true,
+      "links": [
+        {
+          "t": "דיינרס",
+          "u": "https://www.diners.co.il/"
+        }
       ]
     }
   ],
@@ -134,7 +300,11 @@
     {
       "id": "max_pinukim",
       "label": "פינוקים max",
-      "cards": ["tau", "behatsdaa", "max-other"],
+      "cards": [
+        "tau",
+        "behatsdaa",
+        "max-other"
+      ],
       "text": "כל כרטיסי max חולקים בריכת פינוקים אחת לפי ת.ז. — כ-1 פינוק לכל ₪2,000 חיוב, עד 4 בחודש. פינוק שלא נוצל נמחק."
     }
   ]

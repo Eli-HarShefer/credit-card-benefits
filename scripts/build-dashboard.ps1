@@ -286,6 +286,30 @@ if (Test-Path $tcPath) {
   Write-Host "tau club: $tcAdded"
 }
 
+# ---- CAL: the experience store ------------------------------------------
+# cal-online blocks everything that is not a browser, so this file is pulled by
+# hand like isracard's - see SOURCES.md. The store itself is public: discounted
+# vouchers you buy first and redeem at the business, the same mechanic as max's.
+$calPath = Join-Path $data 'cal-store.json'
+if (Test-Path $calPath) {
+  $cal = Get-Content $calPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  $calAdded = 0
+  foreach ($b in $cal.items) {
+    $name = [string]$b.n
+    if (-not $name) { continue }
+    $pct = 0.0
+    if ($null -ne $b.pct) { $pct = [double]$b.pct }
+    # the headline price is the offer: what you pay instead of what it lists at
+    $offer = if ($b.price -and $b.face) { [string]::Format($S.voucher_fmt, $b.face, $b.price) }
+             elseif ($b.note) { [string]$b.note } else { $name }
+    $cats = @($b.c) | Where-Object { $_ }
+    if ($name -match $S.match_superchain) { $cats = @($S.cat_super_chain) + $cats }
+    Add-Row $name $offer $pct 'cal-store' $S.act_cal $cats $S.anywhere $null ([string]$b.u)
+    $calAdded++
+  }
+  Write-Host "cal store: $calAdded"
+}
+
 # ---- group the raw categories, bucket cities into districts, drop dupes ---
 $G = Get-Content (Join-Path $data 'groups.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 
