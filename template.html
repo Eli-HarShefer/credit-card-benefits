@@ -347,6 +347,30 @@
   .copt b{display:block;font-size:.93rem}
   .copt small{display:block;color:var(--muted);font-size:.74rem;line-height:1.35;margin-top:1px}
   .copt .cnt{flex:none;color:var(--faint);font-size:.74rem;font-variant-numeric:tabular-nums}
+  .csearch{
+    width:100%;box-sizing:border-box;margin:0 0 4px;padding:11px 13px;border-radius:12px;
+    border:1px solid var(--rule);background:var(--surface);color:var(--ink);font:inherit;
+  }
+  .csearch::placeholder{color:var(--faint)}
+  .chelp{margin:10px 0 2px;border:1px solid var(--rule);border-radius:13px;background:var(--surface);overflow:hidden}
+  .chelp>summary{
+    padding:11px 13px;cursor:pointer;font-weight:700;font-size:.87rem;color:var(--ink);list-style:none;
+  }
+  .chelp>summary::-webkit-details-marker{display:none}
+  .chelp>summary::after{content:" ›";color:var(--faint)}
+  .chelp[open]>summary::after{content:" ⌄"}
+  .chelp .body{padding:0 13px 13px;font-size:.82rem;line-height:1.5;color:var(--muted)}
+  .chelp .body b{color:var(--ink)}
+  .chelp ol{margin:9px 0;padding:0;list-style:none}
+  .chelp ol li{display:flex;gap:9px;margin-bottom:9px}
+  .chelp ol .ic{flex:none;font-size:1.05rem;line-height:1.3}
+  .chelp ol b{display:block;color:var(--ink);font-size:.85rem;margin-bottom:1px}
+  .chelp .warn-line{
+    margin-top:9px;padding:9px 11px;border-radius:10px;background:var(--bg);
+    border-inline-start:3px solid var(--flag);color:var(--ink);
+  }
+  .chelp .unsure{margin-top:8px;color:var(--faint)}
+  .cnone{padding:16px 4px;text-align:center;color:var(--muted);font-size:.85rem}
   .sheet-go{
     width:100%;margin-top:14px;padding:13px;border:0;border-radius:13px;
     background:var(--accent);color:var(--on-accent);font:inherit;font-weight:800;font-size:.97rem;cursor:pointer;
@@ -536,6 +560,9 @@
   <div class="sheet-box" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
     <h3 id="sheetTitle">💳 אילו כרטיסים יש לך?</h3>
     <p class="lede" id="sheetLede"></p>
+    <input type="search" class="csearch" id="cardSearch" autocomplete="off"
+           placeholder="חפש שם כרטיס, מועדון או חברה…" aria-label="חיפוש כרטיס">
+    <details class="chelp" id="cardHelp"><summary></summary><div class="body"></div></details>
     <div id="cardOpts"></div>
     <button class="sheet-go" id="cardGo" type="button">הצג את ההטבות שלי</button>
   </div>
@@ -809,17 +836,29 @@ function renderWallet(){
 /* the chooser. Opens by itself on a first visit, because without a card choice
    the app would show benefits the visitor cannot use. */
 let sheetSel = [];
-function openSheet(){
-  sheetSel = picked.slice();
+const bold = t => String(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+
+/* Most people cannot name the company that issued their card - they know the club
+   logo, or an old brand name, or nothing at all. So: search that also matches old
+   names and nicknames, and a panel with the three places the answer is written. */
+function cardMatch(c, q){
+  if (!q) return true;
+  const hay = [c.name, c.full, c.tag, c.club, c.issuer_label, ...(c.alias || [])]
+    .filter(Boolean).join(' ').toLowerCase();
+  return q.toLowerCase().split(/\s+/).filter(Boolean).every(w => hay.includes(w));
+}
+
+function paintOpts(){
+  const q = ($('#cardSearch').value || '').trim();
+  const list = CARDS.filter(c => cardMatch(c, q) || sheetSel.includes(c.id));
   const byIssuer = new Map();
-  for (const c of CARDS){
+  for (const c of list){
     const k = c.issuer_label || c.issuer || '';
     if (!byIssuer.has(k)) byIssuer.set(k, []);
     byIssuer.get(k).push(c);
   }
-  $('#sheetLede').textContent = (MY && MY.lede) || '';
-  $('#cardOpts').innerHTML = [...byIssuer].map(([iss, list]) => `<div class="iss">מונפק ע״י ${iss}</div>` +
-    list.map(c => {
+  $('#cardOpts').innerHTML = list.length ? [...byIssuer].map(([iss, cs]) =>
+    `<div class="iss">מונפק ע״י ${iss}</div>` + cs.map(c => {
       const n = countFor(c);
       return `<button class="copt" type="button" data-id="${c.id}" aria-pressed="false"
                 style="--cc:var(${c.color || '--rule'})">
@@ -827,7 +866,8 @@ function openSheet(){
         <span class="w"><b>${c.full || c.name}</b><small>${c.tag || ''}</small></span>
         <span class="cnt">${n ? he(n) + ' הטבות' : 'אין עדיין'}</span>
       </button>`;
-    }).join('')).join('');
+    }).join('')).join('')
+    : `<div class="cnone">לא נמצא כרטיס בשם הזה.<br>נסה את שם החברה — max, ישראכרט או כאל.</div>`;
   $('#cardOpts').querySelectorAll('.copt').forEach(b => {
     b.onclick = () => {
       const id = b.dataset.id;
@@ -836,12 +876,35 @@ function openSheet(){
     };
   });
   paintSheet();
+}
+
+function paintHelp(){
+  const H = MY && MY.help;
+  const box = $('#cardHelp');
+  if (!H){ box.hidden = true; return; }
+  box.querySelector('summary').textContent = '🤔 ' + H.title;
+  box.querySelector('.body').innerHTML =
+    `<p>${bold(H.intro)}</p><ol>${(H.steps || []).map(s =>
+      `<li><span class="ic">${s.ic}</span><span><b>${s.t}</b>${bold(s.d)}</span></li>`).join('')}</ol>` +
+    (H.warn ? `<div class="warn-line">${bold(H.warn)}</div>` : '') +
+    (H.unsure ? `<p class="unsure">${bold(H.unsure)}</p>` : '');
+}
+
+function openSheet(){
+  sheetSel = picked.slice();
+  $('#sheetLede').textContent = (MY && MY.lede) || '';
+  $('#cardSearch').value = '';
+  $('#cardSearch').oninput = paintOpts;
+  paintHelp();
+  paintOpts();
   $('#cardSheet').hidden = false;
 }
 function paintSheet(){
   $('#cardOpts').querySelectorAll('.copt').forEach(b =>
     b.setAttribute('aria-pressed', sheetSel.includes(b.dataset.id) ? 'true' : 'false'));
-  $('#cardGo').disabled = !sheetSel.length;
+  const n = sheetSel.length;
+  $('#cardGo').disabled = !n;
+  $('#cardGo').textContent = n ? `הצג את ההטבות שלי (${n})` : 'בחר לפחות כרטיס אחד';
 }
 function closeSheet(){ $('#cardSheet').hidden = true; }
 
