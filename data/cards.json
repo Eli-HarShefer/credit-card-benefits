@@ -183,6 +183,257 @@
       ]
     },
     {
+      "id": "diners",
+      "name": "דיינרס",
+      "full": "דיינרס קלאב",
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "club": null,
+      "programs": [
+        "cal-store"
+      ],
+      "tag": "מונפק ע״י כאל — אותה חנות חוויות",
+      "color": "--zero",
+      "face": [
+        "#2b2f3a",
+        "#101217"
+      ],
+      "generic": true,
+      "links": [
+        {
+          "t": "דיינרס",
+          "u": "https://www.diners.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "shufersal",
+      "name": "שופרסל",
+      "full": "כרטיס אשראי שופרסל",
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "club": "מועדון לקוחות שופרסל",
+      "programs": [
+        "cal-store",
+        "shufersal-sbox"
+      ],
+      "tag": "SBOX — על כל 100 ₪ בקנייה, מוצר במחיר מבצע",
+      "color": "--accent",
+      "face": [
+        "#e4002b",
+        "#6b0014"
+      ],
+      "uses": [
+        {
+          "ic": "🛒",
+          "t": "SBOX בכל קנייה בשופרסל",
+          "v": "מוצר ל-100 ₪",
+          "how": "על כל 100 ₪ מלאים ששולמו בכרטיס — מוצר אחד מהרשימה במחיר מבצע"
+        },
+        {
+          "ic": "🎟️",
+          "t": "חנות החוויות של כאל",
+          "v": "עד 60%",
+          "how": "הכרטיס מונפק ע״י כאל, ולכן פותח את כל חנות החוויות"
+        }
+      ],
+      "links": [
+        {
+          "t": "רשימת מוצרי SBOX",
+          "u": "https://www.shufersal.co.il/online/he/c/A29"
+        },
+        {
+          "t": "תקנון SBOX",
+          "u": "https://res.cloudinary.com/shufersal/prod/policy/Takanon_SBOX.pdf"
+        },
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "elal",
+      "name": "אל על",
+      "full": "כרטיס נוסע מתמיד של אל על",
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "club": "נוסע מתמיד",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "tag": "צבירת נקודות + חנות החוויות",
+      "color": "--zero",
+      "face": [
+        "#0b3d91",
+        "#071e47"
+      ],
+      "note": "המועדון עובר לישראכרט באפריל 2026. הכרטיס הקיים ממשיך לצבור נקודות עד סוף 2026, ומינואר 2027 נשאר עם הטבות כאל בלבד. לאמת מול אל על.",
+      "links": [
+        {
+          "t": "נוסע מתמיד",
+          "u": "https://www.elal.com/"
+        }
+      ]
+    },
+    {
+      "id": "hever",
+      "name": "חבר",
+      "full": "כרטיס חבר",
+      "brand": "isracard",
+      "issuer": "isracard",
+      "issuer_label": "ישראכרט",
+      "club": "מועדון חבר",
+      "programs": [
+        "isracard",
+        "topcash"
+      ],
+      "generic": true,
+      "tag": "משרתי קבע, גמלאי צה״ל וגופי הביטחון",
+      "color": "--zero",
+      "face": [
+        "#1f4f3d",
+        "#0a211a"
+      ],
+      "note": "ההטבות הן של המנפיק. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חבר",
+          "u": "https://www.hvr.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "ramilevy",
+      "name": "רמי לוי",
+      "full": "כרטיס רמי לוי",
+      "brand": "isracard",
+      "issuer": "isracard",
+      "issuer_label": "ישראכרט",
+      "club": "מועדון רמי לוי",
+      "programs": [
+        "isracard",
+        "topcash"
+      ],
+      "generic": true,
+      "tag": "מועדון רמי לוי",
+      "color": "--zero",
+      "face": [
+        "#0057a8",
+        "#00264a"
+      ],
+      "note": "ההטבות הן של המנפיק. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר."
+    },
+    {
+      "id": "ashmoret",
+      "name": "אשמורת",
+      "full": "כרטיס אשמורת",
+      "brand": "isracard",
+      "issuer": "isracard",
+      "issuer_label": "ישראכרט",
+      "club": "מועדון אשמורת",
+      "programs": [
+        "isracard",
+        "topcash"
+      ],
+      "generic": true,
+      "tag": "מועדון אשמורת",
+      "color": "--zero",
+      "face": [
+        "#5b3a86",
+        "#241642"
+      ],
+      "note": "ההטבות הן של המנפיק. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר."
+    },
+    {
+      "id": "lifestyle",
+      "name": "לייף סטייל",
+      "full": "כרטיס לייף סטייל",
+      "brand": "isracard",
+      "issuer": "isracard",
+      "issuer_label": "ישראכרט",
+      "club": "Life Style",
+      "programs": [
+        "isracard",
+        "topcash"
+      ],
+      "generic": true,
+      "tag": "מועדון Life Style",
+      "color": "--zero",
+      "face": [
+        "#b0356b",
+        "#4a1430"
+      ],
+      "note": "ההטבות הן של המנפיק. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר."
+    },
+    {
+      "id": "flycard",
+      "name": "FLY CARD",
+      "full": "כרטיס FLY CARD",
+      "brand": "isracard",
+      "issuer": "isracard",
+      "issuer_label": "ישראכרט",
+      "club": "FLY CARD",
+      "programs": [
+        "isracard",
+        "topcash"
+      ],
+      "generic": true,
+      "tag": "צבירה לטיסות",
+      "color": "--zero",
+      "face": [
+        "#1d7fa8",
+        "#07303f"
+      ],
+      "note": "ההטבות הן של המנפיק. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר."
+    },
+    {
+      "id": "hot",
+      "name": "HOT",
+      "full": "כרטיס HOT",
+      "brand": "isracard",
+      "issuer": "isracard",
+      "issuer_label": "ישראכרט",
+      "club": "מועדון HOT",
+      "programs": [
+        "isracard",
+        "topcash"
+      ],
+      "generic": true,
+      "tag": "מועדון HOT",
+      "color": "--zero",
+      "face": [
+        "#d61f26",
+        "#4a0a0d"
+      ],
+      "note": "ההטבות הן של המנפיק. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר."
+    },
+    {
+      "id": "maxback",
+      "name": "max Back",
+      "full": "כרטיס max Back",
+      "brand": "max",
+      "issuer": "max",
+      "issuer_label": "max",
+      "club": null,
+      "programs": [
+        "max",
+        "max-payback"
+      ],
+      "generic": true,
+      "tag": "החזר כספי חודשי + הטבות max",
+      "color": "--tau",
+      "face": [
+        "#00a0a0",
+        "#003a3a"
+      ],
+      "note": "ההטבות הן של המנפיק. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר."
+    },
+    {
       "id": "max-other",
       "name": "כרטיס max אחר",
       "full": "כל כרטיס אשראי של max",
@@ -269,31 +520,6 @@
           "u": "https://www.cal-online.co.il/benefits/"
         }
       ]
-    },
-    {
-      "id": "diners",
-      "name": "דיינרס",
-      "full": "דיינרס קלאב",
-      "brand": "cal",
-      "issuer": "cal",
-      "issuer_label": "כאל",
-      "club": null,
-      "programs": [
-        "cal-store"
-      ],
-      "tag": "מונפק ע״י כאל — אותה חנות חוויות",
-      "color": "--zero",
-      "face": [
-        "#2b2f3a",
-        "#101217"
-      ],
-      "generic": true,
-      "links": [
-        {
-          "t": "דיינרס",
-          "u": "https://www.diners.co.il/"
-        }
-      ]
     }
   ],
   "pools": [
@@ -303,7 +529,8 @@
       "cards": [
         "tau",
         "behatsdaa",
-        "max-other"
+        "max-other",
+        "maxback"
       ],
       "text": "כל כרטיסי max חולקים בריכת פינוקים אחת לפי ת.ז. — כ-1 פינוק לכל ₪2,000 חיוב, עד 4 בחודש. פינוק שלא נוצל נמחק."
     }

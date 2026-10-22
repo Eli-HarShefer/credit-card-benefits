@@ -310,6 +310,30 @@ if (Test-Path $calPath) {
   Write-Host "cal store: $calAdded"
 }
 
+# ---- Shufersal SBOX ------------------------------------------------------
+# The first real supermarket chain in the whole database. Not a discount but a
+# mechanic: every full 100 shekels of a basket paid with the Shufersal card buys
+# one product off a rotating list at a promo price, so the headline row carries
+# the rule and the products carry the actual savings.
+$sbPath = Join-Path $data 'shufersal-sbox.json'
+if (Test-Path $sbPath) {
+  $sb = Get-Content $sbPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  $SB_URL = 'https://www.shufersal.co.il/online/he/c/A29'
+  Add-Row $S.sbox_headline $S.sbox_stores 0 'shufersal-sbox' $S.act_sbox `
+          @($S.cat_sbox) $S.anywhere $null $SB_URL
+  $sbAdded = 1
+  foreach ($b in $sb.items) {
+    $name = [string]$b.n
+    if (-not $name) { continue }
+    $pct = 0.0
+    if ($null -ne $b.pct) { $pct = [double]$b.pct }
+    $offer = if ($b.was) { [string]::Format($S.voucher_fmt, $b.was, $b.price) } else { "$($b.price) " + [char]0x20AA }
+    Add-Row $name $offer $pct 'shufersal-sbox' $S.act_sbox @($S.cat_sbox) $S.anywhere $null $SB_URL
+    $sbAdded++
+  }
+  Write-Host "shufersal sbox: $sbAdded"
+}
+
 # ---- group the raw categories, bucket cities into districts, drop dupes ---
 $G = Get-Content (Join-Path $data 'groups.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 
