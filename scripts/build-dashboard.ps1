@@ -38,6 +38,7 @@ function Add-Row {
 # ---- Be-Plus: automatic discount, carries city + full category tree ------
 $bp = Get-Content (Join-Path $data 'be-plus.json') -Raw -Encoding UTF8 | ConvertFrom-Json
 foreach ($m in $bp.merchants) {
+  if (-not ([string]$m.name).Trim()) { continue }     # the source has a few nameless entries
   # child categories arrive prefixed with "- "; strip it, keep the specific name
   $cats = @($m.all_categories) | Where-Object { $_ } | ForEach-Object { ($_ -replace '^\s*-\s*', '').Trim() }
   if (-not $cats) { $cats = @($m.categories) }
@@ -278,9 +279,7 @@ if (Test-Path $tcPath) {
             ForEach-Object { (($_ -replace 'VIEW ALL', '') -replace '\s+', ' ').Trim() } | Where-Object { $_ }
     $act = $null
     if ($offer -match 'ACADEMIC') { $act = $S.act_giftcard }
-    $city = $S.anywhere; $addr = $null
-    foreach ($c in $cats) { if ($c -match $S.match_tau_campus) { $city = $S.tau_city_canon; $addr = $S.tau_campus_addr; break } }
-    Add-Row ([string]$b.name) $offer $pct 'tauclub' $act $cats $city $addr ([string]$b.url)
+    Add-Row ([string]$b.name) $offer $pct 'tauclub' $act $cats $S.anywhere $null ([string]$b.url)
     $tcAdded++
   }
   Write-Host "tau club: $tcAdded"
@@ -308,6 +307,42 @@ if (Test-Path $calPath) {
     $calAdded++
   }
   Write-Host "cal store: $calAdded"
+}
+
+# ---- Hever: the public half of the merchant index ------------------------
+# The club's own site is behind a member login, but its business index has a page
+# per business outside it, with the discount and the branch list. That is where
+# these come from - 88 businesses, and the branches carry a city, so they reach
+# the map. The discount is a credit on the monthly statement, not money off at
+# the till, which is a different promise and says so on every row.
+$hvPath = Join-Path $data 'hever-merchants.json'
+if (Test-Path $hvPath) {
+  $hv = Get-Content $hvPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  $hvAdded = 0
+  foreach ($b in $hv.items) {
+    $name = [string]$b.n
+    if (-not $name) { continue }
+    $offer = ([string]$b.d).Trim()
+    $pct = 0.0
+    $pm = [regex]::Match($offer, '(\d+(?:\.\d+)?)\s*%')
+    if ($pm.Success) { $pct = [double]$pm.Groups[1].Value }
+    $url = 'https://www.mcc.co.il/site/pg/st_reshet_out&p1=' + [string]$b.id
+    $rowsHere = 0
+    foreach ($br in $b.br) {
+      $city = ([string]$br.c).Trim()
+      if (-not $city) { continue }
+      $addr = ([string]$br.ad).Trim()
+      if ($addr -match '^\s*(-|)\s*$') { $addr = $null }
+      Add-Row $name $offer $pct 'hever-club' $S.act_hever @($S.cat_hever) $city $addr $url
+      $rowsHere++
+    }
+    if ($rowsHere -eq 0) {
+      Add-Row $name $offer $pct 'hever-club' $S.act_hever @($S.cat_hever) $S.anywhere $null $url
+      $rowsHere = 1
+    }
+    $hvAdded += $rowsHere
+  }
+  Write-Host "hever merchants: $hvAdded"
 }
 
 # ---- Behatsdaa club catalogue --------------------------------------------
@@ -386,8 +421,7 @@ foreach ($r in $rows) {
   if (-not $cityCanon.ContainsKey($k)) { $cityCanon[$k] = $w }
 }
 
-# Coordinates from the geocoder, so rows can be placed near the TAU campus and,
-# later, sorted by real distance in the app.
+# Coordinates from the geocoder, so the app can sort by real distance.
 # Keyed with whitespace collapsed, same as scripts\geocode.ps1 - harvests differ in spacing.
 function Norm-Addr([string]$s) { return ($s -replace '\s+', ' ').Trim() }
 $geo = @{}
@@ -396,14 +430,6 @@ if (Test-Path $geoFile) {
   $gj = Get-Content $geoFile -Raw -Encoding UTF8 | ConvertFrom-Json
   foreach ($p in $gj.PSObject.Properties) { if ($p.Value) { $geo[(Norm-Addr $p.Name)] = $p.Value } }
   Write-Host "geocoded: $($geo.Count)"
-}
-
-function Get-KmFromTau {
-  param([double]$lat, [double]$lon)
-  # equirectangular is plenty at city scale and avoids trig-heavy haversine per row
-  $dLat = ($lat - [double]$S.tau_lat) * 111.0
-  $dLon = ($lon - [double]$S.tau_lon) * 111.0 * [math]::Cos([double]$S.tau_lat * [math]::PI / 180)
-  return [math]::Sqrt($dLat * $dLat + $dLon * $dLon)
 }
 
 $OTHER_D = $S.district_other
@@ -421,25 +447,12 @@ foreach ($r in $rows) {
       if ($geo.ContainsKey($key)) { $lat = [double]$geo[$key][0]; $lon = [double]$geo[$key][1]; break }
     }
   }
-  if ($null -eq $lat -and $r.d -eq $S.tau_campus_addr) { $lat = [double]$S.tau_lat; $lon = [double]$S.tau_lon }
   $r | Add-Member -NotePropertyName 'lat' -NotePropertyValue $lat -Force
   $r | Add-Member -NotePropertyName 'lon' -NotePropertyValue $lon -Force
 
-  # Is it walking distance from campus? Coordinates decide when we have them;
-  # otherwise fall back to the Ramat Aviv street names, so this works before the
-  # geocoder has finished its run.
-  $nearTau = $false
-  if ($null -ne $lat) {
-    if ((Get-KmFromTau $lat $lon) -le [double]$S.tau_radius_km) { $nearTau = $true }
-  } elseif ($r.w -match $S.tau_city -and $r.d -match $S.tau_streets) {
-    $nearTau = $true
-  }
-  $r | Add-Member -NotePropertyName 'tau' -NotePropertyValue $nearTau -Force
-
   # district
   $r | Add-Member -NotePropertyName 'r' -NotePropertyValue $(
-    if ($nearTau) { $S.district_tau }
-    elseif (-not $r.w -or $r.w -eq $S.anywhere -or $r.w -eq $S.cat_online) { $S.anywhere }
+    if (-not $r.w -or $r.w -eq $S.anywhere -or $r.w -eq $S.cat_online) { $S.anywhere }
     elseif ($cityToDistrict.ContainsKey($r.w)) { $cityToDistrict[$r.w] }
     else { $OTHER_D }
   ) -Force
@@ -482,9 +495,7 @@ $groupsOut = foreach ($grp in $G.groups) {
     [pscustomobject]@{ name = $grp.name; icon = $grp.icon; tier = $grp.tier; n = $n; note = $grp.note }
   }
 }
-$districtsOut = @(
-  [pscustomobject]@{ name = $S.district_tau; icon = $S.district_tau_icon }
-) + @(foreach ($d in $G.districts) { [pscustomobject]@{ name = $d.name; icon = $d.icon } })
+$districtsOut = @(foreach ($d in $G.districts) { [pscustomobject]@{ name = $d.name; icon = $d.icon } })
 
 $payload = [pscustomobject]@{
   built     = (Get-Date -Format 'yyyy-MM-dd')

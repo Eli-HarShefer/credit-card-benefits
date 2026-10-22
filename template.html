@@ -606,12 +606,11 @@ function indexRows(){
 const ICON = {}; for (const g of GROUPS) ICON[g.name] = g.icon;
 const DICON = {}; for (const d of DISTRICTS) DICON[d.name] = d.icon;
 
-const TAU = DISTRICTS[0] ? DISTRICTS[0].name : '';
 function bucket(rows, key){
   const m = new Map();
   for (const r of rows){ const v = r[key] || ANY; m.set(v, (m.get(v)||0)+1); }
-  // campus first, then "anywhere", then by size - the campus is where he actually is
-  const rank = l => l === TAU ? -2 : l === ANY ? -1 : 0;
+  // "anywhere" first, then by size
+  const rank = l => l === ANY ? -1 : 0;
   return [...m.entries()].map(([label, n]) => ({ label, n }))
     .sort((a,b) => (rank(a.label) - rank(b.label)) || (b.n - a.n));
 }
@@ -678,7 +677,7 @@ function fromHash(){
   group = g || null; district = d || null; city = c || null;
   step = city ? 'list' : district ? 'city' : group ? 'district' : 'group';
   // a district with no city means "whole district" - go straight to results
-  if (district === ANY || (district && district === TAU)){ city = ANY; step = 'list'; }
+  if (district === ANY){ city = ANY; step = 'list'; }
 }
 
 function go(next){
@@ -742,18 +741,13 @@ function draw(){
   } else if (step === 'district'){
     paintNearTop();
     const rows = byGroup.get(group) || [];
-    let items = bucket(rows,'r');
-    // The campus is where he spends his days, so it stays pinned at the top of every
-    // category - even at zero, which is itself the answer ("nothing here, don't look").
-    if (TAU && !items.some(i => i.label === TAU)) items.unshift({ label:TAU, n:0 });
+    const items = bucket(rows,'r');
     // not the flag emoji: Windows has no flag glyphs and draws the letters "IL" instead
     setPick(items.map(b => ({...b, icon: b.label===ANY ? '🗺️' : (DICON[b.label]||'📍')})),
             v => go(() => { district=v; if (v===ANY){ city=ANY; step='list'; } else step='city'; }));
     $('#pick').classList.add('two');
   } else if (step === 'city'){
     const rows = (byGroup.get(group)||[]).filter(r => (r.r||ANY) === district);
-    // the campus is one place, not a district - skip straight to its results
-    if (district === TAU){ city = ANY; step = 'list'; draw(); return; }
     const list = [{label:'כל המחוז', n:rows.length, icon:'📍'}, ...bucket(rows,'w').filter(b=>b.label!==ANY)];
     setPick(list, v => go(() => { city = v==='כל המחוז' ? ANY : v; step='list'; }));
     $('#pick').classList.add('two');
@@ -950,7 +944,6 @@ const LS = {
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 };
 const RADII = [0.5, 1, 2, 5, 10];
-const TAU_PT = { lat: 32.1133, lon: 34.8044, label: 'קמפוס אוניברסיטת תל אביב' };
 const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
 const TIER = {}; for (const g of GROUPS) TIER[g.name] = g.tier;
 
@@ -1137,7 +1130,7 @@ function renderLoc(){
 
   if (me){
     $('#locLabel').textContent = me.label || 'המיקום שלך';
-    const src = { gps: 'GPS', addr: 'כתובת שהקלדת', map: 'נבחר במפה', tau: 'מקום שמור' }[me.src] || '';
+    const src = { gps: 'GPS', addr: 'כתובת שהקלדת', map: 'נבחר במפה' }[me.src] || '';
     const mins = Math.round((Date.now() - (me.t || 0)) / 60000);
     const age = me.src !== 'gps' ? '' : mins < 1 ? 'עכשיו' : mins < 60 ? `לפני ${mins} דק׳` : 'לפני יותר משעה';
     const acc = me.acc && me.acc > 150 ? `דיוק ~${Math.round(me.acc)} מ׳ — אפשר לגרור במפה` : '';
@@ -1155,8 +1148,7 @@ function renderLoc(){
   $('#locPanel').hidden = !panelOpen;
   $('#locGps').textContent = perm === 'denied' ? '📡 המיקום חסום — איך מאפשרים?' : '📡 השתמש במיקום הנוכחי שלי';
 
-  const saved = [{ ...TAU_PT, src: 'tau', ic: '📚' },
-    ...LS.get('places', []).filter(p => p.label !== TAU_PT.label).map(p => ({ ...p, ic: '🕘' }))];
+  const saved = LS.get('places', []).map(p => ({ ...p, ic: '🕘' }));
   window.__places = saved;
   $('#places').innerHTML = saved.map((p, i) =>
     `<button type="button" class="chip" data-p="${i}">${p.ic} ${p.label}</button>`).join('');
@@ -1176,7 +1168,7 @@ $('#addrHits').onclick = e => { const b = e.target.closest('[data-h]'); if (b) p
 $('#places').onclick = e => {
   const b = e.target.closest('[data-p]'); if (!b) return;
   const p = window.__places[+b.dataset.p];
-  setMe({ lat: p.lat, lon: p.lon, src: p.src === 'tau' ? 'tau' : 'addr', label: p.label });
+  setMe({ lat: p.lat, lon: p.lon, src: 'addr', label: p.label });
 };
 $('#radius').onclick = e => {
   const b = e.target.closest('[data-r]'); if (!b) return;
