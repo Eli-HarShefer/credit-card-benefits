@@ -421,6 +421,19 @@
     flex-shrink:0;font-family:"Cascadia Mono",Consolas,ui-monospace,monospace;
     font-variant-numeric:tabular-nums;font-weight:800;font-size:.88rem;color:var(--cc);
   }
+  /* the small print: what the card costs and what it asks of you */
+  .cc-need{margin-top:11px;padding-top:10px;border-top:1px dashed var(--rule)}
+  .cc-need h4{margin:0 0 5px;font-size:.76rem;font-weight:800;color:var(--muted);letter-spacing:.02em}
+  .cc-fee{display:flex;flex-wrap:wrap;gap:5px 9px;align-items:baseline;margin-bottom:7px;font-size:.81rem}
+  .cc-fee b{color:var(--ink);font-weight:800}
+  .cc-fee .w{color:var(--muted)}
+  .cc-fee a{color:var(--faint);font-size:.74rem}
+  .cc-need ul{margin:0;padding:0;list-style:none}
+  .cc-need li{position:relative;padding-inline-start:15px;margin-bottom:4px;font-size:.79rem;line-height:1.45;color:var(--muted)}
+  .cc-need li::before{position:absolute;inset-inline-start:0;top:0;color:var(--faint)}
+  .cc-need li.do::before{content:"↳"}
+  .cc-need li.no::before{content:"⚠";font-size:.72rem}
+  .cc-need li.no{color:var(--ink)}
   .cc-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
   .cc-links a{
     font-size:.79rem;font-weight:650;color:var(--cc);text-decoration:none;
@@ -902,6 +915,34 @@ function paintSheet(){
 }
 function closeSheet(){ $('#cardSheet').hidden = true; }
 
+/* What the card costs and what it wants from you. The "do" lines are not written
+   per card: every programme already records what it asks (data/programs.json), so
+   a card simply shows the requirements of the programmes it opens, and cannot drift
+   from them. The "no" lines are the card's own catches. */
+function needBlock(c){
+  const seen = new Set(), does = [];
+  for (const id of c.programs || []){
+    const p = PROGRAM[id];
+    if (!p) continue;
+    for (const t of [p.needs, p.only]){
+      if (t && !seen.has(t)){ seen.add(t); does.push(`<b>${p.short || p.name}:</b> ${t}`); }
+    }
+  }
+  // a catch that the programme line already spells out would print twice
+  const said = [...seen].join(' ');
+  const catches = (c.catch || []).filter(t => !said.includes(t));
+  const cost = c.cost;
+  if (!does.length && !catches.length && !cost) return '';
+  return `<div class="cc-need"><h4>מה זה דורש, ומה זה עולה</h4>` +
+    (cost ? `<div class="cc-fee"><span>💳 דמי כרטיס: <b>${cost.fee}</b></span>` +
+      (cost.waiver ? `<span class="w">· ${cost.waiver}</span>` : '') +
+      (cost.src ? `<a href="${cost.src}" target="_blank" rel="noopener">התעריפון ↗</a>` : '') + `</div>` : '') +
+    (does.length || catches.length
+      ? `<ul>${does.map(t => `<li class="do">${t}</li>`).join('')}` +
+        `${catches.map(t => `<li class="no">${t}</li>`).join('')}</ul>`
+      : '') + `</div>`;
+}
+
 function renderCards(){
   const box = $('#mycards');
   if (!CARDS.length || !picked.length){ box.innerHTML = ''; return; }
@@ -926,6 +967,7 @@ function renderCards(){
           <span class="w"><b>${u.t}</b>${u.how ? `<small>${u.how}</small>` : ''}</span>
           <span class="v">${u.v || ''}</span></li>`).join('')}
       </ul>
+      ${needBlock(c)}
       ${(c.links || []).length ? `<div class="cc-links">${c.links.map(l =>
         `<a href="${l.u}" target="_blank" rel="noopener">${l.t} ↗</a>`).join('')}</div>` : ''}
     </article>`).join('') +

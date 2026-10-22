@@ -73,6 +73,15 @@
         "TAU",
         "מועדון הסטודנטים",
         "אוניברסיטה"
+      ],
+      "cost": {
+        "fee": "פטור כל עוד אתה חבר מועדון",
+        "src": "https://www.max.co.il/"
+      },
+      "catch": [
+        "הפטור מדמי כרטיס תלוי בחברות פעילה במועדון",
+        "השוברים נקנים מראש באתר המועדון — מי שלא קנה, לא חוסך",
+        "פינוק אחד לכל 2,000 ₪ חיוב, עד 4 בחודש — ופינוק שלא נוצל נמחק"
       ]
     },
     {
@@ -144,6 +153,15 @@
         "ארנק דיגיטלי",
         "Be-Plus",
         "הנחות פלוס"
+      ],
+      "cost": {
+        "fee": "תלוי בכרטיס",
+        "src": "https://www.max.co.il/"
+      },
+      "catch": [
+        "כל ארנק נטען בנפרד, ולכל אחד תקרה חודשית משלו",
+        "כסף שנטען ולא נוצל נשאר בארנק ומחכה לקנייה הבאה",
+        "פינוק אחד לכל 2,000 ₪ חיוב, עד 4 בחודש — ופינוק שלא נוצל נמחק"
       ]
     },
     {
@@ -199,6 +217,13 @@
         "וואן זירו",
         "ואן זירו",
         "בנק דיגיטלי"
+      ],
+      "cost": {
+        "fee": "תלוי במסלול",
+        "src": "https://marketing.isracard.co.il/pages/taarifon/"
+      },
+      "catch": [
+        "‏121 מתוך 326 ההטבות מסומנות \"פרימיום\" ותלויות במסלול הכרטיס"
       ]
     },
     {
@@ -228,7 +253,12 @@
       "alias": [
         "Diners",
         "דיינרס קלאב"
-      ]
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש, בניכוי 4 ₪ הנחה לדיינרס",
+        "waiver": "פטור מדמי כרטיס במחזור של 5,000 ₪ בחודש",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "shufersal",
@@ -281,6 +311,16 @@
         "SBOX",
         "סבוקס",
         "מועדון שופרסל"
+      ],
+      "cost": {
+        "fee": "12.90 ₪ לחודש",
+        "waiver": "אין פטור על מחזור בכרטיס הזה",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      },
+      "catch": [
+        "אין פטור מדמי כרטיס על מחזור",
+        "ההטבה היא על כל 100 ₪ בקנייה אחת, לא צבירה חודשית",
+        "לא חל בבי-פארם, המפיץ, יש בשכונה, יש חסד וגודמרקט"
       ]
     },
     {
@@ -314,6 +354,14 @@
         "El Al",
         "Frequent Flyer",
         "מיילים"
+      ],
+      "cost": {
+        "fee": "19.90 ₪ לחודש (ברונזה) · 38.90 ₪ (פרימיום)",
+        "waiver": "אין פטור על מחזור בכרטיס הזה — מועדוני תעופה",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      },
+      "catch": [
+        "המועדון עובר לישראכרט באפריל 2026 — לאמת מול אל על"
       ]
     },
     {
@@ -379,6 +427,14 @@
           "v": "5%",
           "how": "הנחה במעמד החיוב, בכרטיס חבר השחור"
         }
+      ],
+      "cost": {
+        "fee": "דמי חבר חודשיים למועדון, נגבים מהכרטיס",
+        "src": "https://marketing.isracard.co.il/pages/taarifon/"
+      },
+      "catch": [
+        "ההנחה חוזרת כזיכוי בחיוב החודשי, לא בקופה",
+        "מנוי Wolt+ מותנה ב-6,000 ₪ חיוב רבעוני אחרי חצי השנה הראשונה"
       ]
     },
     {
@@ -404,7 +460,11 @@
       "alias": [
         "רמי לוי",
         "Rami Levy"
-      ]
+      ],
+      "cost": {
+        "fee": "תלוי בכרטיס ובבנק",
+        "src": "https://marketing.isracard.co.il/pages/taarifon/"
+      }
     },
     {
       "id": "ashmoret",
@@ -430,7 +490,11 @@
         "אשמורת",
         "מורים",
         "הסתדרות המורים"
-      ]
+      ],
+      "cost": {
+        "fee": "תלוי בכרטיס ובבנק",
+        "src": "https://marketing.isracard.co.il/pages/taarifon/"
+      }
     },
     {
       "id": "lifestyle",
@@ -455,7 +519,11 @@
       "alias": [
         "Life Style",
         "לייף סטייל"
-      ]
+      ],
+      "cost": {
+        "fee": "תלוי בכרטיס ובבנק",
+        "src": "https://marketing.isracard.co.il/pages/taarifon/"
+      }
     },
     {
       "id": "flycard",
@@ -481,7 +549,11 @@
         "Fly Card",
         "פליי קארד",
         "מיילים"
-      ]
+      ],
+      "cost": {
+        "fee": "תלוי בכרטיס ובבנק",
+        "src": "https://marketing.isracard.co.il/pages/taarifon/"
+      }
     },
     {
       "id": "hot",
@@ -506,7 +578,11 @@
       "alias": [
         "HOT",
         "הוט"
-      ]
+      ],
+      "cost": {
+        "fee": "תלוי בכרטיס ובבנק",
+        "src": "https://marketing.isracard.co.il/pages/taarifon/"
+      }
     },
     {
       "id": "maxback",
@@ -533,6 +609,13 @@
         "מקס בק",
         "MAX Back Total",
         "החזר כספי"
+      ],
+      "cost": {
+        "fee": "תלוי בכרטיס",
+        "src": "https://www.max.co.il/"
+      },
+      "catch": [
+        "פינוק אחד לכל 2,000 ₪ חיוב, עד 4 בחודש — ופינוק שלא נוצל נמחק"
       ]
     },
     {
@@ -564,7 +647,12 @@
         "CalFix",
         "כאל פיקס",
         "חיוב קבוע"
-      ]
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש",
+        "waiver": "פטור מדמי כרטיס במחזור של 5,000 ₪ בחודש",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "fixback",
@@ -595,7 +683,12 @@
         "FixBack",
         "פיקסבק",
         "החזר כספי"
-      ]
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש",
+        "waiver": "פטור מדמי כרטיס במחזור של 5,000 ₪ בחודש",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "shave",
@@ -625,7 +718,12 @@
       "alias": [
         "שווה",
         "מועדון שווה"
-      ]
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש",
+        "waiver": "פטור מדמי כרטיס במחזור של 5,000 ₪ בחודש",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "highmiles",
@@ -656,7 +754,12 @@
         "High Miles",
         "הייג מיילס",
         "מיילים"
-      ]
+      ],
+      "cost": {
+        "fee": "19.90 ₪ לחודש (ברונזה) · 38.90 ₪ (פרימיום)",
+        "waiver": "אין פטור על מחזור בכרטיס הזה — מועדוני תעופה",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "flyall",
@@ -688,7 +791,12 @@
         "פלייאול",
         "premium",
         "מיילים"
-      ]
+      ],
+      "cost": {
+        "fee": "19.90 ₪ לחודש (ברונזה) · 38.90 ₪ (פרימיום)",
+        "waiver": "אין פטור על מחזור בכרטיס הזה — מועדוני תעופה",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "diners-extra",
@@ -719,7 +827,12 @@
         "Diners Extra",
         "Extra Family",
         "דיינרס אקסטרה"
-      ]
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש, בניכוי 4 ₪ הנחה לדיינרס",
+        "waiver": "אין פטור על מחזור בכרטיס הזה (Extra)",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "visa-infinite",
@@ -750,7 +863,12 @@
         "Visa Infinite",
         "אינפיניט",
         "פרימיום"
-      ]
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש",
+        "waiver": "פטור מדמי כרטיס במחזור של 5,000 ₪ בחודש",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "discount-mafteah",
@@ -781,7 +899,12 @@
         "דיסקונט",
         "מפתח דיסקונט",
         "בנק דיסקונט"
-      ]
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש",
+        "waiver": "פטור מדמי כרטיס במחזור של 5,000 ₪ בחודש",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "mercantile-smile",
@@ -813,7 +936,12 @@
         "Smile",
         "סמייל",
         "בנק מרכנתיל"
-      ]
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש",
+        "waiver": "פטור מדמי כרטיס במחזור של 5,000 ₪ בחודש",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "mizrahi",
@@ -845,7 +973,12 @@
         "טפחות",
         "מזרחי טפחות",
         "בנק מזרחי"
-      ]
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש",
+        "waiver": "פטור מדמי כרטיס במחזור של 5,000 ₪ בחודש",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      }
     },
     {
       "id": "max-other",
@@ -886,6 +1019,13 @@
         "עסקי",
         "maxbussiness",
         "premium"
+      ],
+      "cost": {
+        "fee": "תלוי בכרטיס",
+        "src": "https://www.max.co.il/"
+      },
+      "catch": [
+        "פינוק אחד לכל 2,000 ₪ חיוב, עד 4 בחודש — ופינוק שלא נוצל נמחק"
       ]
     },
     {
@@ -921,7 +1061,11 @@
         "אמקס",
         "Amex",
         "American Express"
-      ]
+      ],
+      "cost": {
+        "fee": "תלוי בכרטיס ובבנק",
+        "src": "https://marketing.isracard.co.il/pages/taarifon/"
+      }
     },
     {
       "id": "cal-other",
@@ -959,6 +1103,14 @@
         "מאסטרקארד כאל",
         "ויזה",
         "מאסטרקארד"
+      ],
+      "cost": {
+        "fee": "17.90 ₪ לחודש",
+        "waiver": "פטור מדמי כרטיס במחזור של 5,000 ₪ בחודש",
+        "src": "https://www.cal-online.co.il/media/ma5oflaj/amlot.pdf"
+      },
+      "catch": [
+        "הקטלוג שבמאגר הוא חנות החוויות. שאר ההטבות של כאל פזורות בדפי שיווק"
       ]
     }
   ],
