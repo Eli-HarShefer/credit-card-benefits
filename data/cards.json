@@ -434,6 +434,266 @@
       "note": "ההטבות הן של המנפיק. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר."
     },
     {
+      "id": "calfix",
+      "name": "CalFix",
+      "full": "כאל CalFix",
+      "club": "CalFix",
+      "tag": "חיוב חודשי קבוע",
+      "face": [
+        "#1f6fb2",
+        "#0a2c49"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "fixback",
+      "name": "Cal FixBack",
+      "full": "כאל FixBack",
+      "club": "FixBack",
+      "tag": "החזר כספי על החיוב הקבוע",
+      "face": [
+        "#0e8c7a",
+        "#04332c"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "shave",
+      "name": "מועדון שווה",
+      "full": "מועדון 'שווה' של כאל",
+      "club": "שווה",
+      "tag": "מועדון ההטבות של כאל",
+      "face": [
+        "#c4571f",
+        "#4a1f0a"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "highmiles",
+      "name": "High Miles",
+      "full": "כאל High Miles",
+      "club": "High Miles",
+      "tag": "צבירת מיילים",
+      "face": [
+        "#30507e",
+        "#121d2e"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "flyall",
+      "name": "FlyAll",
+      "full": "כאל FlyAll",
+      "club": "FlyAll",
+      "tag": "צבירה לטיסות — יש גם מסלול premium",
+      "face": [
+        "#1a7fa3",
+        "#07303d"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "diners-extra",
+      "name": "Diners Extra Family",
+      "full": "דיינרס Extra Family",
+      "club": "Diners Extra",
+      "tag": "מסלול משפחתי של דיינרס",
+      "face": [
+        "#3b3f4a",
+        "#15171c"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "visa-infinite",
+      "name": "ויזה אינפיניט",
+      "full": "ויזה אינפיניט של כאל",
+      "club": null,
+      "tag": "כרטיס פרימיום",
+      "face": [
+        "#2a2a30",
+        "#0b0b0e"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "discount-mafteah",
+      "name": "מפתח דיסקונט",
+      "full": "כרטיס מפתח דיסקונט",
+      "club": "בנק דיסקונט",
+      "tag": "כרטיס בנק דיסקונט, מונפק ע״י כאל",
+      "face": [
+        "#007a3d",
+        "#032b16"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "mercantile-smile",
+      "name": "מרכנתיל Smile",
+      "full": "כרטיס Smile של מרכנתיל",
+      "club": "בנק מרכנתיל",
+      "tag": "כרטיס בנק מרכנתיל, מונפק ע״י כאל",
+      "face": [
+        "#b8292f",
+        "#3d0d10"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
+      "id": "mizrahi",
+      "name": "מזרחי טפחות",
+      "full": "כרטיס מזרחי טפחות",
+      "club": "בנק מזרחי טפחות",
+      "tag": "כרטיס בנק מזרחי טפחות, מונפק ע״י כאל",
+      "face": [
+        "#e07a00",
+        "#4a2800"
+      ],
+      "brand": "cal",
+      "issuer": "cal",
+      "issuer_label": "כאל",
+      "programs": [
+        "cal-store"
+      ],
+      "generic": true,
+      "color": "--zero",
+      "note": "ההטבות הן של כאל. ההטבות הייחודיות של המועדון עצמו עדיין לא במאגר.",
+      "links": [
+        {
+          "t": "חנות החוויות",
+          "u": "https://www.cal-store.co.il/"
+        }
+      ]
+    },
+    {
       "id": "max-other",
       "name": "כרטיס max אחר",
       "full": "כל כרטיס אשראי של max",

@@ -64,7 +64,7 @@ powershell -ExecutionPolicy Bypass -File "scripts\refresh-all.ps1"
 | `data/cal-store.json` | 1,059 שוברים ומוצרים מוזלים בחנות החוויות של כאל |
 | `data/shufersal-sbox.json` | 35 מוצרי SBOX — רשימת המוצרים המשתתפת, מתחלפת |
 | `data/isracard-online.json` | שיעורי הקאשבק של TOPCASH, להשוואה מול max |
-| `data/behatsdaa-raw.json` | קטלוג מועדון בהצדעה — 1,034 קטגוריות, 14,087 פריטים |
+| `data/behatsdaa-raw.json` | קטלוג מועדון בהצדעה — 14,087 פריטים, 3,573 מהם עם מחיר ומנגנון |
 | `data/cards.json` | רישום הכרטיסים שהאתר מכיר, ואילו תוכניות כל אחד פותח |
 | `data/programs.json` | מאיפה מגיעה כל הטבה — קטלוג, מועדון, רשת הנחות או שירות קאשבק |
 | `data/cards.yaml` | רקע על הכרטיסים מהתכנון המקורי, ושאלות שעדיין פתוחות |

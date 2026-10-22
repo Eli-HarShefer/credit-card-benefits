@@ -310,6 +310,33 @@ if (Test-Path $calPath) {
   Write-Host "cal store: $calAdded"
 }
 
+# ---- Behatsdaa club catalogue --------------------------------------------
+# 14,087 items were harvested a while back but never reached the dashboard. Only
+# the 3,573 that came back with full details carry a price, and a row without a
+# price answers nothing - so those are the ones that become rows. The club is
+# mostly a shop: you buy on its site and the order is loaded onto the card.
+$behPath = Join-Path $data 'behatsdaa-raw.json'
+if (Test-Path $behPath) {
+  $beh = Get-Content $behPath -Raw -Encoding UTF8 | ConvertFrom-Json
+  $BEH_URL = 'https://www.behatsdaa.org.il/category/products/'
+  $behAdded = 0
+  foreach ($b in $beh.details) {
+    $name = [string]$b.name
+    $price = [string]$b.price
+    if (-not $name -or -not $price) { continue }
+    # the path is "root > section > item"; both levels go in, and whichever one the
+    # group table knows wins. A section that is really a shop name falls back to the root.
+    $parts = ([string]$b.path) -split ' > '
+    $cats = @()
+    if ($parts.Count -ge 1) { $cats += $parts[0] }
+    if ($parts.Count -ge 2) { $cats += $parts[1] }
+    $act = if ($b.mech) { ([string]$b.mech).Substring(0, [Math]::Min(90, ([string]$b.mech).Length)) } else { $S.act_beh_club }
+    Add-Row $name $price 0 'behatsdaa-club' $act $cats $S.anywhere $null ($BEH_URL + [string]$b.id)
+    $behAdded++
+  }
+  Write-Host "behatsdaa club: $behAdded"
+}
+
 # ---- Shufersal SBOX ------------------------------------------------------
 # The first real supermarket chain in the whole database. Not a discount but a
 # mechanic: every full 100 shekels of a basket paid with the Shufersal card buys
