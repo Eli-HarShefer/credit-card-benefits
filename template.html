@@ -8,9 +8,10 @@
 </script>
 <style>
   :root, :root[data-theme="light"]{
-    --paper:#f4f6f8; --surface:#fff; --ink:#131722; --muted:#596173; --faint:#8b93a3;
+    --paper:#f4f6f8; --surface:#fff; --ink:#131722; --muted:#4e5668; --faint:#667085;
     --rule:#e7eaf0; --accent:#0d9f7f; --accent-ink:#0a7a62; --accent-wash:#e7f7f2;
     --flag:#b4700d; --flag-wash:#fdf4e4; --on-accent:#fff;
+    --btn:#0a7a62; --on-btn:#fff;
     --tau:#2f6fe4; --zero:#8b46c7; --beh:#0d9f7f;
     --shadow:none;
     --r-sm:8px; --r-md:12px; --r-lg:18px;
@@ -40,14 +41,18 @@
     --p-topcash:#e07aa6;
     --p-cal:#f08080;
     --p-sbox:#e0a267;
-    --paper:#14161a; --surface:#1d2025; --ink:#eceae6; --muted:#a5a7ad; --faint:#83858c;
+    --paper:#14161a; --surface:#1d2025; --ink:#eceae6; --muted:#b2b5bc; --faint:#9aa0ab;
     --rule:#2e3238; --accent:#63c2b2; --accent-ink:#8fd8c9; --accent-wash:#16302b;
     --flag:#e0af65; --flag-wash:#2e2618; --on-accent:#0d1b18;
+    --btn:#63c2b2; --on-btn:#0b1a17;
     --tau:#8ab4ea; --zero:#cb9adb; --beh:#63c2b2;
     --shadow:none;
   }
 
   *{box-sizing:border-box}
+  /* a link with no class of its own fell back to the browser's blue, which vanishes
+     on a dark background */
+  a{color:var(--accent-ink)}
   /* a tap has to answer within about 100ms, so the press state is a plain colour
      change with no transition in, and a short one out */
   button,a,input,select,summary{-webkit-tap-highlight-color:transparent}
@@ -164,7 +169,7 @@
   .card.shufersal-sbox{--cdot:var(--p-sbox)}
   .act{
     display:inline-block;margin-top:6px;padding:2px 8px 3px;border-radius:7px;
-    background:var(--bg);border:1px solid var(--rule);
+    background:var(--paper);border:1px solid var(--rule);
     font-size:.74rem;font-weight:600;color:var(--muted);
   }
   /* when every result needs the same step, it is said once above the list */
@@ -218,8 +223,8 @@
   }
   .facts li b{color:var(--ink)}
   .cta{
-    display:block;text-align:center;margin-top:18px;padding:16px;
-    background:var(--accent);color:var(--on-accent);border-radius:12px;
+    display:block;text-align:center;margin-top:var(--s5);padding:15px;
+    background:var(--btn);color:var(--on-btn);border-radius:var(--r-sm);
     text-decoration:none;font-weight:700;
   }
 
@@ -231,7 +236,7 @@
     flex:1 1 auto;padding:13px;background:var(--surface);border:1px solid var(--rule);
     border-radius:11px;color:var(--ink);font:inherit;font-weight:650;cursor:pointer;
   }
-  .nearbar button.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+  .nearbar button.on{background:var(--btn);border-color:var(--btn);color:var(--on-btn)}
   .nearnote{color:var(--muted);font-size:.8rem;margin:0 0 10px}
 
   #map{
@@ -297,7 +302,7 @@
   .loc-panel{margin-top:12px;gap:9px}
   .loc-gps{
     padding:12px var(--s4);border:0;border-radius:var(--r-sm);
-    background:var(--accent);color:var(--on-accent);
+    background:var(--btn);color:var(--on-btn);
     font:inherit;font-weight:600;font-size:.92rem;cursor:pointer;
   }
   /* a blocked permission is a notice, not the main action */
@@ -327,7 +332,7 @@
     padding:7px 12px;border:1px solid var(--rule);border-radius:20px;background:var(--paper);
     color:var(--ink);font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap;
   }
-  .chip.on{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700}
+  .chip.on{background:var(--btn);border-color:var(--btn);color:var(--on-btn);font-weight:700}
   .loc-help{
     margin:0;padding:10px 12px;border-radius:10px;background:var(--flag-wash);
     border-inline-start:3px solid var(--flag);color:var(--ink);font-size:.84rem;
@@ -404,29 +409,49 @@
     background:rgba(0,0,0,.45);backdrop-filter:blur(2px)}
   .sheet[hidden]{display:none}
   .sheet-box{
-    width:100%;max-width:560px;max-height:88vh;overflow:auto;background:var(--bg);
+    width:100%;max-width:560px;max-height:88vh;overflow:auto;background:var(--paper);
     border-radius:18px 18px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom));
     box-shadow:0 -10px 40px rgba(0,0,0,.4);
   }
   @media (min-width:600px){ .sheet{align-items:center} .sheet-box{border-radius:18px} }
   .sheet-box h3{margin:0 0 3px;font-size:1.1rem}
   .sheet-box .lede{margin:0 0 14px}
-  .iss{margin:14px 0 7px;font-size:.74rem;font-weight:800;color:var(--muted);letter-spacing:.03em}
+  .iss{
+    margin:var(--s4) 0 var(--s2);font-size:.8rem;font-weight:800;color:var(--ink);
+    letter-spacing:.01em;
+  }
+  .iss:first-child{margin-top:var(--s2)}
   .copt{
-    display:flex;align-items:center;gap:11px;width:100%;text-align:right;margin-bottom:8px;padding:11px 12px;
-    border:1px solid var(--rule);border-radius:13px;background:var(--surface);color:var(--ink);
+    display:flex;align-items:center;gap:var(--s3);width:100%;text-align:right;
+    margin-bottom:var(--s2);padding:10px var(--s3);min-height:62px;
+    border:1px solid var(--rule);border-radius:var(--r-md);background:var(--surface);color:var(--ink);
     font:inherit;cursor:pointer;
   }
-  .copt[aria-pressed="true"]{border-color:var(--cc,var(--accent));box-shadow:inset 0 0 0 1px var(--cc,var(--accent))}
+  .copt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-wash)}
   .copt .box{
-    flex:none;width:21px;height:21px;border-radius:7px;border:1.5px solid var(--rule);
-    display:grid;place-items:center;font-size:.72rem;color:var(--on-accent);
+    flex:none;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--rule);
+    display:grid;place-items:center;font-size:.7rem;color:transparent;background:var(--surface);
   }
-  .copt[aria-pressed="true"] .box{background:var(--cc,var(--accent));border-color:var(--cc,var(--accent))}
+  .copt[aria-pressed="true"] .box{background:var(--btn);border-color:var(--btn);color:var(--on-btn)}
+  /* the card itself, small - this is what someone recognises in their wallet */
+  .mini{
+    position:relative;flex:none;width:52px;aspect-ratio:1.586;border-radius:5px;overflow:hidden;
+    background:linear-gradient(135deg,var(--c1,#555),var(--c2,#222));
+    direction:ltr;color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
+  }
+  .mini i{
+    position:absolute;top:30%;left:10%;width:20%;height:24%;border-radius:2px;
+    background:linear-gradient(135deg,#f6dc95,#b98f3e);
+  }
+  .mini span{
+    position:absolute;bottom:7%;right:8%;left:8%;font-size:.46rem;font-weight:800;
+    letter-spacing:.02em;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
   .copt .w{flex:1;min-width:0}
-  .copt b{display:block;font-size:.93rem}
-  .copt small{display:block;color:var(--muted);font-size:.74rem;line-height:1.35;margin-top:1px}
-  .copt .cnt{flex:none;color:var(--faint);font-size:.74rem;font-variant-numeric:tabular-nums}
+  .copt b{display:block;font-size:.93rem;line-height:1.3}
+  .copt small{display:block;color:var(--muted);font-size:.74rem;line-height:1.35;margin-top:2px}
+  .copt .cnt{flex:none;color:var(--faint);font-size:.74rem;font-variant-numeric:tabular-nums;text-align:center}
+  .copt .cnt b{display:block;font-size:.84rem;color:var(--muted);font-weight:700}
   .csearch{
     width:100%;box-sizing:border-box;margin:0 0 4px;padding:11px 13px;border-radius:12px;
     border:1px solid var(--rule);background:var(--surface);color:var(--ink);font:inherit;
@@ -446,14 +471,14 @@
   .chelp ol .ic{flex:none;font-size:1.05rem;line-height:1.3}
   .chelp ol b{display:block;color:var(--ink);font-size:.85rem;margin-bottom:1px}
   .chelp .warn-line{
-    margin-top:9px;padding:9px 11px;border-radius:10px;background:var(--bg);
+    margin-top:9px;padding:9px 11px;border-radius:10px;background:var(--paper);
     border-inline-start:3px solid var(--flag);color:var(--ink);
   }
   .chelp .unsure{margin-top:8px;color:var(--faint)}
   .cnone{padding:16px 4px;text-align:center;color:var(--muted);font-size:.85rem}
   .sheet-go{
-    width:100%;margin-top:14px;padding:13px;border:0;border-radius:13px;
-    background:var(--accent);color:var(--on-accent);font:inherit;font-weight:800;font-size:.97rem;cursor:pointer;
+    width:100%;margin-top:var(--s4);padding:14px;border:0;border-radius:var(--r-sm);
+    background:var(--btn);color:var(--on-btn);font:inherit;font-weight:700;font-size:.97rem;cursor:pointer;
   }
   .sheet-go[disabled]{opacity:.45;cursor:default}
   /* my cards - the ones in the wallet, drawn as cards so they read at a glance */
@@ -499,7 +524,7 @@
   .cc-uses .w small{display:block;color:var(--muted);font-size:.76rem;line-height:1.35}
   .cc-uses .v{
     flex-shrink:0;font-family:"Cascadia Mono",Consolas,ui-monospace,monospace;
-    font-variant-numeric:tabular-nums;font-weight:800;font-size:.88rem;color:var(--cc);
+    font-variant-numeric:tabular-nums;font-weight:800;font-size:.88rem;color:var(--ink);
   }
   /* the small print: what the card costs and what it asks of you */
   .cc-need{margin-top:11px;border-top:1px solid var(--rule)}
@@ -524,7 +549,7 @@
   .cc-need li.no{color:var(--ink)}
   .cc-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:11px}
   .cc-links a{
-    font-size:.79rem;font-weight:650;color:var(--cc);text-decoration:none;
+    font-size:.79rem;font-weight:650;color:var(--ink);text-decoration:none;
     border:1px solid var(--rule);border-radius:20px;padding:6px 12px;background:var(--surface);
   }
   .cc-links a:hover{border-color:var(--cc)}
@@ -959,11 +984,12 @@ function paintOpts(){
   $('#cardOpts').innerHTML = list.length ? [...byIssuer].map(([iss, cs]) =>
     `<div class="iss">מונפק ע״י ${iss}</div>` + cs.map(c => {
       const n = countFor(c);
-      return `<button class="copt" type="button" data-id="${c.id}" aria-pressed="false"
-                style="--cc:var(${c.color || '--rule'})">
+      const f = c.face || ['#5b6472', '#20242c'];
+      return `<button class="copt" type="button" data-id="${c.id}" aria-pressed="false">
         <span class="box">✓</span>
+        <span class="mini" style="--c1:${f[0]};--c2:${f[1]}" aria-hidden="true"><i></i><span>${c.name}</span></span>
         <span class="w"><b>${c.full || c.name}</b><small>${c.tag || ''}</small></span>
-        <span class="cnt">${n ? he(n) + ' הטבות' : 'אין עדיין'}</span>
+        <span class="cnt">${n ? `<b>${he(n)}</b>הטבות` : 'אין עדיין'}</span>
       </button>`;
     }).join('')).join('')
     : `<div class="cnone">לא נמצא כרטיס בשם הזה.<br>נסה את שם החברה — max, ישראכרט או כאל.</div>`;
