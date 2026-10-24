@@ -1,36 +1,78 @@
 <title>ארנק ההטבות</title>
+<script>
+  // before the first paint, so the page never flashes the wrong colours
+  try {
+    var t = localStorage.getItem('theme');
+    document.documentElement.dataset.theme = (t === 'dark' || t === 'light') ? t : 'light';
+  } catch (e) { document.documentElement.dataset.theme = 'light'; }
+</script>
 <style>
-  :root{
-    --paper:#fbfbf9; --surface:#fff; --ink:#15161a; --muted:#5f6169; --faint:#8b8d94;
-    --rule:#e6e6e2; --accent:#0f6b5f; --accent-ink:#0a4c43; --accent-wash:#e6f4f0;
-    --flag:#8a5a12; --flag-wash:#fdf3e2; --on-accent:#fff;
-    --tau:#1f4b8f; --zero:#6b2f7a; --beh:#0f6b5f;
-    --shadow:0 1px 2px rgba(20,25,24,.05), 0 4px 12px rgba(20,25,24,.05);
-  }
-  @media (prefers-color-scheme:dark){
-    :root:not([data-theme="light"]){
-      --paper:#14161a; --surface:#1d2025; --ink:#eceae6; --muted:#a5a7ad; --faint:#83858c;
-      --rule:#2e3238; --accent:#63c2b2; --accent-ink:#8fd8c9; --accent-wash:#16302b;
-      --flag:#e0af65; --flag-wash:#2e2618; --on-accent:#0d1b18;
-      --tau:#8ab4ea; --zero:#cb9adb; --beh:#63c2b2;
-      --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
-    }
+  :root, :root[data-theme="light"]{
+    --paper:#f4f6f8; --surface:#fff; --ink:#131722; --muted:#596173; --faint:#8b93a3;
+    --rule:#e7eaf0; --accent:#0d9f7f; --accent-ink:#0a7a62; --accent-wash:#e7f7f2;
+    --flag:#b4700d; --flag-wash:#fdf4e4; --on-accent:#fff;
+    --tau:#2f6fe4; --zero:#8b46c7; --beh:#0d9f7f;
+    --shadow:none;
+    --r-sm:8px; --r-md:12px; --r-lg:18px;
+    /* one hue per programme, so two dots on the map are never the same colour */
+    --p-beplus:#0d9f7f;
+    --p-wallet:#e8870c;
+    --p-hever:#7c3aed;
+    --p-behclub:#0e7490;
+    --p-max:#2563eb;
+    --p-payback:#0ea5e9;
+    --p-tau:#4338ca;
+    --p-isracard:#db2777;
+    --p-topcash:#9d174d;
+    --p-cal:#dc2626;
+    --p-sbox:#b45309;
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
   }
   :root[data-theme="dark"]{
+    --p-beplus:#5ecfb4;
+    --p-wallet:#f3ae51;
+    --p-hever:#b690f7;
+    --p-behclub:#4cb6d1;
+    --p-max:#7da6f5;
+    --p-payback:#63cdf5;
+    --p-tau:#9b93ef;
+    --p-isracard:#f183b4;
+    --p-topcash:#e07aa6;
+    --p-cal:#f08080;
+    --p-sbox:#e0a267;
     --paper:#14161a; --surface:#1d2025; --ink:#eceae6; --muted:#a5a7ad; --faint:#83858c;
     --rule:#2e3238; --accent:#63c2b2; --accent-ink:#8fd8c9; --accent-wash:#16302b;
     --flag:#e0af65; --flag-wash:#2e2618; --on-accent:#0d1b18;
     --tau:#8ab4ea; --zero:#cb9adb; --beh:#63c2b2;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+    --shadow:none;
   }
 
   *{box-sizing:border-box}
+  /* a tap has to answer within about 100ms, so the press state is a plain colour
+     change with no transition in, and a short one out */
+  button,a,input,select,summary{-webkit-tap-highlight-color:transparent}
+  button,a[href],summary{touch-action:manipulation}
+  .pick button,.copt,.chip,.back,.navs a,.navs button,.ali-entry,.loc-gps,.sheet-go,.theme-btn{
+    transition:background-color .12s ease, border-color .12s ease, color .12s ease;
+  }
+  .pick button:active,.copt:active,.ali-entry:active,.back:active{background:var(--accent-wash);transition:none}
+  .loc-gps:active,.sheet-go:active{filter:brightness(.94);transition:none}
+  .chip:active{border-color:var(--accent);transition:none}
   body{
     margin:0;direction:rtl;background:var(--paper);color:var(--ink);
     font-family:"Segoe UI","Noto Sans Hebrew",Arial,sans-serif;
     font-size:17px;line-height:1.5;-webkit-text-size-adjust:100%;
   }
   .wrap{max-width:660px;margin:0 auto;padding:18px 14px 60px}
+  .topbar{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+  .topbar .crumb{flex:1;margin-bottom:0}
+  /* the theme switch, small and out of the way */
+  .theme-btn{
+    width:30px;height:30px;flex:none;border-radius:50%;
+    border:1px solid var(--rule);background:var(--surface);color:var(--muted);
+    font-size:.9rem;line-height:1;cursor:pointer;display:grid;place-items:center;
+  }
+  .theme-btn:hover{color:var(--ink);border-color:var(--accent)}
 
   .crumb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;min-height:20px}
   .back{
@@ -40,31 +82,38 @@
   .back:hover{border-color:var(--accent);color:var(--accent-ink)}
   .here{color:var(--muted);font-size:.85rem}
 
-  h2{font-size:1.3rem;font-weight:650;margin:0 0 3px;letter-spacing:-.015em}
-  .lede{color:var(--muted);font-size:.87rem;margin:0 0 16px}
+  h2{font-size:1.45rem;font-weight:700;margin:0 0 var(--s1);letter-spacing:-.02em;line-height:1.25}
+  .lede{color:var(--muted);font-size:.87rem;margin:0 0 var(--s4)}
+  .lede:empty{margin:0 0 var(--s4)}
 
   #filter{
-    width:100%;padding:13px 15px;font-size:16px;font-family:inherit;margin-bottom:14px;
-    border:1px solid var(--rule);border-radius:11px;background:var(--surface);color:var(--ink);
+    width:100%;padding:12px var(--s4);font-size:16px;font-family:inherit;margin-bottom:var(--s3);
+    border:1px solid var(--rule);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);
   }
   #filter:focus{outline:none;border-color:var(--accent)}
   input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
   /* big picks */
-  .pick{list-style:none;margin:0;padding:0;display:grid;gap:9px;align-items:stretch}
-  .pick.two{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-  .pick li{display:flex}
-  .pick button{
-    width:100%;display:flex;align-items:center;gap:11px;text-align:start;
-    background:var(--surface);border:1px solid var(--rule);border-radius:13px;
-    padding:15px 14px;color:var(--ink);font:inherit;cursor:pointer;box-shadow:var(--shadow);
-    min-height:60px;
+  /* one bordered list with hairlines between rows - five separate cards for five
+     categories is the look this was trying to get away from */
+  .pick{
+    list-style:none;margin:0;padding:0;
+    background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden;
   }
-  .pick button:hover{border-color:var(--accent);background:var(--accent-wash)}
-  .ic{font-size:1.5rem;line-height:1;flex-shrink:0}
-  .lbl{flex:1;min-width:0;font-weight:650;overflow-wrap:anywhere}
-  .cnt{color:var(--faint);font-size:.8rem;font-variant-numeric:tabular-nums;flex-shrink:0}
-  .arrow{color:var(--faint);flex-shrink:0}
+  .pick.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+  .pick li{display:flex;border-top:1px solid var(--rule)}
+  .pick li:first-child{border-top:0}
+  .pick.two li:nth-child(-n+2){border-top:0}
+  .pick button{
+    width:100%;display:flex;align-items:center;gap:var(--s3);text-align:start;
+    background:none;border:0;padding:13px var(--s4);color:var(--ink);font:inherit;cursor:pointer;
+    min-height:52px;
+  }
+  .pick button:hover{background:var(--accent-wash)}
+  .ic{font-size:1.1rem;line-height:1;flex-shrink:0;opacity:.85;width:1.4em;text-align:center}
+  .lbl{flex:1;min-width:0;font-weight:600;font-size:.95rem;overflow-wrap:anywhere}
+  .cnt{color:var(--faint);font-size:.78rem;font-variant-numeric:tabular-nums;flex-shrink:0}
+  .arrow{color:var(--faint);flex-shrink:0;opacity:.6}
 
   /* the de-prioritised tail */
   .tail{margin-top:26px;border-top:1px solid var(--rule);padding-top:14px}
@@ -75,16 +124,17 @@
   .tail summary::before{content:"▾ ";color:var(--faint)}
   .tail[open] summary::before{content:"▴ "}
   .tail .pick{margin-top:10px;gap:5px}
-  .tail .pick button{padding:9px 12px;font-size:.85rem;border-radius:9px;box-shadow:none}
+  .tail .pick button{padding:10px var(--s3);font-size:.85rem}
   .tail .ic{font-size:1rem}
   .tail .lbl{font-weight:500}
 
   /* results */
-  .res{list-style:none;margin:0;padding:0}
-  .res li{
-    background:var(--surface);border:1px solid var(--rule);border-radius:12px;
-    padding:13px 15px;margin-bottom:8px;box-shadow:var(--shadow);
+  .res{
+    list-style:none;margin:0;padding:0;
+    background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-md);overflow:hidden;
   }
+  .res li{padding:var(--s3) var(--s4);border-top:1px solid var(--rule)}
+  .res li:first-child{border-top:0}
   .top{display:flex;align-items:baseline;gap:10px}
   .name{flex:1;min-width:0;font-weight:650;overflow-wrap:anywhere}
   .name a{color:inherit;text-decoration:none}
@@ -94,25 +144,49 @@
     font-variant-numeric:tabular-nums;color:var(--accent-ink);
     font-weight:700;font-size:.98rem;flex-shrink:0;
   }
-  .sub{display:block;color:var(--muted);font-size:.79rem;margin-top:4px}
+  .sub{display:block;color:var(--muted);font-size:.79rem;margin-top:var(--s1)}
+  /* the programme is context, not a headline - plain text with a colour dot */
+  /* the dot alone: it ties the row to the map legend without spending a word */
   .card{
-    display:inline-block;font-size:.68rem;font-weight:700;padding:2px 9px;
-    border-radius:20px;border:1px solid currentColor;margin-inline-end:7px;
+    display:inline-block;width:7px;height:7px;border-radius:50%;
+    background:var(--cdot,var(--faint));margin-inline-end:7px;vertical-align:1px;
   }
-  .card.behatsdaa{color:var(--beh)}
-  .card.tau{color:var(--tau)}
-  .card.onezero{color:var(--zero)}
-  .card.wallet{color:var(--on-accent);background:var(--accent);border-color:var(--accent)}
-  .act{display:block;margin-top:7px;font-size:.81rem;color:var(--flag);font-weight:650}
+  .card.beplus{--cdot:var(--p-beplus)}
+  .card.behatsdaa-wallet{--cdot:var(--p-wallet)}
+  .card.hever-club{--cdot:var(--p-hever)}
+  .card.behatsdaa-club{--cdot:var(--p-behclub)}
+  .card.max{--cdot:var(--p-max)}
+  .card.max-payback{--cdot:var(--p-payback)}
+  .card.tauclub{--cdot:var(--p-tau)}
+  .card.isracard{--cdot:var(--p-isracard)}
+  .card.topcash{--cdot:var(--p-topcash)}
+  .card.cal-store{--cdot:var(--p-cal)}
+  .card.shufersal-sbox{--cdot:var(--p-sbox)}
+  .act{
+    display:inline-block;margin-top:6px;padding:2px 8px 3px;border-radius:7px;
+    background:var(--bg);border:1px solid var(--rule);
+    font-size:.74rem;font-weight:600;color:var(--muted);
+  }
+  /* when every result needs the same step, it is said once above the list */
+  .act-all{
+    display:flex;gap:9px;align-items:flex-start;margin:0 0 12px;padding:10px 13px;
+    border:1px solid var(--rule);border-radius:12px;background:var(--surface);
+    color:var(--ink);font-size:.83rem;line-height:1.45;
+  }
+  .act-all[hidden]{display:none}
+  .act-all .ic{flex:none;opacity:.75}
 
   /* AliExpress */
   .ali-entry{
-    width:100%;text-align:start;background:var(--flag-wash);
-    border:1px solid var(--rule);border-inline-start:3px solid var(--flag);
-    border-radius:12px;padding:14px 15px;margin-bottom:16px;
-    color:var(--ink);font:inherit;cursor:pointer;display:flex;align-items:center;gap:12px;
+    width:100%;text-align:start;background:var(--surface);
+    border:1px solid var(--rule);border-radius:var(--r-md);padding:11px var(--s4);
+    margin-bottom:var(--s3);
+    color:var(--ink);font:inherit;cursor:pointer;display:flex;align-items:center;gap:11px;
   }
-  .ali-entry:hover{border-color:var(--flag)}
+  .ali-entry:hover{border-color:var(--accent)}
+  .ali-entry .ic{font-size:1.05rem;opacity:.8}
+  /* one accent button, not a wall of green */
+  .loc-gps{font-weight:600}
   .ali-tx{flex:1;min-width:0}
   .ali-t{display:block;font-weight:700}
   .ali-s{display:block;color:var(--muted);font-size:.82rem;margin-top:2px}
@@ -208,8 +282,8 @@
   .allnear:not([hidden]){display:flex}
 
   .loc{
-    background:var(--surface);border:1px solid var(--rule);border-radius:14px;
-    padding:12px 14px;margin-bottom:14px;box-shadow:var(--shadow);
+    background:var(--surface);border:1px solid var(--rule);border-radius:var(--r-md);
+    padding:var(--s3) var(--s4);margin-bottom:var(--s3);
   }
   .loc-row{display:flex;align-items:center;gap:10px}
   .loc-ic{font-size:1.3rem;line-height:1}
@@ -222,13 +296,16 @@
   }
   .loc-panel{margin-top:12px;gap:9px}
   .loc-gps{
-    padding:14px;border:0;border-radius:11px;background:var(--accent);color:var(--on-accent);
-    font:inherit;font-weight:700;cursor:pointer;
+    padding:12px var(--s4);border:0;border-radius:var(--r-sm);
+    background:var(--accent);color:var(--on-accent);
+    font:inherit;font-weight:600;font-size:.92rem;cursor:pointer;
   }
+  /* a blocked permission is a notice, not the main action */
+  .loc-gps.off{background:none;border:1px solid var(--rule);color:var(--muted);font-weight:500}
   .addr{display:flex;gap:6px;margin:0}
   .addr input{
-    flex:1;min-width:0;padding:12px 13px;font-size:16px;font-family:inherit;
-    border:1px solid var(--rule);border-radius:10px;background:var(--paper);color:var(--ink);
+    flex:1;min-width:0;padding:11px var(--s3);font-size:16px;font-family:inherit;
+    border:1px solid var(--rule);border-radius:var(--r-sm);background:var(--paper);color:var(--ink);
   }
   .addr input:focus{outline:none;border-color:var(--accent)}
   .addr button{
@@ -245,7 +322,8 @@
   .hits .none{color:var(--muted);font-size:.85rem;padding:6px 2px}
   .places{display:flex;gap:6px;flex-wrap:wrap}
   .places:empty{display:none}
-  .chip{
+  /* 44px is the smallest a thumb hits reliably */
+  .chip{min-height:38px;
     padding:7px 12px;border:1px solid var(--rule);border-radius:20px;background:var(--paper);
     color:var(--ink);font:inherit;font-size:.82rem;cursor:pointer;white-space:nowrap;
   }
@@ -270,20 +348,22 @@
     display:block;width:22px;height:22px;border-radius:50%;background:#2b7de9;
     border:3px solid #fff;box-shadow:0 0 0 6px rgba(43,125,233,.25),0 1px 4px rgba(0,0,0,.4);
   }
-  .navs{display:flex;gap:6px;margin-top:9px;flex-wrap:wrap}
+  .navs{display:flex;gap:var(--s2);margin-top:var(--s1);flex-wrap:wrap;margin-inline-start:-10px}
   .navs a,.navs button{
-    padding:7px 11px;border:1px solid var(--rule);border-radius:8px;background:var(--paper);
-    color:var(--accent-ink);font:inherit;font-size:.78rem;font-weight:650;
-    text-decoration:none;cursor:pointer;
+    display:inline-flex;align-items:center;min-height:40px;padding:0 10px;
+    border:0;background:none;color:var(--accent-ink);
+    font:inherit;font-size:.82rem;font-weight:600;text-decoration:none;cursor:pointer;
   }
+  .navs a:hover,.navs button:hover{text-decoration:underline;text-underline-offset:3px}
   .walk{color:var(--muted);font-size:.74rem;margin-inline-end:7px}
   .alt{display:block;color:var(--muted);font-size:.75rem;margin-top:3px}
-  .res li.hl{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-wash)}
+  .res li.hl{background:var(--accent-wash)}
   .legend{
     display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.75rem;margin:-4px 0 12px;
   }
   .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:5px;vertical-align:0}
 
+  .walk{color:var(--muted)}
   .dist{
     display:inline-block;font-family:"Cascadia Mono",Consolas,ui-monospace,monospace;
     font-variant-numeric:tabular-nums;color:var(--accent-ink);font-weight:700;
@@ -310,10 +390,10 @@
   .wallet{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:0 0 14px}
   .wallet[hidden]{display:none}
   .wchip{
-    display:inline-flex;align-items:center;gap:6px;padding:4px 10px 5px;border-radius:999px;
-    background:var(--surface);border:1px solid var(--rule);font-size:.76rem;font-weight:700;color:var(--ink);
+    display:inline-flex;align-items:center;gap:6px;padding:3px 10px 4px;border-radius:999px;
+    background:none;border:1px solid var(--rule);font-size:.76rem;font-weight:600;color:var(--muted);
   }
-  .wchip i{width:9px;height:9px;border-radius:3px;background:var(--cc,var(--rule));flex:none}
+  .wchip i{width:7px;height:7px;border-radius:50%;background:var(--cc,var(--rule));flex:none}
   .wallet button{
     padding:4px 11px 5px;border-radius:999px;border:1px dashed var(--rule);background:none;
     color:var(--muted);font:inherit;font-size:.76rem;cursor:pointer;
@@ -422,8 +502,16 @@
     font-variant-numeric:tabular-nums;font-weight:800;font-size:.88rem;color:var(--cc);
   }
   /* the small print: what the card costs and what it asks of you */
-  .cc-need{margin-top:11px;padding-top:10px;border-top:1px dashed var(--rule)}
-  .cc-need h4{margin:0 0 5px;font-size:.76rem;font-weight:800;color:var(--muted);letter-spacing:.02em}
+  .cc-need{margin-top:11px;border-top:1px solid var(--rule)}
+  .cc-need>summary{
+    list-style:none;cursor:pointer;padding:10px 0 2px;min-height:40px;display:flex;align-items:center;
+    font-size:.78rem;font-weight:700;color:var(--muted);
+  }
+  .cc-need>summary::-webkit-details-marker{display:none}
+  .cc-need>summary::after{content:"›";margin-inline-start:6px;color:var(--faint);font-size:1rem}
+  .cc-need[open]>summary::after{content:"⌄"}
+  .cc-need>summary:hover{color:var(--ink)}
+  .cc-need .body{padding-bottom:var(--s2)}
   .cc-fee{display:flex;flex-wrap:wrap;gap:5px 9px;align-items:baseline;margin-bottom:7px;font-size:.81rem}
   .cc-fee b{color:var(--ink);font-weight:800}
   .cc-fee .w{color:var(--muted)}
@@ -448,7 +536,10 @@
 </style>
 
 <div class="wrap">
-  <div class="crumb" id="crumb"></div>
+  <div class="topbar">
+    <div class="crumb" id="crumb"></div>
+    <button class="theme-btn" id="themeBtn" type="button" aria-label="מצב תצוגה"></button>
+  </div>
   <h2 id="title"></h2>
   <p class="lede" id="lede"></p>
 
@@ -483,7 +574,7 @@
       <span class="ic">📦</span>
       <span class="ali-tx">
         <span class="ali-t">אליאקספרס — עד 11% חזרה</span>
-        <span class="ali-s">הסדר קובע. פספסת שלב, הכסף אבוד.</span>
+        <span class="ali-s">הסדר קובע</span>
       </span>
       <span class="arrow">‹</span>
     </button>
@@ -563,6 +654,7 @@
   </div>
   <p class="nearnote" id="nearnote" hidden></p>
 
+  <div class="act-all" id="actAll" hidden></div>
   <ul class="res" id="res"></ul>
   <button class="more" id="more" hidden>הצג עוד</button>
 
@@ -642,12 +734,12 @@ function chrome(){
 
   const gnote = (GROUPS.find(g => g.name === group) || {}).note || '';
   const T = {
-    group:    ['מה אתה מחפש?', me ? 'בחר תחום — הוא ייפתח על מה שקרוב אליך.' : 'בחר תחום, ואז את האזור שאתה נמצא בו.'],
+    group:    ['מה אתה מחפש?', ''],
     near:     [group ? `${ICON[group] || ''} ${group}` : 'כל ההטבות סביבך', ''],
-    district: nearFirst ? [`${ICON[group] || ''} ${group}`, gnote] : ['באיזה אזור?',  gnote || 'קודם מחוז, אחר כך עיר.'],
+    district: nearFirst ? [`${ICON[group] || ''} ${group}`, gnote] : ['באיזה אזור?', gnote],
     city:     ['באיזו עיר?',   ''],
     list:     [[group, city && city!==ANY ? city : district].filter(x=>x&&x!==ANY).join(' · '), gnote],
-    ali:      ['אליאקספרס',    'עד 11% חזרה — אבל רק אם עושים את זה בסדר הנכון.']
+    ali:      ['אליאקספרס',    'עד 11% חזרה, אם עושים את זה בסדר הנכון.']
   }[step];
   $('#title').textContent = Array.isArray(T[0]) ? T[0].join('') : T[0];
   $('#lede').textContent = T[1];
@@ -933,14 +1025,14 @@ function needBlock(c){
   const catches = (c.catch || []).filter(t => !said.includes(t));
   const cost = c.cost;
   if (!does.length && !catches.length && !cost) return '';
-  return `<div class="cc-need"><h4>מה זה דורש, ומה זה עולה</h4>` +
+  return `<details class="cc-need"><summary>מה זה דורש, ומה זה עולה</summary><div class="body">` +
     (cost ? `<div class="cc-fee"><span>💳 דמי כרטיס: <b>${cost.fee}</b></span>` +
       (cost.waiver ? `<span class="w">· ${cost.waiver}</span>` : '') +
       (cost.src ? `<a href="${cost.src}" target="_blank" rel="noopener">התעריפון ↗</a>` : '') + `</div>` : '') +
     (does.length || catches.length
       ? `<ul>${does.map(t => `<li class="do">${t}</li>`).join('')}` +
         `${catches.map(t => `<li class="no">${t}</li>`).join('')}</ul>`
-      : '') + `</div>`;
+      : '') + `</div></details>`;
 }
 
 function renderCards(){
@@ -1052,7 +1144,7 @@ function gps(auto){
   if (perm === 'denied') return auto || locErr('denied');
   if (!auto){
     $('#locLabel').textContent = 'מאתר את המיקום שלך…';
-    $('#locSub').textContent = 'אם הדפדפן שואל — לחץ "אפשר"';
+    $('#locSub').textContent = 'אם הדפדפן שואל, לחץ "אפשר"';
   }
   const ok = pos => {
     setMe({ lat: pos.coords.latitude, lon: pos.coords.longitude, acc: pos.coords.accuracy,
@@ -1182,13 +1274,15 @@ function renderLoc(){
   } else {
     const fold = step === 'district';   // there the areas come first; location is one tap away
     $('#locLabel').textContent = 'איפה אתה?';
-    $('#locSub').textContent = fold ? 'הגדר מיקום ותראה כאן מה הכי קרוב אליך' : 'מיקום, כתובת או מקום שמור — ואז הכל יחסי אליך';
+    $('#locSub').textContent = 'כדי לראות מה הכי קרוב אליך';
     if (!fold) panelOpen = true;
     $('#locChg').hidden = !fold;
     $('#locChg').textContent = panelOpen ? 'סגור' : 'הגדר';
   }
   $('#locPanel').hidden = !panelOpen;
-  $('#locGps').textContent = perm === 'denied' ? '📡 המיקום חסום — איך מאפשרים?' : '📡 השתמש במיקום הנוכחי שלי';
+  const blocked = perm === 'denied';
+  $('#locGps').textContent = blocked ? 'המיקום חסום — איך מאפשרים?' : 'השתמש במיקום שלי';
+  $('#locGps').classList.toggle('off', blocked);
 
   const saved = LS.get('places', []).map(p => ({ ...p, ic: '🕘' }));
   window.__places = saved;
@@ -1464,6 +1558,13 @@ function paintNear(){
   window.__rows = out; shown = 0; $('#res').innerHTML = ''; more();
 }
 
+const esc = t => String(t).replace(/"/g, '&quot;');
+/* the instruction, cut to its verb: everything before the colon, or the first clause */
+function shortAct(a){
+  const t = String(a).split(':')[0].split(' · ')[0].trim();
+  return t.length > 2 && t.length < a.length ? t + '…' : a;
+}
+
 function paintList(q){
   let rows = results.filter(r => !q || (r.n&&r.n.includes(q)) || (r.o&&r.o.includes(q)));
   $('#nearbar').hidden = !rows.some(r => r.lat);
@@ -1478,6 +1579,13 @@ function paintList(q){
 
 function more(){
   const rows = window.__rows || [];
+  // one instruction repeated on 3,500 rows is noise; if they all need the same
+  // step it belongs above the list, once
+  const acts = new Set(rows.map(r => r.a || ''));
+  window.__actAll = (acts.size === 1 && rows.length > 2) ? [...acts][0] : '';
+  const box = $('#actAll');
+  box.hidden = !window.__actAll;
+  if (window.__actAll) box.innerHTML = `<span class="ic">↳</span><span>${window.__actAll}</span>`;
   const slice = rows.slice(shown, shown+PAGE);
   const base = shown, mapOn = !$('#map').hidden;
   $('#res').insertAdjacentHTML('beforeend', slice.map((r, i) => {
@@ -1490,14 +1598,14 @@ function more(){
         <span class="val">${r.o||''}</span>
       </span>
       <span class="sub">
-        ${r._d != null ? `<span class="dist">${fmtKm(r._d)}</span>${r._d <= 3 ? `<span class="walk">🚶 ${walkMin(r._d)} דק׳</span>` : ''}` : ''}
-        <span class="card ${r.c}">${CARD[r.c]||''}</span>${[r.w!==ANY?r.w:'', r.d].filter(Boolean).join(' · ')}
+        ${r._d != null ? `<span class="dist">${fmtKm(r._d)}</span>${r._d <= 3 ? `<span class="walk">${walkMin(r._d)} דק׳ הליכה</span>` : ''}` : ''}
+        <span class="card ${r.c}" title="${esc(CARD[r.c] || '')}"></span>${[r.w!==ANY?r.w:'', r.d].filter(Boolean).join(' · ')}
       </span>
       ${alt ? `<span class="alt">גם: ${alt}</span>` : ''}
-      ${r.a ? `<span class="act">↳ ${r.a}</span>` : ''}
+      ${r.a && !window.__actAll ? `<span class="act" title="${esc(r.a)}">${shortAct(r.a)}</span>` : ''}
       ${r.lat ? `<span class="navs">
-          ${mapOn ? `<button type="button" data-map="${base+i}">📍 במפה</button>` : ''}
-          <a href="${g}" target="_blank" rel="noopener">🚶 ניווט</a>
+          ${mapOn ? `<button type="button" data-map="${base+i}">במפה</button>` : ''}
+          <a href="${g}" target="_blank" rel="noopener">ניווט</a>
           <a href="${w}" target="_blank" rel="noopener">Waze</a></span>` : ''}
     </li>`; }).join(''));
   shown += slice.length;
@@ -1535,6 +1643,20 @@ $('#filter').oninput = () => {
   mapDelay = 0;
 };
 $('#aliBtn').onclick = () => go(() => { step='ali'; });
+
+function paintTheme(){
+  const dark = document.documentElement.dataset.theme === 'dark';
+  $('#themeBtn').textContent = dark ? '☀' : '☾';
+  $('#themeBtn').title = dark ? 'תצוגה בהירה' : 'תצוגה כהה';
+}
+$('#themeBtn').onclick = () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem('theme', next); } catch(e){}   // raw, same as the boot script reads
+  paintTheme();
+  if (map){ map.remove(); map = null; draw(); }   // the tiles are themed too
+};
+paintTheme();
 
 $('#aliDeals').innerHTML = (DATA.aliDeals||[]).length
   ? DATA.aliDeals.map(d => `<li>${d.t}</li>`).join('')

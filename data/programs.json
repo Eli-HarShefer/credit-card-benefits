@@ -13,7 +13,7 @@
       "data": "data/max.json",
       "harvest": "scripts/harvest-max.ps1",
       "access": "public",
-      "color": "--tau"
+      "color": "--p-max"
     },
     {
       "id": "max-payback",
@@ -28,7 +28,7 @@
       "harvest": "scripts/harvest-payback.ps1",
       "access": "public",
       "only": "כרטיסי אשראי של max בלבד — לא cash-card, לא דביט, לא free ולא רכש",
-      "color": "--tau"
+      "color": "--p-payback"
     },
     {
       "id": "beplus",
@@ -42,7 +42,7 @@
       "harvest": "scripts/harvest-beplus.ps1",
       "access": "public",
       "note": "הכניסה הרגילה היא דרך מועדון בהצדעה. לכרטיסי max אחרים אותה רשת נפתחת דרך \"הטבות פלוס\" באתר max, אבל שם היא מותנית בתשלום בנייד, והאחוזים לא תמיד זהים.",
-      "color": "--beh"
+      "color": "--p-beplus"
     },
     {
       "id": "behatsdaa-wallet",
@@ -56,7 +56,7 @@
       "data": "data/behatsdaa-wallet.json",
       "harvest": "browser",
       "access": "login",
-      "color": "--accent"
+      "color": "--p-wallet"
     },
     {
       "id": "behatsdaa-club",
@@ -69,7 +69,7 @@
       "data": "data/behatsdaa-raw.json",
       "harvest": "browser",
       "access": "login",
-      "color": "--beh"
+      "color": "--p-behclub"
     },
     {
       "id": "tauclub",
@@ -82,7 +82,7 @@
       "data": "data/tauclub.json",
       "harvest": "browser",
       "access": "login",
-      "color": "--tau"
+      "color": "--p-tau"
     },
     {
       "id": "isracard",
@@ -96,7 +96,7 @@
       "harvest": "browser",
       "access": "blocked",
       "note": "האתר מחזיר 403 לכל בקשה שאינה מדפדפן. הקטגוריה הכספית חולצה ידנית; שאר הקטלוג ממתין.",
-      "color": "--zero"
+      "color": "--p-isracard"
     },
     {
       "id": "topcash",
@@ -110,7 +110,7 @@
       "data": "data/isracard-online.json",
       "harvest": "browser",
       "access": "blocked",
-      "color": "--zero"
+      "color": "--p-topcash"
     },
     {
       "id": "cal-store",
@@ -125,7 +125,7 @@
       "harvest": "browser",
       "access": "blocked",
       "note": "האתר של כאל חוסם כל בקשה שאינה מדפדפן, ולכן הקצירה רצה בדפדפן. חנות החוויות עצמה ציבורית ואינה דורשת התחברות.",
-      "color": "--zero"
+      "color": "--p-cal"
     },
     {
       "id": "shufersal-sbox",
@@ -140,7 +140,7 @@
       "harvest": "browser",
       "access": "public",
       "note": "בתוקף מ-8.6.2025 ועד להחלטת שופרסל. חל בשופרסל דיל, דיל אקסטרה, יוניברס, שופרסל שלי, אקספרס ובשופרסל Online. לא חל בבי-פארם, המפיץ, יש בשכונה, יש חסד וגודמרקט. בפיצול תשלום נספר רק החלק ששולם בכרטיס, ומסל הקנייה לא נספרים סיגריות, מזון תינוקות, תרופות, תווי קנייה, משלוחים, תרומות ותשלום חשבונות.",
-      "color": "--accent"
+      "color": "--p-sbox"
     },
     {
       "id": "hever-club",
@@ -155,7 +155,7 @@
       "harvest": "browser",
       "access": "partial",
       "note": "זהו החלק הציבורי של אינדקס בתי העסק. המדריך המלא, שלפי המועדון מכיל אלפי בתי עסק, פתוח לעמיתים מחוברים בלבד. ההסדרים ואחוזי ההנחה משתנים בלי הודעה מוקדמת.",
-      "color": "--accent"
+      "color": "--p-hever"
     }
   ],
   "issuers": [
