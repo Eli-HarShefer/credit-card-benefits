@@ -1,0 +1,9 @@
+# source                  start  len   caption
+ads/raw/y2-red.mp4        0.0    2.50  a2-01
+ads/raw/y2-red.mp4        2.50   2.50  a2-02
+ads/raw/y3-shock.mp4      1.2    3.55  a2-03
+ads/raw/y3-shock.mp4      4.75   3.29  a2-04
+ads/site/app-map.mp4      0.0    2.50  a2-05
+ads/site/app-map.mp4      2.50   3.16  end-01
+ads/site/app-map.mp4      5.66   2.50  end-02
+ads/site/app-cards.mp4    0.0    2.50  end-03
